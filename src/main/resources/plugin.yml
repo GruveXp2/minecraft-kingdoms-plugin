@@ -1,0 +1,44 @@
+name: Kingdoms
+version: '${project.version}'
+main: gruvexp.gruvexp.Main
+api-version: 1.20
+authors: [ GruveXp ]
+description: Made by CommandMaster GruveXp 4 the Kingdoms server
+website: https://www.youtube.com/channel/UCZsak04_6H192H5NVDrJ4Ww
+depend: [ProtocolLib]
+commands:
+  path:
+    description: Make paths for villagers. its like a junction with signs pointing what adresses are in which direction.
+    usage: /path <pos> [set | get | add | remove] <paths>
+  villager:
+    description: Edit villager nbt for storing path stuff
+    usage: /villager <UUID> [set | get | add | remove] <adresses>
+  test:
+    description: Where you test stuff
+    usage: It varies over time
+  home:
+    description: Teleports to your home
+    usage: /home    /home set
+  digitalclock:
+    description: Do stuff related to the clock. Used on nyttår saften
+    usage: /clock show    /clock hide
+  rail:
+    description: Make sections for the railway system
+    usage: aks GrubeXp
+  bigthing:
+    description: Teleport to The Big Thing
+    usage: /bigthing
+    aliases:
+      - largeobject
+  shrink:
+    description: Works the same way as /clone, but you can change the size
+    usage: /shrink <start> <end> <target> <size>
+  house:
+    description: Commands relating to villager houses
+    usage: /home <kdom> <distr> <addr> [add | get | list | set | retmove]
+  citizen:
+    description: Command for villager citizens in your kingdom
+    usage: /citizen [add | get | set] <villager name>
+  loadcitizens:
+    description: When the citizens doesnt load correctly, use this command
+    usage: /loadcitizens
