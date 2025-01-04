@@ -45,9 +45,11 @@ public class CitizenTabCompletion implements TabCompleter {
             switch (oper) {
                 case "add" -> {
                     if (args.length == 4) {
-                        return Arrays.stream(Villager.Type.values()).map(Enum::toString).map(String::toLowerCase).collect(Collectors.toList());
+                        //return Arrays.stream(Villager.Type.values()).map(Enum::name).map(String::toLowerCase).collect(Collectors.toList());
+                        return List.of("Error CitizenTabCompletion:49");
                     } else if (args.length == 5) {
-                        return Arrays.stream(Villager.Profession.values()).map(Enum::toString).map(String::toLowerCase).collect(Collectors.toList());
+                        //return Arrays.stream(Villager.Profession.values()).map(Enum::toString).map(String::toLowerCase).collect(Collectors.toList());
+                        return List.of("Error CitizenTabCompletion:52");
                     } else if (args.length == 6) {
                         return new ArrayList<>(kingdom.getDistrictIDs());
                     }

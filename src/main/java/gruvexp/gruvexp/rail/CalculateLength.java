@@ -32,7 +32,7 @@ public class CalculateLength extends BukkitRunnable {
         Coord coord = section.getEntry();
         World world = p.getWorld();
         loc = new Location(world, coord.getX() + 0.5, coord.getY(), coord.getZ() + 0.5);
-        cart = (CommandMinecart) world.spawnEntity(loc, EntityType.MINECART_COMMAND);
+        cart = (CommandMinecart) world.spawnEntity(loc, EntityType.COMMAND_BLOCK_MINECART);
         Coord exit_coord = section.getExit();
         exit = new Location(world, exit_coord.getX() + 0.5, exit_coord.getY(), exit_coord.getZ() + 0.5);
         start_distance = (int) Math.sqrt(Math.pow(coord.getX() - exit_coord.getX(), 2) + Math.pow(coord.getY() - exit_coord.getY(), 2) + Math.pow(coord.getZ() - exit_coord.getZ(), 2));

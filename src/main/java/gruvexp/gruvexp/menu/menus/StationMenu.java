@@ -85,7 +85,7 @@ public class StationMenu extends Menu {
                 StorageMinecart cart = (StorageMinecart) Bukkit.getEntity(ENTRYPOINT.getCartUUID());
                 if (cart == null) {
                     p.sendMessage(ChatColor.RED + "Couldnt find the chest minecart! Spawning new one...");
-                    spawnCart(EntityType.MINECART_CHEST);
+                    spawnCart(EntityType.CHEST_MINECART);
                     cart = (StorageMinecart) Bukkit.getEntity(ENTRYPOINT.getCartUUID());
                 }
                 p.openInventory(cart.getInventory());
@@ -166,7 +166,7 @@ public class StationMenu extends Menu {
 
         }
         if (prevCart == null || prevCart instanceof RideableMinecart ) {
-            spawnCart(EntityType.MINECART_CHEST);
+            spawnCart(EntityType.CHEST_MINECART);
         }
     }
 

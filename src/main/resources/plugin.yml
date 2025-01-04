@@ -1,7 +1,7 @@
 name: Kingdoms
 version: '${project.version}'
 main: gruvexp.gruvexp.Main
-api-version: 1.20
+api-version: 1.21
 authors: [ GruveXp ]
 description: Made by CommandMaster GruveXp 4 the Kingdoms server
 website: https://www.youtube.com/channel/UCZsak04_6H192H5NVDrJ4Ww
@@ -42,3 +42,6 @@ commands:
   loadcitizens:
     description: When the citizens doesnt load correctly, use this command
     usage: /loadcitizens
+  nyttår:
+    description: Brukt for å lage et fancy skilt for å feire 2025
+    usage: /nyttår
