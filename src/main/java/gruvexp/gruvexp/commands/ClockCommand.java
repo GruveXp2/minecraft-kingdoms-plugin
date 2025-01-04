@@ -22,7 +22,16 @@ public class ClockCommand implements CommandExecutor {
         }
 
         if (Objects.equals(args[0], "show")) {
-            ClockManager.clockInit(-3319, 121, 2255);
+            int x, y, z;
+            try {
+                x = Integer.parseInt(args[1]);
+                y = Integer.parseInt(args[2]);
+                z = Integer.parseInt(args[3]);
+                ClockManager.clockInit(x, y, z);
+            } catch (NumberFormatException e) {
+                p.sendMessage(ChatColor.RED + "Syntax error! " + ChatColor.WHITE + "Only numbers are allowed");
+                return true;
+            }
             return true;
         } else if (Objects.equals(args[0], "run")) {
             int seconds = Integer.parseInt(args[1]);

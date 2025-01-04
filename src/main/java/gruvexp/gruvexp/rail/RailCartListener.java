@@ -81,7 +81,7 @@ public class RailCartListener implements Listener {
                     cart.remove();
                     CartManager.removeCart(cartUUID);
                     //spawner ny cart
-                    spawnCart(entrypoint, address, EntityType.MINECART_CHEST);
+                    spawnCart(entrypoint, address, EntityType.CHEST_MINECART);
                     return;
                 }
             }

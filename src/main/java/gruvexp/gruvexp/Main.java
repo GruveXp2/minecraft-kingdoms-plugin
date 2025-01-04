@@ -4,7 +4,9 @@ import gruvexp.gruvexp.clock.ClockManager;
 import gruvexp.gruvexp.clock.Digit;
 import gruvexp.gruvexp.commands.*;
 import gruvexp.gruvexp.core.KingdomsManager;
+import gruvexp.gruvexp.listeners.BlockListener;
 import gruvexp.gruvexp.menu.MenuListener;
+import gruvexp.gruvexp.nyttår.Year2025;
 import gruvexp.gruvexp.rail.RailCartListener;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -28,7 +30,7 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         // Plugin startup logic
-        Bukkit.getLogger().info("[Kingdoms] v24.08.13");
+        Bukkit.getLogger().info("[Kingdoms] v25.01.04");
         getServer().getPluginManager().registerEvents(new MenuListener(), this);
         getServer().getPluginManager().registerEvents(new RailCartListener(), this);
         getCommand("path").setExecutor(new PathCommand());
@@ -47,12 +49,16 @@ public final class Main extends JavaPlugin {
         getCommand("citizen").setExecutor(new CitizenCommand());
         getCommand("citizen").setTabCompleter(new CitizenTabCompletion());
         getCommand("loadcitizens").setExecutor(new LoadCitizensCommand());
+        getCommand("nyttår").setExecutor(new NyttårCommand());
+        getCommand("nyttår").setTabCompleter(new NyttårTabCompletion());
+        getServer().getPluginManager().registerEvents(new BlockListener(), this);
         plugin = this;
         WORLD = Bukkit.getWorld("Four Kingdoms");
         HomeManager.loadData();
         KingdomsManager.loadData();
         Digit.init();
         KingdomsManager.init();
+        Year2025.loadData();
         new Thread(this::startSocketServer).start(); // Start the server in a new thread to avoid blocking the main thread
     }
 
