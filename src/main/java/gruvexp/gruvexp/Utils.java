@@ -19,7 +19,7 @@ public class Utils {
     public static String loadTxt(String fileName) { //returner string som er hele dokumentet
         StringBuilder input = new StringBuilder();
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("C:\\Users\\gruve\\Desktop\\Server\\Four Kingdoms\\plugin data\\"+fileName+".txt"));
+            BufferedReader reader = new BufferedReader(new FileReader(FilePath.SERVER_FOLDER + "\\Four Kingdoms\\plugin data\\"+fileName+".txt"));
             String line;
             while ((line = reader.readLine()) != null) {
                 input.append(line).append("\n");
@@ -32,7 +32,7 @@ public class Utils {
     }
     public static void saveTxt(String fileName, String fileData) { //returner string som er hele dokumentet
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\gruve\\Desktop\\Server\\Four Kingdoms\\plugin data\\"+fileName+".txt"));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(FilePath.SERVER_FOLDER + "\\Four Kingdoms\\plugin data\\"+fileName+".txt"));
             writer.write(fileData);
             writer.close();
         } catch (IOException e) {
