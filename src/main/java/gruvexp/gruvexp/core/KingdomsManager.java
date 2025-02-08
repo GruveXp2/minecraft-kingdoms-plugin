@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import gruvexp.gruvexp.FilePath;
 import gruvexp.gruvexp.rail.Entrypoint;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -122,7 +123,7 @@ public final class KingdomsManager {
         ObjectMapper mapper = new ObjectMapper();
         try {
             String json = mapper.writeValueAsString(kingdoms);
-            FileWriter fileWriter = new FileWriter("C:\\Users\\gruve\\Desktop\\Server\\Four Kingdoms\\plugin data\\kingdoms_data.json");
+            FileWriter fileWriter = new FileWriter(FilePath.SERVER_FOLDER + FilePath.SERVER_NAME + "\\plugin data\\kingdoms_data.json");
             fileWriter.write(json);
             fileWriter.close();
         } catch (IOException e) {
@@ -130,11 +131,10 @@ public final class KingdomsManager {
         }
     }
 
-    public static void
-    loadData() {
+    public static void loadData() {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            File file = new File("C:\\Users\\gruve\\Desktop\\Server\\Four Kingdoms\\plugin data\\kingdoms_data.json");
+            File file = new File(FilePath.SERVER_FOLDER + FilePath.SERVER_NAME + "\\plugin data\\kingdoms_data.json");
             Map<String, Kingdom> kingdomMap = mapper.readValue(file, new TypeReference<>() {
             });
 

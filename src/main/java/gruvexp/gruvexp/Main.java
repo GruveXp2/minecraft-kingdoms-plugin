@@ -53,7 +53,7 @@ public final class Main extends JavaPlugin {
         getCommand("nyttår").setTabCompleter(new NyttårTabCompletion());
         getServer().getPluginManager().registerEvents(new BlockListener(), this);
         plugin = this;
-        WORLD = Bukkit.getWorld("Four Kingdoms");
+        WORLD = Bukkit.getWorld(FilePath.SERVER_NAME);
         HomeManager.loadData();
         KingdomsManager.loadData();
         Digit.init();
