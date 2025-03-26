@@ -166,7 +166,7 @@ public class DriveCart extends BukkitRunnable {
         String dir = endpointdata[0];
         if (dir != null) {
             //Rail.Shape shape = KingdomsManager.string2Rail.get(section.getShape(dir));
-            Rail.Shape shape = Rail.Shape.valueOf(section.getShape(dir));
+            Rail.Shape shape = section.getShape(dir);
             Rail rail = (Rail) loc.getBlock().getBlockData();
             assert shape != null;
             rail.setShape(shape);

@@ -12,6 +12,7 @@ import gruvexp.gruvexp.rail.CalculateLength;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.data.Rail;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -108,10 +109,10 @@ public class RailCommand implements CommandExecutor {
                             if (!KingdomsManager.ROUTES.contains(direction)) {
                                 throw new IllegalArgumentException(ChatColor.RED + "\"" + direction + "\" is not a valid direction!");
                             }
-                            String railShape = args[6]; // north_west
-                            if (!KingdomsManager.RAIL_SHAPES.contains(railShape)) {
-                                throw new IllegalArgumentException(ChatColor.RED + "\"" + railShape + "\" is not a valid rail shape!");
+                            if (!KingdomsManager.RAIL_SHAPES.contains(args[6])) {
+                                throw new IllegalArgumentException(ChatColor.RED + "\"" + args[6] + "\" is not a valid rail shape!");
                             }
+                            Rail.Shape railShape = Rail.Shape.valueOf(args[6]); // north_west
                             String targetSectionID = args[7];
                             HashSet<String> addresses = new HashSet<>(args.length - 8);
                             addresses.addAll(Arrays.asList(args).subList(8, args.length));

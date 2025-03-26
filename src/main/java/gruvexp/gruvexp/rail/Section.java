@@ -28,7 +28,7 @@ public final class Section { // en delstrekning på en vei, GJØR SÅNN AT ENDPO
     private String monoroute = ""; // "": kommer opp piler og man kan velge hvor man skal kjøre. en string: man kommer inn på en spesifik section i slutten uansett hva man gjør
     private String borderKingdom; // ender kingdom umiddelbart dersom det er spesifisert (dvs non null)
     private String borderDistrict; // samme som over bare med distrikt istedet
-    private final HashMap<String, String> endPointShape = new HashMap<>(); // right: north_south
+    private final HashMap<String, Rail.Shape> endPointShape = new HashMap<>(); // right: north_south
     private final HashMap<String, String> endPointSection = new HashMap<>(); // right: section_id
     private final HashMap<String, HashSet<String>> endPointAddresses = new HashMap<>(); // right: [pyralix, east_district, kano_bay]
 
@@ -44,7 +44,7 @@ public final class Section { // en delstrekning på en vei, GJØR SÅNN AT ENDPO
 
     public Coord getExit() {return exit;}
 
-    public void setRoute(String direction, String railShape, String nextSection, HashSet<String> addresses) {
+    public void setRoute(String direction, Rail.Shape railShape, String nextSection, HashSet<String> addresses) {
         endPointShape.put(direction, railShape);
         endPointSection.put(direction, nextSection);
         endPointAddresses.put(direction, addresses);
@@ -59,7 +59,7 @@ public final class Section { // en delstrekning på en vei, GJØR SÅNN AT ENDPO
             String shape = (String) directionData.get("shape");
             String sectionID = (String) directionData.get("section");
             HashSet<String> addresses = new HashSet<>((ArrayList<String>) directionData.get("addresses"));
-            endPointShape.put(direction, shape);
+            endPointShape.put(direction, Rail.Shape.valueOf(shape));
             endPointSection.put(direction, sectionID);
             endPointAddresses.put(direction, addresses);
         }
@@ -73,7 +73,7 @@ public final class Section { // en delstrekning på en vei, GJØR SÅNN AT ENDPO
         Map<String, Map<String, Object>> routes = new HashMap<>();
         for (String direction : endPointShape.keySet()) {
             Map<String, Object> route = new HashMap<>();
-            route.put("shape", endPointShape.get(direction));
+            route.put("shape", endPointShape.get(direction).name());
             route.put("section", endPointSection.get(direction));
             route.put("addresses", endPointAddresses.get(direction));
             routes.put(direction, route);
@@ -91,7 +91,7 @@ public final class Section { // en delstrekning på en vei, GJØR SÅNN AT ENDPO
         endPointAddresses.clear();
     }
 
-    public String getShape(String direction) {
+    public Rail.Shape getShape(String direction) {
         return endPointShape.get(direction);
     }
 
