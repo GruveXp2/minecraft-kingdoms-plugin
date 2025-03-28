@@ -26,7 +26,7 @@ public class HomeCommand implements CommandExecutor {
                 String raw_coord = PlayerToHomeAdr.get(p.getPlayerListName());
                 String[] coords = raw_coord.split(" ");
                 if (p.getName().equals("bossfight3")) {
-                    p.teleport(new Location(Bukkit.getWorld("Four Kingdoms_nether"), Double.parseDouble(coords[0]), Double.parseDouble(coords[1]), Double.parseDouble(coords[2])));
+                    p.teleport(new Location(Main.WORLD_NETHER, Double.parseDouble(coords[0]), Double.parseDouble(coords[1]), Double.parseDouble(coords[2])));
                 } else {
                     p.teleport(new Location(Main.WORLD, Double.parseDouble(coords[0]), Double.parseDouble(coords[1]), Double.parseDouble(coords[2])));
                 }
