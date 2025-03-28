@@ -80,8 +80,7 @@ public class Utils {
     public static void openDoor(Block doorBlock) {
         BlockData data = doorBlock.getBlockData();
 
-        if (data instanceof Door) {
-            Door door = (Door) data;
+        if (data instanceof Door door) {
             door.setOpen(true);
             doorBlock.setBlockData(door);
         }
