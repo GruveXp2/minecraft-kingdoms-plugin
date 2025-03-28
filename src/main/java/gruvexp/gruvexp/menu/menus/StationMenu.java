@@ -38,8 +38,8 @@ public class StationMenu extends Menu {
     }
 
     public void spawnCart(EntityType entityType) {
-        Minecart new_cart = (Minecart) Main.WORLD.spawnEntity(ENTRYPOINT.getCoord().toLocation(Main.WORLD), entityType);
-        registerCart(new_cart);
+        Minecart newCart = (Minecart) Main.WORLD.spawnEntity(ENTRYPOINT.getCoord().toLocation(Main.WORLD), entityType);
+        registerCart(newCart);
     }
 
     private void registerCart(Minecart cart) {
