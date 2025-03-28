@@ -23,6 +23,7 @@ public final class Main extends JavaPlugin {
 
     private static Main plugin;
     public static World WORLD;
+    public static World WORLD_NETHER;
     private static final int PORT = 25566; // Port used to communicate with the discord bot
 
     public static boolean spamPackets = false;
@@ -52,6 +53,7 @@ public final class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new BlockListener(), this);
         plugin = this;
         WORLD = Bukkit.getWorld(FilePath.SERVER_NAME);
+        WORLD_NETHER = Bukkit.getWorld(FilePath.SERVER_NAME + "_nether");
         HomeManager.loadData();
         KingdomsManager.loadData();
         Digit.init();
