@@ -11,7 +11,7 @@ repositories {
     mavenCentral()
     mavenLocal()
     maven {
-        url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+        url = uri("https://repo.papermc.io/repository/maven-public/")
     }
 
     maven {
@@ -30,7 +30,7 @@ repositories {
 dependencies {
     api("org.jetbrains:annotations:24.1.0")
     api(libs.com.fasterxml.jackson.core.jackson.databind)
-    compileOnly(libs.org.spigotmc.spigot.api)
+    compileOnly("io.papermc.paper:paper-api:1.21.+")
     compileOnly(libs.com.comphenix.protocol.protocollib)
 }
 
@@ -57,11 +57,11 @@ publishing {
     }
 }
 
-tasks.withType<JavaCompile>() {
+tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }
 
-tasks.withType<Javadoc>() {
+tasks.withType<Javadoc> {
     options.encoding = "UTF-8"
 }
 
