@@ -17,12 +17,13 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
 public class RailCommand implements CommandExecutor {
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String @NotNull [] args) {
 
         // Rail command by GruveXp aka David
         // This is a command that lets players in my Minecraft server interact with the rail network, and makes it easier to create roads similar to real life.
@@ -32,11 +33,10 @@ public class RailCommand implements CommandExecutor {
         // usage explanation: Command returns the rail cords and direction when you hold right arrow in hand and are in section "my section"
         // if a section is not complete, minecarts will stop when they enter the sector and display error message in chat so a player can use this command to fix.
 
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player p)) {
             return true;
         }
         String usage =  ChatColor.WHITE + "\nUsage: /rail [add | get | modify | show | remove | calculate_length | entrypoints | addresses]";
-        Player p = (Player) sender;
 
         if (args.length == 0) {
             p.sendMessage(ChatColor.RED + "Error: No arguments." + usage);
@@ -74,7 +74,7 @@ public class RailCommand implements CommandExecutor {
                         p.sendMessage(section.printRoutes());
                         return true;
                     }
-                    p.sendMessage(section.print(property));
+                    p.sendMessage(Objects.requireNonNull(section.print(property)));
                 }
                 case "set" -> { // raildata set <section> entry x y z
                     if (args.length == 4) {

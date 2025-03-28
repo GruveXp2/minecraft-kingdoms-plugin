@@ -5,6 +5,8 @@ import gruvexp.gruvexp.core.Citizen;
 import gruvexp.gruvexp.core.Kingdom;
 import gruvexp.gruvexp.core.KingdomsManager;
 import org.bukkit.ChatColor;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -12,19 +14,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class CitizenCommand implements CommandExecutor {
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
 
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player p)) {
             return true;
         }
         String usage =  ChatColor.WHITE + "\nUsage: /citizen <kingdom> [add | get | list | set | remove]";
-        Player p = (Player) sender;
 
         if (args.length < 2) {
             p.sendMessage(ChatColor.RED + "Error: Too few arguments." + usage);
@@ -47,8 +47,8 @@ public class CitizenCommand implements CommandExecutor {
                     if (args.length < 8) {
                         throw new IllegalArgumentException(ChatColor.RED + "Not enough args!\n" + ChatColor.WHITE + "Usage: add <name> <variant> <profession> <distr> <addr> <house id>");
                     }
-                    Villager.Type type = Villager.Type.valueOf(args[3].toUpperCase());
-                    Villager.Profession profession = Villager.Profession.valueOf(args[4].toUpperCase());
+                    Villager.Type type = Registry.VILLAGER_TYPE.get(new NamespacedKey("minecraft", args[3]));
+                    Villager.Profession profession = Registry.VILLAGER_PROFESSION.get(new NamespacedKey("minecraft", args[4]));
                     String homeAddress = args[5] + " " + args[6] + " " + args[7];
                     Citizen citizen = new Citizen(citizenName, type, profession, kingdom, homeAddress);
                     kingdom.addCitizen(citizenName, citizen);

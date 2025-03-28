@@ -50,7 +50,6 @@ public class Test {
     }
 
     public static void packetMount1(Player p, Minecart cart) {
-        Location loc = p.getLocation();
         ProtocolManager manager = ProtocolLibrary.getProtocolManager();
         PacketContainer mountPacket = manager.createPacket(PacketType.Play.Server.MOUNT); // a packet which makes the player mount the minecart
         mountPacket.getIntegers().write(0, cart.getEntityId());
@@ -94,5 +93,4 @@ public class Test {
         rotationPacket.getBytes().write(1, xRot); // getBytes funker ikke for index 1, pga de er i samme byte?
         manager.broadcastServerPacket(rotationPacket);
     }
-
 }

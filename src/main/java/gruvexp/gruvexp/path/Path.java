@@ -99,7 +99,7 @@ public class Path {
 
     public boolean hasBranch(int index) {return branchPathID.containsKey(index);}
 
-    public boolean hasBranches() {return branchPathID.size() > 0;}
+    public boolean hasBranches() {return !branchPathID.isEmpty();}
 
     @JsonIgnore
     public HashSet<String> getBranchAddresses(int index) {return branchAddresses.get(index);}
@@ -116,7 +116,7 @@ public class Path {
 
     @SuppressWarnings("unused") @JsonProperty("branches") @JsonInclude(JsonInclude.Include.NON_NULL)
     private Map<Integer, Map<String, Object>> getBranches() {
-        if (branchPathID.size() == 0) {
+        if (branchPathID.isEmpty()) {
             return null;
         }
         Map<Integer, Map<String, Object>> branches = new HashMap<>();

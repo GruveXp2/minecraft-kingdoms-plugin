@@ -1,8 +1,5 @@
 package gruvexp.gruvexp.clock;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.ArmorStand;
-
 import java.util.ArrayList;
 
 public class Number {
@@ -30,9 +27,9 @@ public class Number {
         if (number == this.number) {return;}
 
         this.number = number;
-        String num = String.valueOf(number);
+        StringBuilder num = new StringBuilder(String.valueOf(number));
         while (num.length() < digits.size()) {
-            num = "0" + num;
+            num.insert(0, "0");
         }
 
         for (int j = 0; j < digits.size(); j++) {
@@ -51,9 +48,8 @@ public class Number {
             ClockManager.increaseNumber(id + 1);
             return;
         }
-        digits.get(0).increaseDigit();
+        digits.getFirst().increaseDigit();
         carry(1); // skjekker om det skal carries over eller ikke
-
     }
 
     private void carry(int i) {
@@ -68,5 +64,4 @@ public class Number {
             digit.delete();
         }
     }
-
 }

@@ -7,10 +7,7 @@ import gruvexp.gruvexp.Main;
 import gruvexp.gruvexp.Utils;
 import gruvexp.gruvexp.path.WalkPath;
 import gruvexp.gruvexp.rail.Coord;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
 
@@ -37,8 +34,8 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
         this.homeAddress = homeAddress;
         this.uuid = UUID.fromString(uuid);
         this.location = location;
-        TYPE = Villager.Type.valueOf(type.toUpperCase());
-        PROFESSION = Villager.Profession.valueOf(profession.toUpperCase());
+        TYPE = Registry.VILLAGER_TYPE.get(new NamespacedKey("minecraft", type));
+        PROFESSION = Registry.VILLAGER_PROFESSION.get(new NamespacedKey("minecraft", profession));
     }
 
     public Citizen(String name, Villager.Type type, Villager.Profession profession, Kingdom kingdom, String homeAddress) {
@@ -70,7 +67,7 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
                 VILLAGER.setCustomNameVisible(true);
                 uuid = VILLAGER.getUniqueId();
             } else {
-                Bukkit.getLogger().warning("Failed to load citizen: " + NAME);
+                Main.getPlugin().getLogger().warning("Failed to load citizen: " + NAME);
                 KingdomsManager.scheduleCitizenInit(this);
             }
         }

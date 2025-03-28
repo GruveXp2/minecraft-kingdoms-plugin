@@ -2,14 +2,12 @@ package gruvexp.gruvexp.core;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import gruvexp.gruvexp.FilePath;
 import gruvexp.gruvexp.rail.Entrypoint;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.block.data.Rail;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -28,14 +26,6 @@ public final class KingdomsManager {
     private static HashMap<String, Kingdom> kingdoms;
     public static final HashSet<String> BLOCKS = new HashSet<>();
     public static boolean save = false;
-
-    public static final ImmutableMap<String, Rail.Shape> string2Rail = ImmutableMap.of(
-            "north_south", Rail.Shape.NORTH_SOUTH,
-            "east_west", Rail.Shape.EAST_WEST,
-            "north_east", Rail.Shape.NORTH_EAST,
-            "north_west", Rail.Shape.NORTH_WEST,
-            "south_east", Rail.Shape.SOUTH_EAST,
-            "south_west", Rail.Shape.SOUTH_WEST);
 
     private static final HashSet<Entrypoint> entrypointPostInit = new HashSet<>();
     private static final HashSet<Address> addressPostInit = new HashSet<>();

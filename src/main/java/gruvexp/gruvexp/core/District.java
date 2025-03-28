@@ -9,7 +9,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 public class District {
@@ -49,7 +48,7 @@ public class District {
 
     @SuppressWarnings("unused") @JsonProperty("addresses") @JsonInclude(JsonInclude.Include.NON_NULL) // Blir brukt av JSONParseren
     private HashMap<String, Address> getAddresses() {
-        if (addresses.size() == 0) {
+        if (addresses.isEmpty()) {
             return null;
         }
         return addresses;
@@ -79,7 +78,7 @@ public class District {
 
     @SuppressWarnings("unused") @JsonProperty("sections") @JsonInclude(JsonInclude.Include.NON_NULL) // Blir brukt av JSONParseren
     private HashMap<String, Section> getSections() {
-        if (sections.size() == 0) {
+        if (sections.isEmpty()) {
             return null;
         }
         return sections;
@@ -97,18 +96,13 @@ public class District {
         entrypoints.put(address, new Entrypoint(kingdom, district, address, section, dir));
     }
 
-    @JsonIgnore
-    public Set<Map.Entry<String, Entrypoint>> getEntrypointEntrySet() {
-        return entrypoints.entrySet();
-    }
-
     public Entrypoint getEntrypoint(String address) {
         return entrypoints.get(address);
     }
 
     @SuppressWarnings("unused") @JsonProperty("entrypoints") @JsonInclude(JsonInclude.Include.NON_NULL) // Blir brukt av JSONParseren
     private HashMap<String, Entrypoint> getEntrypoints() {
-        if (entrypoints.size() == 0) {
+        if (entrypoints.isEmpty()) {
             return null;
         }
         return entrypoints;

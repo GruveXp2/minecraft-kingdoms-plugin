@@ -46,7 +46,7 @@ public class SelectDistrictMenu extends Menu {
     public void updateItems() {
         Kingdom kingdom = KingdomsManager.getKingdom(ENTRYPOINT.getTargetKingdom());
         Set<String> districts = kingdom.getDistrictIDs();
-        if (districts.size() == 0) {
+        if (districts.isEmpty()) {
             inventory.setItem(0, makeItem(Material.BARRIER, ChatColor.RED + "This kingdom has no districts"));
         }
         int i = 0;

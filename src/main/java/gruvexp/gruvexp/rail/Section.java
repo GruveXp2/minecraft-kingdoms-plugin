@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gruvexp.gruvexp.Main;
-import gruvexp.gruvexp.core.KingdomsManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -96,14 +95,14 @@ public final class Section { // en delstrekning på en vei, GJØR SÅNN AT ENDPO
     }
 
     public boolean hasRoutes() {
-        return endPointShape.size() > 0;
+        return !endPointShape.isEmpty();
     }
 
     public boolean hasRoute(String route) {
         return endPointShape.containsKey(route);
     }
 
-    public void setMonoroute(String sectionId) { // sets a route at the end position. will disable endPointRoutes and it will just switch to that route when it gets there no matther what, and the player cant choose
+    public void setMonoroute(String sectionId) { // sets a route at the end position. will disable endPointRoutes, and it will just switch to that route when it gets there no matther what, and the player cant choose
         monoroute = sectionId;
     }
 

@@ -24,7 +24,7 @@ public class House {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public HashSet<Citizen> getCitizens() {
-        if (citizens.size() == 0) {
+        if (citizens.isEmpty()) {
             return null;
         }
         return citizens;

@@ -59,7 +59,7 @@ public class Kingdom {
 
     @SuppressWarnings("unused") @JsonProperty("districts") @JsonInclude(JsonInclude.Include.NON_NULL) // Blir brukt av JSONParseren
     private HashMap<String, District> getDistricts() {
-        if (districts.size() == 0) { // sånn at det ikke kommer med i josn hvis egenskapen ikke er der. TA PÅ DE ANDRE OGSÅ FOR Å FRIGJØRE PLASS!
+        if (districts.isEmpty()) { // sånn at det ikke kommer med i josn hvis egenskapen ikke er der. TA PÅ DE ANDRE OGSÅ FOR Å FRIGJØRE PLASS!
             return null;
         }
         return districts;
@@ -103,7 +103,7 @@ public class Kingdom {
 
     @SuppressWarnings("unused") @JsonProperty("citizens") @JsonInclude(JsonInclude.Include.NON_NULL)
     private HashMap<String, Citizen> getCitizens() {
-        if (citizens.size() == 0) {
+        if (citizens.isEmpty()) {
             return null;
         }
         return citizens;
