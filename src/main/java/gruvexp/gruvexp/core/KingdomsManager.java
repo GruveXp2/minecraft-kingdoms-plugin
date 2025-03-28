@@ -66,7 +66,7 @@ public final class KingdomsManager {
     }
 
     public static void loadCitizens(boolean respawn) {
-        if (citizenPostInit.size() == 0) {return;}
+        if (citizenPostInit.isEmpty()) {return;}
         int loadedCitizens = 0;
         for (Citizen citizen : citizenPostInit) {
             citizenPostInit.remove(citizen);
@@ -76,7 +76,7 @@ public final class KingdomsManager {
             }
         }
         if (loadedCitizens > 0) {
-            if (citizenPostInit.size() == 0) {
+            if (citizenPostInit.isEmpty()) {
                 Bukkit.broadcastMessage("[Kingdoms] " + ChatColor.GREEN + "Successfully loaded " + loadedCitizens + " citizens");
             } else {
                 Bukkit.broadcastMessage(String.format("[Kingdoms] %sSuccessfully loaded %d citizens, but failed to load %s", ChatColor.YELLOW, loadedCitizens, citizenPostInit.size()));
