@@ -29,8 +29,6 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
-        Bukkit.getLogger().info("[Kingdoms] v25.01.04");
         getServer().getPluginManager().registerEvents(new MenuListener(), this);
         getServer().getPluginManager().registerEvents(new RailCartListener(), this);
         getCommand("path").setExecutor(new PathCommand());
@@ -64,11 +62,10 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
         ClockManager.deleteNumbers();
-        Bukkit.getLogger().info("Saving data...");
+        getLogger().info("Saving data...");
         KingdomsManager.saveData();
-        Bukkit.getLogger().info("Disabling Kingdoms plugin...");
+        getLogger().info("Disabling Kingdoms plugin...");
     }
 
     public static Main getPlugin() {

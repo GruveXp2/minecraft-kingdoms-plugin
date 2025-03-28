@@ -1,25 +1,22 @@
 package gruvexp.gruvexp.clock;
 
 import gruvexp.gruvexp.Main;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
 public class Digit {
 
-    private static ArrayList<ArrayList<Integer>> digitPlacements = new ArrayList<>(13);
-    private static ArrayList<ArrayList<Integer>> digitToggles = new ArrayList<>(13);
+    private static final ArrayList<ArrayList<Integer>> digitPlacements = new ArrayList<>(13);
+    private static final ArrayList<ArrayList<Integer>> digitToggles = new ArrayList<>(13);
 
-    ArrayList<ArmorStand> armorStands = new ArrayList<>(13);
+    final ArrayList<ArmorStand> armorStands = new ArrayList<>(13);
     private int digit = -1;
     private final double z;
 
@@ -59,10 +56,6 @@ public class Digit {
                 armorStands.add(e);
             }
         }
-    }
-
-    public int getDigit() {
-        return digit;
     }
 
     public void setDigit(int digit) {

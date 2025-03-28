@@ -53,7 +53,7 @@ public class StationMenu extends Menu {
     public void handleMenu(InventoryClickEvent e) {
         if (e.getSlot() >= getSlots()) {return;}
         Player p = (Player) e.getWhoClicked(); // send player til selectkingdom menu osv.
-        switch (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getLore().get(0))) {
+        switch (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getLore().getFirst())) {
             case "kingdom" -> ENTRYPOINT.openInventory(p, "kingdom");
             case "district" -> ENTRYPOINT.openInventory(p, "district");
             case "address" -> ENTRYPOINT.openInventory(p, "address");

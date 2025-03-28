@@ -16,12 +16,12 @@ public class CalculateLength extends BukkitRunnable {
     int counter = 0;
     char direction; // hvilken retning carten kjører. når man kommer til svinger vil den nye retninga avhenge av den forrige retninga
     final CommandMinecart cart;
-    String sectionID;
-    Location loc;
-    Location exit;
-    Player p;
-    int start_distance;
-    District district;
+    final String sectionID;
+    final Location loc;
+    final Location exit;
+    final Player p;
+    final int start_distance;
+    final District district;
     boolean doubleRun = false; // system som gjør at hver tick flytter han seg 2 hakk
     public CalculateLength(String kingdomID, String districtID, String sectionID, char direction, Player p) {
         this.sectionID = sectionID;

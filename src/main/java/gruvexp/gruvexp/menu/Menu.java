@@ -10,12 +10,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
 public abstract class Menu implements InventoryHolder {
 
-    protected Inventory inventory;
+    protected final Inventory inventory;
     protected final ItemStack FILLER_GLASS = makeItem(Material.GRAY_STAINED_GLASS_PANE, " ");
     protected final ItemStack LEFT = makeItem(Material.LIGHT_BLUE_STAINED_GLASS_PANE, ChatColor.AQUA + "Prev page");
     protected final ItemStack CLOSE = makeItem(Material.BARRIER, ChatColor.RED + "Close menu");
@@ -49,7 +50,7 @@ public abstract class Menu implements InventoryHolder {
 
     //Overridden method from the InventoryHolder interface
     @Override
-    public Inventory getInventory() {
+    public @NotNull Inventory getInventory() {
         return inventory;
     }
 

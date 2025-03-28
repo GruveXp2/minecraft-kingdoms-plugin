@@ -33,7 +33,7 @@ public class SelectAddressMenu extends Menu {
     @Override
     public void handleMenu(InventoryClickEvent e) {
         Player p = (Player) e.getWhoClicked();
-        if (e.getSlot() > 8 || e.getCurrentItem().getType() == Material.BARRIER) {return;}
+        if (e.getSlot() > 8 || e.getCurrentItem() != null && e.getCurrentItem().getType() == Material.BARRIER) {return;}
         ENTRYPOINT.setTargetAddress(e.getCurrentItem().getItemMeta().getDisplayName());
         ENTRYPOINT.openInventory(p, "main");
     }
@@ -46,7 +46,7 @@ public class SelectAddressMenu extends Menu {
     public void updateItems() {
         District district = KingdomsManager.getKingdom(ENTRYPOINT.getTargetKingdom()).getDistrict(ENTRYPOINT.getTargetDistrict());
         Set<String> addressses = district.getAddressIDs();
-        if (addressses.size() == 0) {
+        if (addressses.isEmpty()) {
             inventory.setItem(0, makeItem(Material.BARRIER, ChatColor.RED + "This district has no addresses"));
         }
         int i = 0;

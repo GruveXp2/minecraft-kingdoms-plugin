@@ -20,7 +20,7 @@ import org.joml.Vector3f;
 
 public class ShrinkCommand implements CommandExecutor {
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
         Player p = (Player) sender;
         if (args.length < 10) {
             p.sendMessage(ChatColor.RED + "Not enough args!\n" + ChatColor.WHITE + "Usage: " + command.getUsage());

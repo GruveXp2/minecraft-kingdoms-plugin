@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class ClockManager {
 
-    private static ArrayList<Number> numbers = new ArrayList<>(3);
+    private static final ArrayList<Number> numbers = new ArrayList<>(3);
 
     public static void clockInit(int x, int y, int z) {
         Number seconds = new Number(x, y, z, 60, 0);
@@ -44,7 +44,7 @@ public class ClockManager {
     }
 
     public static void increaseTime() {
-        numbers.get(0).increaseNumber();
+        numbers.getFirst().increaseNumber();
     }
 
 }

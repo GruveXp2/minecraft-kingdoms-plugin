@@ -58,7 +58,7 @@ public class Address {
 
     @SuppressWarnings("unused") @JsonProperty("paths") @JsonInclude(JsonInclude.Include.NON_NULL)
     private HashMap<String, Path> getPaths() {
-        if (paths.size() == 0) {return null;}
+        if (paths.isEmpty()) {return null;}
         return paths;
     }
 
@@ -101,7 +101,7 @@ public class Address {
 
     @SuppressWarnings("unused") @JsonProperty("houses") @JsonInclude(JsonInclude.Include.NON_NULL)
     private HashMap<Integer, House> getHouses() {
-        if (houses.size() == 0) {return null;}
+        if (houses.isEmpty()) {return null;}
         return houses;
     }
 

@@ -25,21 +25,21 @@ public class DriveCart extends BukkitRunnable {
     char direction; // hvilken retning carten kjører. når man kommer til svinger vil den nye retninga avhengig av den forrige retninga
     final Minecart cart;
     String sectionID;
-    Location loc;
-    String targetKingdom;
+    final Location loc;
+    final String targetKingdom;
     String kingdomID;
-    String targetDistrict;
+    final String targetDistrict;
     String districtID;
-    String targetAddress;
+    final String targetAddress;
     String targetAddressNr;
-    Entity passenger;
-    int[] dPos = new int[3]; // ΔPos om man kjører treigt blir Δpos huska.
+    final Entity passenger;
+    final int[] dPos = new int[3]; // ΔPos om man kjører treigt blir Δpos huska.
     float speed; // 0.5 = vanlig, 1 = motorvei, 1.5 = motorvei ekspress
     float speedOffset = 0; // svinger
     float moves = 0; // hvor mange moves som skal gjøres på veien
 
     // DEBUG
-    Player gruvexp = Bukkit.getPlayer("GruveXp");
+    final Player gruvexp = Bukkit.getPlayer("GruveXp");
 
     public DriveCart(@NotNull Minecart cart, Entity passenger, String startKingdom, String startDistrict, String sectionID, char direction, String targetKingdom, String targetDistrict, String targetAddress) {
         this.sectionID = sectionID;
@@ -65,7 +65,7 @@ public class DriveCart extends BukkitRunnable {
         this((Minecart) Main.WORLD.spawnEntity(entrypoint.getCoord().toLocation(Main.WORLD), EntityType.MINECART), villager, entrypoint.getKingdomID(), entrypoint.getDistrictID(), entrypoint.getSectionID(), entrypoint.getDirection(), targetKingdom, targetDistrict, targetAddress);
         villager.teleport(cart);
         cart.addPassenger(villager); // villageren setter seg i minecarten
-        if (cart.getPassengers().get(0) instanceof Villager) {
+        if (cart.getPassengers().getFirst() instanceof Villager) {
             //Bukkit.broadcastMessage("a villager sits in the cart");
         } else {
             Bukkit.broadcastMessage(".addPassenger() is trash and dont work");
@@ -149,14 +149,12 @@ public class DriveCart extends BukkitRunnable {
         }
         String nextSectionID = endpointdata[1];
         if (Objects.equals(nextSectionID, "end") || nextSectionID.contains("end:")) { // hvis monoroute blir satt til end/stop så slutter railwayen.
-            if (!cart.getPassengers().isEmpty() && cart.getPassengers().get(0) instanceof Player) {
-                Player p = (Player) cart.getPassengers().get(0);
+            if (!cart.getPassengers().isEmpty() && cart.getPassengers().getFirst() instanceof Player p) {
                 p.sendMessage(ChatColor.GRAY + "Destination reached: " + ((Math.ceil(totalDistance / 100f))/10f) + " km");
                 CartManager.removeCart(cart.getUniqueId());
-            } else if (!cart.getPassengers().isEmpty() && cart.getPassengers().get(0) instanceof Villager) {
+            } else if (!cart.getPassengers().isEmpty() && cart.getPassengers().getFirst() instanceof Villager villager) {
                 Address address = district.getAddress(targetAddress);
                 Path path = address.getPath("station_exit"); // hardcode: alle adresses som villidgers kan komme til med rail systemet må ha en path som kalles "station_exit" som villidgersene kan gå på når de er framme.
-                Villager villager = (Villager) cart.getPassengers().get(0);
                 villager.teleport(path.getStartPos().toLocation(Main.WORLD));
                 new WalkPath(villager, kingdomID, districtID, targetAddress, kingdomID, districtID, targetAddress, targetAddressNr, path).runTaskTimer(Main.getPlugin(), 0, 1);
             }

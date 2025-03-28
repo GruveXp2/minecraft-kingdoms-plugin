@@ -24,16 +24,16 @@ public class WalkPath extends BukkitRunnable {
     char direction; // hvilken retning carten kjører. når man kommer til svinger vil den nye retninga avhengig av den forrige retninga
     final Villager VILLAGER;
     Path path;
-    Location loc;
-    Location groundLoc;
-    String targetKingdomID;
-    String kingdomID;
-    String targetDistrictID;
-    String districtID;
-    String targetAddressID;
-    String addressID;
-    Address address;
-    String targetAddressNr;
+    final Location loc;
+    final Location groundLoc;
+    final String targetKingdomID;
+    final String kingdomID;
+    final String targetDistrictID;
+    final String districtID;
+    final String targetAddressID;
+    final String addressID;
+    final Address address;
+    final String targetAddressNr;
 
     Vector dPos = new Vector(); // ΔPos, villageren skal ikke gå for fort, bare 4m/s = 0.2m/t.
     int timeUntilCalc = 0;
@@ -62,7 +62,6 @@ public class WalkPath extends BukkitRunnable {
         cancel(); // i fremtiden så kommer det rød blocc og tekst som sier hva som gikk galt og at man kan ta /fix for å fikse det eller noe
         //tp villager til huset sitt
     }
-
 
     @Override
     public void run() {

@@ -16,7 +16,7 @@ public class CircleCart {
     private final double radius;
     private final double speed;
     private static final DecimalFormat df = new DecimalFormat("0.00");
-    Player gruveXp = Bukkit.getPlayer("GruveXp");
+    final Player gruveXp = Bukkit.getPlayer("GruveXp");
 
     public CircleCart(Minecart cart, double radius, double speed) {
         this.cart = cart;

@@ -27,7 +27,7 @@ public class Forskerlinja {
         World world = p.getWorld();
         for (int x = 0; x < Δx + 1; x++) {
             for (int y = 0; y < Δy + 1; y++) {
-                Block block = world.getBlockAt(pLoc.getBlockX() + x, pLoc.getBlockY() + -y, pLoc.getBlockZ() + 2);
+                Block block = world.getBlockAt(pLoc.getBlockX() + x, pLoc.getBlockY() - y, pLoc.getBlockZ() + 2);
                 if (block.getType() != Material.AIR) {
                     BlockDisplay display = (BlockDisplay) world.spawnEntity(block.getLocation(), EntityType.BLOCK_DISPLAY);
                     BlockData blockData = block.getBlockData();

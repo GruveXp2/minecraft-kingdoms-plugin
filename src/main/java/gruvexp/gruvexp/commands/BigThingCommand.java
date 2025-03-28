@@ -10,9 +10,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class BigThingCommand implements CommandExecutor {
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (!(sender instanceof Player)) {return false;}
-        Player p = (Player) sender; // -3907 94 908
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
+        if (!(sender instanceof Player p)) {return false;}
         p.teleport(new Location(Bukkit.getWorld("Four Kingdoms"), -3907, 94, 908, 180, -10));
         return true;
     }

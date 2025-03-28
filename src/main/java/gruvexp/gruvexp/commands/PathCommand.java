@@ -15,13 +15,12 @@ import java.util.*;
 
 public class PathCommand implements CommandExecutor {
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
 
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player p)) {
             return true;
         }
         String usage =  ChatColor.WHITE + "\nUsage: /path <kingdom> <district> <address> [add | get | list | set | remove]";
-        Player p = (Player) sender;
 
         if (args.length < 4) {
             p.sendMessage(ChatColor.RED + "Error: Too few arguments." + usage);
