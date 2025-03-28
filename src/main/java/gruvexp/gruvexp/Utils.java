@@ -41,13 +41,13 @@ public class Utils {
 
     public static Coord getPlayerBlockCoords(Player p) {
         Location loc = p.getLocation();
-        int pos_x = (int) loc.getX();
-        if (pos_x < 0) {pos_x -= 1;}
-        int pos_y = (int) loc.getY();
-        if (pos_y < 0) {pos_y -= 1;}
-        int pos_z = (int) loc.getZ();
-        if (pos_z < 0) {pos_z -= 1;}
-        return new Coord(pos_x, pos_y, pos_z);
+        int posX = (int) loc.getX();
+        if (posX < 0) {posX -= 1;}
+        int posY = (int) loc.getY();
+        if (posY < 0) {posY -= 1;}
+        int posZ = (int) loc.getZ();
+        if (posZ < 0) {posZ -= 1;}
+        return new Coord(posX, posY, posZ);
     }
 
     public static Material getMaterial(String namespaced) {
