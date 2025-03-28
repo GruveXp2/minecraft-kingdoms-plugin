@@ -10,6 +10,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -17,19 +18,21 @@ import java.util.List;
 
 public class Year2025 {
 
-    private static List<Location> snøfnugg = new ArrayList<>(50);
-    private static List<BlockDisplay> blockDisplays = new ArrayList<>(50);
-    private static List<BlockDisplay> blockDisplays1 = new ArrayList<>(50);
-    private static List<BlockDisplay> blockDisplays2 = new ArrayList<>(50);
-    private static List<Double> radians = new ArrayList<>(50);
-    private static List<Double> length = new ArrayList<>(50);
+    private static final List<Location> snøfnugg = new ArrayList<>(50);
+    private static final List<BlockDisplay> blockDisplays = new ArrayList<>(50);
+    private static final List<BlockDisplay> blockDisplays1 = new ArrayList<>(50);
+    private static final List<BlockDisplay> blockDisplays2 = new ArrayList<>(50);
+    private static final List<Double> radians = new ArrayList<>(50);
+    private static final List<Double> length = new ArrayList<>(50);
     private static Location animationCenter;
     private static boolean isCenterRegistered = false;
 
     private static Location numberStart1;
     private static Location numberStart2;
-    private static List<Location> number1 = new ArrayList<>();
-    private static List<Location> number2 = new ArrayList<>();
+    private static final List<Location> number1 = new ArrayList<>();
+    private static final List<Location> number2 = new ArrayList<>();
+    private static final List<Double> number1Lengths = new ArrayList<>();
+    private static final List<Double> number2Lengths = new ArrayList<>();
 
     public static BlockDisplay testDisplay;
 
@@ -38,6 +41,7 @@ public class Year2025 {
     }
 
     public static void addNumberNode(boolean isNumber20, Location location) {
+        Bukkit.getLogger().info("added blocc");
         if (isNumber20) {
             number1.add(location);
         } else {
@@ -125,12 +129,32 @@ public class Year2025 {
         display.setTransformation(newTransform);
     }
 
-    public static void animateNumber() {
-
+    public static void animateNumber(int ticks) {
+        numberStart1 = blockDisplays1.get(0).getLocation();
+        numberStart1 = blockDisplays2.get(0).getLocation();
+        new SkiltAnimasjon(blockDisplays1, true, ticks).runTaskTimer(Main.getPlugin(), 0, 1);
+        new SkiltAnimasjon(blockDisplays2, false, ticks).runTaskTimer(Main.getPlugin(), 0, 1);
     }
 
-    private static void getLocation(double progress) {
+    private static Location getLocation(boolean isNumber20, double progress, double placement) {
+        int totalLength = isNumber20 ? blockDisplays1.size() : blockDisplays2.size();
+        double length = totalLength * progress * placement;
+        if (isNumber20) {
+            return getLocation(length, number1Lengths, number1, numberStart1);
+        } else {
+            return getLocation(length, number2Lengths, number2, numberStart2);
+        }
+    }
 
+    @NotNull
+    private static Location getLocation(double length, List<Double> numberLengths, List<Location> number, Location startLocation) {
+        int i = 0;
+        while (i < numberLengths.size() && length < numberLengths.get(i)) {
+            length -= numberLengths.get(i);
+            i++;
+        }
+        if (i == numberLengths.size()) i--;
+        return startLocation.clone().add(number.get(i)).add(number.get(i + 1).subtract(number.get(i)).multiply(length));
     }
 
     public static void deleteCircle() {
@@ -165,8 +189,18 @@ public class Year2025 {
         processFile(inputSnøfnugg, snøfnugg);
         String inputNumber1 = Utils.loadTxt("number1");
         processFile(inputNumber1, number1);
+        double dist = 0;
+        for (int i = 1; i < number1.size(); i++) {
+            dist += number1.get(i).distance(number1.get(i - 1));
+            number1Lengths.add(dist);
+        }
         String inputNumber2 = Utils.loadTxt("number2");
         processFile(inputNumber2, number2);
+        dist = 0;
+        for (int i = 1; i < number2.size(); i++) {
+            dist += number2.get(i).distance(number2.get(i - 1));
+            number2Lengths.add(dist);
+        }
     }
 
     private static void processFile(String inputNumber1, List<Location> number1) {
@@ -234,11 +268,11 @@ public class Year2025 {
 
         final int totalSteps;
         int currentStep = 0;
+        double TARGET_ANGLE = Math.atan((double) 4 / 3);
 
         private Vekkus(int steps) {
             this.totalSteps = steps;
         }
-        double targetAngle = Math.atan((double) 4 / 3);
 
         @Override
         public void run() {
@@ -264,14 +298,15 @@ public class Year2025 {
             }
         }
 
-        private double getNewAngle(double i, double progress, BlockDisplay display) {
-            double startAngle = 2 * Math.PI * (i / blockDisplays.size());
+        private double getNewAngle(int i, double progress, BlockDisplay display) {
+            double targetAngle = TARGET_ANGLE;
+            double startAngle = 2 * Math.PI * ((double) i / blockDisplays.size());
             if (startAngle > targetAngle && startAngle < Math.PI + targetAngle) {
                 targetAngle += Math.PI;
             } else if (startAngle > targetAngle + Math.PI) {
                 startAngle -= 2 * Math.PI;
             }
-            if (i == 0) {
+            if (currentStep == 1) {
                 if (targetAngle < Math.PI) {
                     blockDisplays1.add(display);
                 } else {
@@ -281,6 +316,33 @@ public class Year2025 {
             //if (targetAngle > Math.PI && Math.abs(startAngle - Math.PI) > 0.01) targetAngle -= 2 * Math.PI;
             double diffAngle = targetAngle - startAngle;
             return startAngle + (diffAngle - 2 * Math.PI) * progress;
+        }
+    }
+
+    private static class SkiltAnimasjon extends BukkitRunnable {
+
+        private final List<BlockDisplay> displays;
+        private final boolean isNumber20;
+        private final int totalSteps;
+        private int step = 0;
+        int totalDisplays;
+
+        private SkiltAnimasjon(List<BlockDisplay> displays, boolean isNumber20, int totalSteps) {
+            this.displays = displays;
+            this.isNumber20 = isNumber20;
+            this.totalSteps = totalSteps;
+            totalDisplays = displays.size();
+        }
+
+        @Override
+        public void run() {
+            step++;
+            double progress = (double) step / totalSteps;
+            for (int i = 0; i < totalDisplays; i++) {
+                double placement = (double) i / totalDisplays;
+                displays.get(i).teleport(getLocation(isNumber20, progress, placement));
+            }
+            if (step == totalSteps) cancel();
         }
     }
 }

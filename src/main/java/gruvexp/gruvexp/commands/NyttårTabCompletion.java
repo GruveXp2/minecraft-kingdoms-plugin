@@ -18,7 +18,7 @@ public class NyttårTabCompletion implements TabCompleter {
         Player p = (Player) sender;
 
         if (args.length == 1) {
-            return List.of("lag_tekst", "register_center", "register_number_center", "run_snowflake", "spawn_circle", "toggle_set_blocks", "rotate_snowflake", "teleportus_vekkus", "delete_circle", "save_positions", "load_positions", "test");
+            return List.of("lag_tekst", "register_center", "register_number_center", "run_snowflake", "spawn_circle", "toggle_set_blocks", "rotate_snowflake", "teleportus_vekkus", "animate_number", "delete_circle", "save_positions", "load_positions", "test");
         }
         String oper = args[0];
         switch (oper) {

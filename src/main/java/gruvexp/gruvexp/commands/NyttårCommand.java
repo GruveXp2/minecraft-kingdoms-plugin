@@ -21,10 +21,9 @@ public class NyttårCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        Player p = (Player) sender;
 
         if (args.length == 0) {
-            p.sendMessage(ChatColor.RED + "you need 1 or more arguments");
+            sender.sendMessage(ChatColor.RED + "you need 1 or more arguments");
             return true;
         }
 
@@ -65,9 +64,10 @@ public class NyttårCommand implements CommandExecutor {
                     String number = args[1];
                     isSetting20 = number.equals("1");
                     sender.sendMessage("Setting number blocks: " + settingNumberBlocks + ", type: " + number);
+                } else {
+                    settingBlocks = !settingBlocks;
+                    sender.sendMessage("setting blocks ble satt til " + settingBlocks);
                 }
-                settingBlocks = !settingBlocks;
-                sender.sendMessage("setting blocks ble satt til " + settingBlocks);
             }
             case "spawn_circle" -> {
                 if (args.length < 4) {
@@ -101,7 +101,12 @@ public class NyttårCommand implements CommandExecutor {
                 Year2025.rotateInwards(ticks);
             }
             case "animate_number" -> {
-                Year2025.animateNumber();
+                if (args.length == 1) {
+                    sender.sendMessage(ChatColor.RED + "Ta med antall ticks");
+                    return true;
+                }
+                int ticks = Integer.parseInt(args[1]);
+                Year2025.animateNumber(ticks);
                 sender.sendMessage("Animerer tall");
             }
             case "delete_circle" -> {
@@ -123,7 +128,7 @@ public class NyttårCommand implements CommandExecutor {
                 }
                 String tall = args[1];
                 switch (tall) {
-                    case "1" -> Year2025.test1(p);
+                    case "1" -> Year2025.test1((Player) sender);
                     case "2" -> Year2025.test2();
                     case "3" -> Year2025.test3();
                     case "4" -> Year2025.test4();
