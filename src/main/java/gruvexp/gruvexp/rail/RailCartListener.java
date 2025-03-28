@@ -23,8 +23,7 @@ public class RailCartListener implements Listener {
     @EventHandler
     public void onRailInteract(PlayerInteractEntityEvent e) {
         Player p = e.getPlayer();
-        if (e.getRightClicked() instanceof ItemFrame) {
-            ItemFrame frame = (ItemFrame) e.getRightClicked();
+        if (e.getRightClicked() instanceof ItemFrame frame) {
             if (frame.getItem().getType() != Material.COMMAND_BLOCK_MINECART) {return;}
             Set<String> tags = frame.getScoreboardTags();
             if (tags.size() != 1) {return;}
@@ -45,13 +44,12 @@ public class RailCartListener implements Listener {
                 return;
             }
             entrypoint.openInventory(p, "main");
-        } else if (e.getRightClicked() instanceof Minecart) {
-            Minecart cart = (Minecart) e.getRightClicked();
+        } else if (e.getRightClicked() instanceof Minecart cart) {
             Set<String> tags = cart.getScoreboardTags();
             if (tags.contains("running")) {return;}
             UUID cartUUID = cart.getUniqueId();
             if (!CartManager.isCartRegistered(cartUUID)) {
-                if (tags.size() == 0) {return;}
+                if (tags.isEmpty()) {return;}
                 for (String tag : tags) {
                     String[] tagData = tag.split("-");
                     CartManager.registerCart(cartUUID, new String[]{tagData[0], tagData[1], tagData[2]});
@@ -67,7 +65,7 @@ public class RailCartListener implements Listener {
             if (cart instanceof StorageMinecart) {
                 e.setCancelled(true);
                 if (!entrypoint.getStationMenu().isChestMode()) {
-                    Bukkit.getLogger().info("Clicked chest cart but was in drive mode, spawning drive cart");
+                    Main.getPlugin().getLogger().info("Clicked chest cart but was in drive mode, spawning drive cart");
                     cart.remove();
                     CartManager.removeCart(cartUUID);
                     spawnCart(entrypoint, address, EntityType.MINECART);
@@ -76,7 +74,7 @@ public class RailCartListener implements Listener {
                 Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> entrypoint.getStationMenu().driveMode(), 10L);
             } else {
                 if (entrypoint.getStationMenu().isChestMode()) {
-                    Bukkit.getLogger().info("Clicked drive cart but was in chest mode, spawning cest cart");
+                    Main.getPlugin().getLogger().info("Clicked drive cart but was in chest mode, spawning cest cart");
                     e.setCancelled(true);
                     cart.remove();
                     CartManager.removeCart(cartUUID);

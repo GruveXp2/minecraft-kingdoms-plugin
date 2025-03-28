@@ -41,7 +41,7 @@ public class Year2025 {
     }
 
     public static void addNumberNode(boolean isNumber20, Location location) {
-        Bukkit.getLogger().info("added blocc");
+        Main.getPlugin().getLogger().info("added blocc");
         if (isNumber20) {
             number1.add(location);
         } else {
@@ -85,7 +85,7 @@ public class Year2025 {
             display.addScoreboardTag("nyttor2025");
             blockDisplays.add(display);
         }
-        Bukkit.getLogger().info("spawned in " + blocks + " blocks");
+        Main.getPlugin().getLogger().info("spawned in " + blocks + " blocks");
     }
 
     public static void snowFlake() {
@@ -101,12 +101,12 @@ public class Year2025 {
             length.add(Math.hypot(relativeLoc.getY(), relativeLoc.getZ()));
             display.setTeleportDuration(1);
         }
-        Bukkit.getLogger().info("Starting loop");
+        Main.getPlugin().getLogger().info("Starting loop");
         new Teleportus(ticks).runTaskTimer(Main.getPlugin(), 0, 1);
     }
 
     public static void rotateInwards(int ticks) {
-        Bukkit.getLogger().info("Starting inwards loop");
+        Main.getPlugin().getLogger().info("Starting inwards loop");
         new Vekkus(ticks).runTaskTimer(Main.getPlugin(), 0, 1);
     }
 
@@ -240,7 +240,7 @@ public class Year2025 {
 
         @Override
         public void run() {
-            Bukkit.getLogger().info("Step: " + currentStep);
+            Main.getPlugin().getLogger().info("Step: " + currentStep);
             currentStep++;
             double progress = (double) currentStep / totalSteps;
 
@@ -268,7 +268,7 @@ public class Year2025 {
 
         final int totalSteps;
         int currentStep = 0;
-        double TARGET_ANGLE = Math.atan((double) 4 / 3);
+        final double TARGET_ANGLE = Math.atan((double) 4 / 3);
 
         private Vekkus(int steps) {
             this.totalSteps = steps;
@@ -325,7 +325,7 @@ public class Year2025 {
         private final boolean isNumber20;
         private final int totalSteps;
         private int step = 0;
-        int totalDisplays;
+        final int totalDisplays;
 
         private SkiltAnimasjon(List<BlockDisplay> displays, boolean isNumber20, int totalSteps) {
             this.displays = displays;
