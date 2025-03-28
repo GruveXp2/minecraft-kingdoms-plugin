@@ -81,10 +81,8 @@ public final class Main extends JavaPlugin {
 
             while (true) {
                 try (Socket clientSocket = serverSocket.accept();
-                     BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                     BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()))) {
-
-                    //getLogger().info("Client connected");
+                    BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                    BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()))) {
 
                     String command = in.readLine();
                     if (command == null || command.trim().isEmpty()) return;
@@ -93,13 +91,9 @@ public final class Main extends JavaPlugin {
                             out.write("Kingdoms: " + Bukkit.getOnlinePlayers().size() + " online");
                             out.newLine();
                             out.flush();
-                            return;
                         }
                     } else { // a minecraft command
-                        //getLogger().info("Received command: " + command);
-
                         CountDownLatch latch = new CountDownLatch(1);
-
                         Bukkit.getScheduler().runTask(this, () -> { // Schedule the command execution on the main thread
                             try {
                                 // Execute the command on the server console
@@ -131,7 +125,7 @@ public final class Main extends JavaPlugin {
                     }
                     //getLogger().warning("The socket will close now");
                 } catch (IOException e) {
-                    getLogger().severe("Error handling client: " + e.getMessage());
+                    getLogger().severe("Error handling client: " + e.getMessage()); // random comment is being typed for no reason, idk whartugifukg
                 }
             }
         } catch (IOException e) {
