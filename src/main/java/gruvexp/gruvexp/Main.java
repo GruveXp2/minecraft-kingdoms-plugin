@@ -32,6 +32,8 @@ public final class Main extends JavaPlugin {
     public void onEnable() {
         getServer().getPluginManager().registerEvents(new MenuListener(), this);
         getServer().getPluginManager().registerEvents(new RailCartListener(), this);
+        getCommand("kingdoms").setExecutor(new KingdomsCommand());
+        getCommand("kingdoms").setTabCompleter(new KingdomsTabCompletion());
         getCommand("path").setExecutor(new PathCommand());
         getCommand("path").setTabCompleter(new PathTabCompletion());
         getCommand("home").setExecutor(new HomeCommand());
