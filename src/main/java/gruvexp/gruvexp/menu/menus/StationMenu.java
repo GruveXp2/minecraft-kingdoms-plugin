@@ -102,7 +102,7 @@ public class StationMenu extends Menu {
 
     public void setKingdom(String kingdomID) {
         Kingdom kingdom = KingdomsManager.getKingdom(ENTRYPOINT.getTargetKingdom());
-        String player = kingdom.getPlayer();
+        Player p = Bukkit.getPlayer(kingdom.getKingID());
         if (!chestMode) {
             inventory.setItem(3, makeItem(Material.PAPER, "select district", "district"));
         }
@@ -111,8 +111,7 @@ public class StationMenu extends Menu {
             ENTRYPOINT.setTargetDistrict(kingdom.getPostOfficeDistrict());
             ENTRYPOINT.setTargetAddress("post_office");
         }
-        inventory.setItem(1, makeHeadItem(Bukkit.getOfflinePlayer(player), kingdomID, "kingdom", player));
-
+        inventory.setItem(1, makeHeadItem(p, kingdomID, "kingdom", p.getName()));
     }
 
     public void setDistrict(String districtID) {
