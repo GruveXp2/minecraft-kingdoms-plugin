@@ -20,6 +20,6 @@ public class KingdomsTabCompletion implements TabCompleter {
                 return new ArrayList<>(KingdomsManager.getKingdomIDs());
             }
         }
-        return List.of("");
+        return List.of();
     }
 }

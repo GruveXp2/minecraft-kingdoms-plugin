@@ -389,9 +389,7 @@ public class RailCommand implements CommandExecutor {
                         String districtID = args[3];
                         Material material;
                         if (args.length == 5) {
-                            material = Utils.getMaterial(args[4]);
-                            kingdom.addDistrict(districtID, new District(material));
-                            p.sendMessage("Successfully added new district " + ChatColor.GOLD + districtID + ChatColor.WHITE + " to " + ChatColor.GOLD + kingdomID);
+                            p.sendMessage(Component.text("use /kingdom add <district> instead", NamedTextColor.YELLOW));
                             return true;
                         }
                         String address = args[4];
