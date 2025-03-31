@@ -1,6 +1,6 @@
 package gruvexp.gruvexp.listeners;
 
-import gruvexp.gruvexp.commands.NyttårCommand;
+import gruvexp.gruvexp.nyttår.NyttårCommand;
 import gruvexp.gruvexp.nyttår.Year2025;
 import org.bukkit.Location;
 import org.bukkit.Material;
