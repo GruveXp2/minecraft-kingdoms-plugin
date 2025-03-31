@@ -5,17 +5,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import gruvexp.gruvexp.FilePath;
 import gruvexp.gruvexp.rail.Entrypoint;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public final class KingdomsManager {
 
@@ -37,9 +38,6 @@ public final class KingdomsManager {
             if (!material.isLegacy()) {
                 BLOCKS.add(material.toString().toLowerCase());
             }
-        }
-        for (Map.Entry<String, Kingdom> kingdomEntry : kingdoms.entrySet()) {
-            kingdomEntry.getValue().initID(kingdomEntry.getKey());
         }
         for (Entrypoint entrypoint : entrypointPostInit) {
             entrypoint.init();
@@ -87,23 +85,39 @@ public final class KingdomsManager {
     }
     public static void scheduleCitizenInit(Citizen citizen) {citizenPostInit.add(citizen);}
 
-    public static void addKingdom(String kingdomID, String player) {
-        if (kingdoms.containsKey(kingdomID)) {
-            throw new IllegalArgumentException(ChatColor.RED + "Kingdom \"" + kingdomID + "\" already exist!");
-        }
-        kingdoms.put(kingdomID, new Kingdom(player));
+    public static TextComponent addKingdom(String ID, Player king, boolean isMale) {
+        if (kingdoms.containsKey(ID)) return Component.text("Kingdom \"" + ID + "\" already exists!", NamedTextColor.RED);
+
+        kingdoms.put(ID, new Kingdom(ID, king.getUniqueId(), isMale));
+        return Component.text("Kingdom ")
+                .append(Component.text(ID, NamedTextColor.GOLD))
+                .append(Component.text(" successfully added", NamedTextColor.GREEN))
+                .append(Component.text(" with "))
+                .append(king.name().color(NamedTextColor.YELLOW))
+                .append(Component.text(" as " + (isMale ? "king" : "queen")));
     }
 
     public static Kingdom getKingdom(String kingdomID) {
+        return kingdoms.get(kingdomID);
+    }
+
+    public static TextComponent removeKingdom(String kingdomID, String password) {
         Kingdom kingdom = kingdoms.get(kingdomID);
         if (kingdom == null) {
-            throw new IllegalArgumentException(ChatColor.RED + "Kingdom \"" + kingdomID + "\" doesnt exist!");
+            return Component.text("Kingdom \"" + kingdomID + "\" doesnt exist!", NamedTextColor.RED);
         }
-        return kingdom;
+        if (!Objects.equals(password, "kjør_kano_det_forurenser_ikke")) return Component.text("Wrong password", NamedTextColor.RED);
+        return Component.text("Successfully removed kingdom ")
+                .append(Component.text(kingdomID, NamedTextColor.GOLD))
+                .append(Component.text(". TO UNDO THIS ACTION, BACKUP THE JSON FILE BEFORE THE SERVER CLOSES"));
     }
 
     public static Set<String> getKingdomIDs() {
         return kingdoms.keySet();
+    }
+
+    public static Collection<Kingdom> getKingdoms() {
+        return kingdoms.values();
     }
 
     public static void saveData() {
