@@ -12,14 +12,16 @@ import java.util.HashMap;
 import java.util.Set;
 
 public class District {
-    private final Material MATERIAL;
+
+    public final String id;
+    private final Material icon;
     private final HashMap<String, Address> addresses = new HashMap<>();
     private final HashMap<String, Entrypoint> entrypoints = new HashMap<>(); // key = address
     private final HashMap<String, Section> sections = new HashMap<>();
 
-
-    public District(@JsonProperty("material") Material material) {
-        MATERIAL = material;
+    public District(String id, Material icon) {
+        this.id = id;
+        this.icon = icon;
     }
 
     public void addAddress(String addressID, Material material) {
@@ -89,7 +91,7 @@ public class District {
     }
 
     public Material getMaterial() {
-        return MATERIAL;
+        return icon;
     }
 
     public void setEntrypoint(String kingdom, String district, String address, String section, char dir) {

@@ -38,7 +38,7 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
         PROFESSION = Registry.VILLAGER_PROFESSION.get(new NamespacedKey("minecraft", profession));
     }
 
-    public Citizen(String name, Villager.Type type, Villager.Profession profession, Kingdom kingdom, String homeAddress) {
+    public Citizen(String name, Villager.Type type, Villager.Profession profession, Kingdom kingdom) {
         String[] homeAddressStr = homeAddress.split(" ");
         home = kingdom.getDistrict(homeAddressStr[0]).getAddress(homeAddressStr[1]).getHouse(Integer.parseInt(homeAddressStr[2]));
         NAME = name;
@@ -48,7 +48,6 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
         uuid = VILLAGER.getUniqueId();
         VILLAGER.setCustomName(Utils.ToName(name));
         VILLAGER.setCustomNameVisible(true);
-        this.homeAddress = homeAddress;
     }
 
     public void load(boolean respawn) {

@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.entity.Villager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,15 +18,16 @@ import java.util.UUID;
 
 public class Kingdom {
 
-    public final String ID;
+    public final String id;
     private final HashMap<String, District> districts = new HashMap<>();
     private HashMap<String, Citizen> citizens = new HashMap<>(); // holder alle villagers i kingdomet. key=navnet
-    private final UUID kingID;
+    private UUID kingID;
+    private TextColor color;
     private final boolean isMale;
     private String postOfficeDistrict;
 
     public Kingdom(@JsonProperty("id") String kingdomID, @JsonProperty("player") UUID kingID, boolean isMale) { // gender is strictly binary to align with common sense and reality
-        this.ID = kingdomID;
+        this.id = kingdomID;
         this.kingID = kingID;
         this.isMale = isMale;
     }
@@ -39,11 +42,30 @@ public class Kingdom {
         return kingID;
     }
 
-    public void addDistrict(String districtID, District district) {
-        if (districts.containsKey(districtID)) {
-            throw new IllegalArgumentException(ChatColor.RED + "District \"" + districtID + "\" already exist!");
-        }
-        districts.put(districtID, district);
+    public Component setKingID(UUID kingID) {
+        this.kingID = kingID;
+        return Component.text("Successfully set king of ").append(name())
+                .append(Component.text(" to ")).append(king());
+    }
+
+    public TextColor getColor() {return color;}
+
+    public Component setColor(TextColor color) {
+        this.color = color;
+        return Component.text("Successfully set color of ").append(name())
+                .append(Component.text(" to ")).append(Component.text(color.asHexString(), color));
+    }
+
+    public Component addDistrict(String districtID, Material icon) {
+        if (districts.containsKey(districtID)) return Component.text("District \"" + id + "\" already exists!", NamedTextColor.RED);
+
+        districts.put(districtID, new District(districtID, icon));
+        return Component.text("Successfully added district ")
+                .append(Component.text(districtID, NamedTextColor.GOLD))
+                .append(Component.text(" to ", NamedTextColor.GREEN))
+                .append(name())
+                .append(Component.text(" with icon "))
+                .append(Component.text(icon.name().toLowerCase()).color(NamedTextColor.BLUE));
     }
 
     public District getDistrict(String districtID) {
@@ -67,6 +89,12 @@ public class Kingdom {
         return districts;
     }
 
+    public Component removeDistrict(String districtID) {
+        if (!districts.containsKey(districtID)) return Component.text("No distric twith id \"" + districtID + "\" exists", NamedTextColor.RED);
+        districts.remove(districtID);
+        return Component.text("Successfully removed district: ").append(Component.text(districtID));
+    }
+
     @SuppressWarnings("unused")
     public void setPostOfficeDistrict(@JsonProperty("postOfficeDistrict") String district) {
         postOfficeDistrict = district;
@@ -84,11 +112,10 @@ public class Kingdom {
         return postOfficeDistrict;
     }
 
-    public void addCitizen(String name, Citizen citizen) {
-        if (citizens.containsKey(name)) {
-            throw new IllegalArgumentException(ChatColor.GREEN + name + ChatColor.RED + " already exists!");
-        }
-        citizens.put(name, citizen);
+    public Component addCitizen(String name, Villager.Type variant, Villager.Profession profession) {
+        if (citizens.containsKey(name)) return Component.text("A villager with that name already exists!", NamedTextColor.RED);
+        citizens.put(name, new Citizen(name, variant, profession, this));
+        return Component.text("Successfully added new citizen called ", NamedTextColor.GREEN).append(Component.text(name));
     }
 
     public Citizen getCitizen(String name) {
@@ -96,6 +123,12 @@ public class Kingdom {
             throw new IllegalArgumentException(ChatColor.RED + "Citizen \"" + name + "\" doesnt exist!");
         }
         return citizens.get(name);
+    }
+
+    public Component removeCitizen(String name) {
+        if (!citizens.containsKey(name)) return Component.text("No citizen with name \"" + name + "\" exitst", NamedTextColor.RED);
+        citizens.remove(name);
+        return Component.text("Successfully removed citizen called ").append(Component.text(name));
     }
 
     @JsonIgnore
@@ -119,14 +152,14 @@ public class Kingdom {
 
     @Override
     public String toString() {
-        return ID;
+        return id;
     }
 
-    public TextComponent name() {
-        return Component.text(Character.toUpperCase(ID.charAt(0)) + ID.substring(1), NamedTextColor.GOLD);
+    public Component name() {
+        return Component.text(Character.toUpperCase(id.charAt(0)) + id.substring(1), NamedTextColor.GOLD);
     }
 
-    public TextComponent king() {
+    public Component king() {
         return Component.text(isMale ? "King " : "Queen ").append(Bukkit.getPlayer(kingID).name());
     }
 }
