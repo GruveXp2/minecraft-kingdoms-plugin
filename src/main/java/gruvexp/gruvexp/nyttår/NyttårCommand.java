@@ -1,8 +1,6 @@
-package gruvexp.gruvexp.commands;
+package gruvexp.gruvexp.nyttår;
 
 import gruvexp.gruvexp.Main;
-import gruvexp.gruvexp.nyttår.Forskerlinja;
-import gruvexp.gruvexp.nyttår.Year2025;
 import gruvexp.gruvexp.rail.Coord;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

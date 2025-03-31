@@ -1,4 +1,4 @@
-package gruvexp.gruvexp.commands;
+package gruvexp.gruvexp.nyttår;
 
 import gruvexp.gruvexp.Utils;
 import gruvexp.gruvexp.rail.Coord;

@@ -6,6 +6,8 @@ import gruvexp.gruvexp.commands.*;
 import gruvexp.gruvexp.core.KingdomsManager;
 import gruvexp.gruvexp.listeners.BlockListener;
 import gruvexp.gruvexp.menu.MenuListener;
+import gruvexp.gruvexp.nyttår.NyttårCommand;
+import gruvexp.gruvexp.nyttår.NyttårTabCompletion;
 import gruvexp.gruvexp.nyttår.Year2025;
 import gruvexp.gruvexp.rail.RailCartListener;
 import org.bukkit.Bukkit;
