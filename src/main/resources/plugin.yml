@@ -7,6 +7,9 @@ description: Made by CommandMaster GruveXp 4 the Kingdoms server
 website: https://www.youtube.com/channel/UCZsak04_6H192H5NVDrJ4Ww
 depend: [ProtocolLib]
 commands:
+  kingdoms:
+    description: This command shows info about the server, can change settings, add or remove kingdoms
+    usage: /kingdoms [info | set | add | remove] <kingdom?>
   path:
     description: Make paths for villagers. its like a junction with signs pointing what adresses are in which direction.
     usage: /path <pos> [set | get | add | remove] <paths>

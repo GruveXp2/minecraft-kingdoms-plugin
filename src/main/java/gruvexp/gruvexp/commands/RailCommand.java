@@ -9,6 +9,8 @@ import gruvexp.gruvexp.rail.Entrypoint;
 import gruvexp.gruvexp.core.KingdomsManager;
 import gruvexp.gruvexp.rail.Section;
 import gruvexp.gruvexp.rail.CalculateLength;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -380,8 +382,7 @@ public class RailCommand implements CommandExecutor {
                         }
                         String kingdomID = args[2];
                         if (args.length == 4) {
-                            KingdomsManager.addKingdom(kingdomID, args[3]);
-                            p.sendMessage("Successfully added new kingdom " + ChatColor.GOLD + kingdomID + ChatColor.WHITE + " with " + args[3] + " as king");
+                            p.sendMessage(Component.text("use /kingdoms add <kingdom> instead", NamedTextColor.YELLOW));
                             return true;
                         }
                         Kingdom kingdom = KingdomsManager.getKingdom(kingdomID);

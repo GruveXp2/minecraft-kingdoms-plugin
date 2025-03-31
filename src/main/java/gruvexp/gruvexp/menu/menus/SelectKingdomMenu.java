@@ -46,8 +46,8 @@ public class SelectKingdomMenu extends Menu {
         Set<String> kingdoms = KingdomsManager.getKingdomIDs();
         int i = 0;
         for (String kingdom : kingdoms) {
-            String player = KingdomsManager.getKingdom(kingdom).getPlayer();
-            inventory.setItem(i, makeHeadItem(Bukkit.getOfflinePlayer(player), kingdom, player));
+            Player p = Bukkit.getPlayer(KingdomsManager.getKingdom(kingdom).getKingID());
+            inventory.setItem(i, makeHeadItem(p, kingdom, p.getName()));
             i++;
         }
     }
