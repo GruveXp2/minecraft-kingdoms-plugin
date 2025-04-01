@@ -33,6 +33,35 @@ public final class KingdomsManager {
     private static final HashSet<Kingdom> kingdomPostInit = new HashSet<>();
     private static final HashSet<Citizen> citizenPostInit = new HashSet<>();
 
+    private static final HashMap<Player, Kingdom> selectedKingdom = new HashMap<>();
+    private static final HashMap<Player, District> selectedDistrict = new HashMap<>();
+    private static final HashMap<Player, Locality> selectedLocality = new HashMap<>();
+
+    public static Kingdom getSelectedKingdom(Player p) {
+        return selectedKingdom.get(p);
+    }
+    public static District getSelectedDistrict(Player p) {
+        return selectedDistrict.get(p);
+    }
+    public static Locality getSelectedLocality(Player p) {
+        return selectedLocality.get(p);
+    }
+    public static void setSelectedKingdom(Player p, Kingdom kingdom) {
+        selectedKingdom.put(p, kingdom);
+        selectedDistrict.remove(p);
+        selectedLocality.remove(p);
+    }
+    public static void setSelectedDistrict(Player p, District district) {
+        selectedKingdom.put(p, district.getKingdom());
+        selectedDistrict.put(p, district);
+        selectedLocality.remove(p);
+    }
+    public static void setSelectedLocality(Player p, Locality locality) {
+        selectedKingdom.put(p, locality.getDistrict().getKingdom());
+        selectedDistrict.put(p, locality.getDistrict());
+        selectedLocality.put(p, locality);
+    }
+
     public static void init() {
         for (Material material : Material.values()) {
             if (!material.isLegacy()) {
