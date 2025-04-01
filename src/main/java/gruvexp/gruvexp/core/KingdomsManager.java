@@ -29,7 +29,7 @@ public final class KingdomsManager {
     public static boolean save = false;
 
     private static final HashSet<Entrypoint> entrypointPostInit = new HashSet<>();
-    private static final HashSet<Address> addressPostInit = new HashSet<>();
+    private static final HashSet<Locality> LOCALITY_POST_INIT = new HashSet<>();
     private static final HashSet<Kingdom> kingdomPostInit = new HashSet<>();
     private static final HashSet<Citizen> citizenPostInit = new HashSet<>();
 
@@ -43,10 +43,10 @@ public final class KingdomsManager {
             entrypoint.init();
         }
         entrypointPostInit.clear();
-        for (Address address : addressPostInit) {
-            address.postInit();
+        for (Locality locality : LOCALITY_POST_INIT) {
+            locality.postInit();
         }
-        addressPostInit.clear();
+        LOCALITY_POST_INIT.clear();
         for (Kingdom kingdom : kingdomPostInit) {
             kingdom.postInit();
         }
@@ -80,8 +80,8 @@ public final class KingdomsManager {
     public static void scheduleEntrypointInit(Entrypoint entrypoint) {
         entrypointPostInit.add(entrypoint);
     }
-    public static void scheduleAddressInit(Address address) {
-        addressPostInit.add(address);
+    public static void scheduleAddressInit(Locality locality) {
+        LOCALITY_POST_INIT.add(locality);
     }
     public static void scheduleCitizenInit(Citizen citizen) {citizenPostInit.add(citizen);}
 
