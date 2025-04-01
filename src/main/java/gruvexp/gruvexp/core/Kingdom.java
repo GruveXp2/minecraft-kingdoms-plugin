@@ -26,8 +26,8 @@ public class Kingdom {
     private final boolean isMale;
     private String postOfficeDistrict;
 
-    public Kingdom(@JsonProperty("id") String kingdomID, @JsonProperty("player") UUID kingID, boolean isMale) { // gender is strictly binary to align with common sense and reality
-        this.id = kingdomID;
+    public Kingdom(String id, @JsonProperty("player") UUID kingID, boolean isMale) { // gender is strictly binary to align with common sense and reality
+        this.id = id;
         this.kingID = kingID;
         this.isMale = isMale;
     }
@@ -59,7 +59,7 @@ public class Kingdom {
     public Component addDistrict(String districtID, Material icon) {
         if (districts.containsKey(districtID)) return Component.text("District \"" + id + "\" already exists!", NamedTextColor.RED);
 
-        districts.put(districtID, new District(districtID, icon));
+        districts.put(districtID, new District(districtID, this, icon));
         return Component.text("Successfully added district ")
                 .append(Component.text(districtID, NamedTextColor.GOLD))
                 .append(Component.text(" to ", NamedTextColor.GREEN))
