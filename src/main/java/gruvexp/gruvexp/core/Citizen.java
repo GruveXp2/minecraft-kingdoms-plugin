@@ -7,6 +7,8 @@ import gruvexp.gruvexp.Main;
 import gruvexp.gruvexp.Utils;
 import gruvexp.gruvexp.path.WalkPath;
 import gruvexp.gruvexp.rail.Coord;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
@@ -15,39 +17,38 @@ import java.util.UUID;
 
 public class Citizen { //holder info om hver villager, som bosted, fabrikk, og personlige egenskaper
 
-    private Villager VILLAGER;
-    private String NAME; //villagerens fulle navn
-    private final Villager.Type TYPE;
-    private final Villager.Profession PROFESSION;
+    private Villager villager;
+    Kingdom kingdom;
+    private String name; //villagerens fulle navn
+    private final Villager.Type type;
+    private Villager.Profession profession;
     private House home;
-    private String homeAddress;
-    private String workAddress;
+    private Locality workLocality;
     private String bio;
     private UUID uuid;
     private Coord location;
-    private String kingdomID;
 
     @SuppressWarnings("unused")
     public Citizen(@JsonProperty("villager") String uuid, @JsonProperty("homeAddress") String homeAddress, @JsonProperty("workAddress") String workAddress,
                    @JsonProperty("location") Coord location, @JsonProperty("type") String type, @JsonProperty("profession") String profession) {
-        this.workAddress = workAddress;
+        this.workLocality = workAddress;
         this.homeAddress = homeAddress;
         this.uuid = UUID.fromString(uuid);
         this.location = location;
-        TYPE = Registry.VILLAGER_TYPE.get(new NamespacedKey("minecraft", type));
-        PROFESSION = Registry.VILLAGER_PROFESSION.get(new NamespacedKey("minecraft", profession));
+        this.type = Registry.VILLAGER_TYPE.get(new NamespacedKey("minecraft", type));
+        this.profession = Registry.VILLAGER_PROFESSION.get(new NamespacedKey("minecraft", profession));
     }
 
-    public Citizen(String name, Villager.Type type, Villager.Profession profession, Kingdom kingdom) {
+    public Citizen(String name, Kingdom kingdom, Villager.Type type, Villager.Profession profession) {
         String[] homeAddressStr = homeAddress.split(" ");
-        home = kingdom.getDistrict(homeAddressStr[0]).getAddress(homeAddressStr[1]).getHouse(Integer.parseInt(homeAddressStr[2]));
-        NAME = name;
-        TYPE = type;
-        PROFESSION = profession;
-        VILLAGER = (Villager) Main.WORLD.spawnEntity(home.getBedPos().toLocation(Main.WORLD), EntityType.VILLAGER);
-        uuid = VILLAGER.getUniqueId();
-        VILLAGER.setCustomName(Utils.ToName(name));
-        VILLAGER.setCustomNameVisible(true);
+        home = kingdom.getDistrict(homeAddressStr[0]).getLocality(homeAddressStr[1]).getHouse(Integer.parseInt(homeAddressStr[2]));
+        this.name = name;
+        this.type = type;
+        this.profession = profession;
+        villager = (Villager) Main.WORLD.spawnEntity(home.getBedPos().toLocation(Main.WORLD), EntityType.VILLAGER);
+        uuid = villager.getUniqueId();
+        villager.setCustomName(Utils.toName(name));
+        villager.setCustomNameVisible(true);
     }
 
     public void load(boolean respawn) {
@@ -57,16 +58,16 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
                 chunk.load();
             }
         }
-        VILLAGER = (Villager) Bukkit.getEntity(this.uuid);
-        if (VILLAGER == null) {
+        villager = (Villager) Bukkit.getEntity(this.uuid);
+        if (villager == null) {
             if (respawn) {
-                Bukkit.broadcastMessage(ChatColor.YELLOW + NAME + " was found (prob ded), spawning new villager");
-                VILLAGER = (Villager) Main.WORLD.spawnEntity(home.getBedPos().toLocation(Main.WORLD), EntityType.VILLAGER);
-                VILLAGER.setCustomName(Utils.ToName(NAME));
-                VILLAGER.setCustomNameVisible(true);
-                uuid = VILLAGER.getUniqueId();
+                Bukkit.broadcastMessage(ChatColor.YELLOW + name + " was found (prob ded), spawning new villager");
+                villager = (Villager) Main.WORLD.spawnEntity(home.getBedPos().toLocation(Main.WORLD), EntityType.VILLAGER);
+                villager.setCustomName(Utils.toName(name));
+                villager.setCustomNameVisible(true);
+                uuid = villager.getUniqueId();
             } else {
-                Main.getPlugin().getLogger().warning("Failed to load citizen: " + NAME);
+                Main.getPlugin().getLogger().warning("Failed to load citizen: " + name);
                 KingdomsManager.scheduleCitizenInit(this);
             }
         }
@@ -74,9 +75,9 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
 
     public void postInit(String name, Kingdom kingdom) {
         kingdomID = kingdom.toString();
-        NAME = name;
+        this.name = name;
         String[] homeAddressStr = homeAddress.split(" ");
-        home = kingdom.getDistrict(homeAddressStr[0]).getAddress(homeAddressStr[1]).getHouse(Integer.parseInt(homeAddressStr[2]));
+        home = kingdom.getDistrict(homeAddressStr[0]).getLocality(homeAddressStr[1]).getHouse(Integer.parseInt(homeAddressStr[2]));
         load(false);
     }
 
@@ -86,21 +87,27 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
     }
 
     @JsonIgnore
-    public Villager getVillager() {return VILLAGER;}
+    public Villager getVillager() {return villager;}
 
     @JsonIgnore
     public String getName() {
-        return NAME;
+        return name;
     }
 
     @JsonProperty("type")
     public String getType() {
-        return TYPE.toString();
+        return type.toString();
     }
 
     @JsonProperty("profession")
     public String getProfession() {
-        return PROFESSION.toString();
+        return profession.toString();
+    }
+
+    public Component setProfession(Villager.Profession profession) {
+        this.profession = profession;
+        return Component.text("Successfully updated profession of ").append(name())
+                .append(Component.text(" to ")).append(Component.text(profession.toString()));
     }
 
     @JsonProperty("homeAddress")
@@ -108,26 +115,25 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
         return homeAddress;
     }
 
-    public void setHomeAddress(String homeAddress) {
-        String[] homeAddressParts = homeAddress.split(" ");
-        Kingdom kingdom = KingdomsManager.getKingdom(homeAddressParts[0]);
-        District district = kingdom.getDistrict(homeAddressParts[1]);
-        Address address = district.getAddress(homeAddressParts[2]);
-        home = address.getHouse(homeAddressParts[3]);
-        this.homeAddress = homeAddress;
+    public Component setHome(House house) {
+        home = house;
+        return Component.text("Successfully set home of ").append(name())
+                .append(Component.text(" to ")).append(house.address())
+                .append(Component.text(" in ")).append(house.getLocality().getDistrict().name());
     }
 
     @JsonProperty("workAddress") @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getWorkAddress() {
-        return workAddress;
+        return workLocality;
     }
 
     public void setWorkAddress(String workAddress) {
-        this.workAddress = workAddress;
+        this.workLocality = workAddress;
     }
 
-    public void setBio(String bio) {
+    public Component setBio(String bio) {
         this.bio = bio;
+        return Component.text("Successfully updated bio of ").append(name());
     }
 
     @JsonProperty("bio") @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -137,28 +143,51 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
 
     @SuppressWarnings("unused")  @JsonProperty("location") @JsonInclude(JsonInclude.Include.NON_NULL)
     private Coord getLocation() {
-        if (VILLAGER == null) {
+        if (villager == null) {
             return null;
         }
-        Location location = VILLAGER.getLocation();
+        Location location = villager.getLocation();
         return new Coord(location.getX(), location.getY(), location.getZ());
     }
 
     public void goToWork() {
-        if (workAddress == null) {
-            Bukkit.broadcastMessage(ChatColor.RED + NAME + " failed to go to work, this citizen is not registered i a workplace");
+        if (workLocality == null) {
+            Bukkit.broadcastMessage(ChatColor.RED + name + " failed to go to work, this citizen is not registered i a workplace");
             return;
         }
         Location doorPos = home.getDoorPos().toLocation(Main.WORLD);
         Utils.openDoor(doorPos.getBlock());
-        VILLAGER.teleport(doorPos);
-        String[] workAddressParts = workAddress.split(" ");
+        villager.teleport(doorPos);
+        String[] workAddressParts = workLocality.split(" ");
         String[] homeAddressParts = homeAddress.split(" ");
-        new WalkPath(VILLAGER, kingdomID, homeAddressParts[0], homeAddressParts[1], workAddressParts[0], workAddressParts[1], workAddressParts[2], null, home.getExitPath()).runTaskTimer(Main.getPlugin(), 0, 1);
+        new WalkPath(villager, kingdom, homeAddressParts[0], homeAddressParts[1], workAddressParts[0], workAddressParts[1], workAddressParts[2], null, home.getExitPath()).runTaskTimer(Main.getPlugin(), 0, 1);
         //telporter til døra, sett addressen til jobbaddresse og begynn å gå exitPath.
     }
     // Denne classen skal lagre følgende informasjon: Bostedadresse, jobbaddresse, sengkordinater, profession(skin), variant (biome skin)
-    // Lagrer ikke navn(inkl etternavn), det lagres som key i kingdom hashmappet
+    // Lagrer ikke navn(inkl etternavn), det lagres som key i kingdom hashmappet <== total bs
 
+    public Component name() {
+        return Component.text(name, NamedTextColor.GREEN);
+    }
 
+    public Component workAddress() {
+        Kingdom kingdom = workLocality.getDistrict().getKingdom();
+        return (kingdom != this.kingdom ? kingdom.name().append(Component.text(":")) : Component.empty())
+                .append(workLocality.getDistrict().name().append(Component.text(":")))
+                .append(workLocality.name());
+    }
+
+    public Component homeAddress() {
+        Locality locality = home.getLocality();
+        District district = locality.getDistrict();
+        Kingdom kingdom = district.getKingdom();
+        return (kingdom != this.kingdom ? kingdom.name().append(Component.text(":")) : Component.empty())
+                .append(district.name().append(Component.text(":")))
+                .append(locality.name().append(Component.text(":")))
+                .append(Component.text(home.nr));
+    }
+
+    public Component bio() {
+        return Component.text(bio);
+    }
 }

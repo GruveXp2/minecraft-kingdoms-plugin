@@ -1,12 +1,12 @@
 package gruvexp.gruvexp.commands;
 
-import gruvexp.gruvexp.core.Address;
-import gruvexp.gruvexp.core.District;
-import gruvexp.gruvexp.core.Kingdom;
-import gruvexp.gruvexp.core.KingdomsManager;
+import gruvexp.gruvexp.core.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Registry;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,88 +19,67 @@ public class CitizenTabCompletion implements TabCompleter {
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
 
-        if (args.length == 1) {
-            return new ArrayList<>(KingdomsManager.getKingdomIDs());
+        if (!(sender instanceof Player p)) {return List.of("tab completion only works for players");}
+
+        Kingdom kingdom = KingdomsManager.getSelectedKingdom(p);
+        if (args.length == 1) return new ArrayList<>(kingdom.getCitizenNames());
+
+        if (args.length == 2) {
+            return List.of("info", "set", "help", "tp");
         }
-        try {
-            String kingdomID = args[0];
-            Kingdom kingdom = KingdomsManager.getKingdom(kingdomID);
-            if (args.length == 2) {
-                return List.of("add", "get", "list", "set", "remove", "tp");
-            }
-            String oper = args[1];
+        String oper = args[1];
+        if (oper.equals("set")) {
             if (args.length == 3) {
-                switch (oper) {
-                    case "add":
-                        return List.of("<name>");
-                    case "get":
-                    case "set":
-                    case "remove":
-                    case "tp":
-                        return new ArrayList<>(kingdom.getCitizenNames());
-                }
+                return List.of("home_address", "work_address", "bio", "profession");
             }
-            switch (oper) {
-                case "add" -> {
-                    if (args.length == 4) {
-                        //return Arrays.stream(Villager.Type.values()).map(Enum::name).map(String::toLowerCase).collect(Collectors.toList());
-                        return List.of("Error CitizenTabCompletion:49");
-                    } else if (args.length == 5) {
-                        //return Arrays.stream(Villager.Profession.values()).map(Enum::toString).map(String::toLowerCase).collect(Collectors.toList());
-                        return List.of("Error CitizenTabCompletion:52");
-                    } else if (args.length == 6) {
-                        return new ArrayList<>(kingdom.getDistrictIDs());
-                    }
-                    District district = kingdom.getDistrict(args[5]);
-                    if (args.length == 7) {
-                        return new ArrayList<>(district.getAddressIDs());
-                    }
-                    Address address = district.getAddress(args[6]);
-                    if (args.length == 8) {
-                        return address.getHouseIDs().stream().map(Object::toString).collect(Collectors.toList());
-                    }
+            String property = args[2];
+            switch (property) {
+                case "profession" -> {
+                    return Registry.VILLAGER_PROFESSION.stream()
+                            .map(t -> t.toString().toLowerCase())
+                            .filter(t -> t.contains(args[3]))
+                            .collect(Collectors.toList());
                 }
-                case "get" -> {
-                    return List.of("bio");
-                }
-                case "set" -> {
+                case "home_address" -> {
                     if (args.length == 4) {
-                        return List.of("home_address", "work_address", "bio");
-                    }
-                    String property = args[3];
-                    switch (property) {
-                        case "home_address" -> {
-                            if (args.length == 5) {
-                                return new ArrayList<>(kingdom.getDistrictIDs());
-                            }
-                            District district = kingdom.getDistrict(args[5]);
-                            if (args.length == 6) {
-                                return new ArrayList<>(district.getAddressIDs());
-                            }
-                            Address address = district.getAddress(args[6]);
-                            if (args.length == 7) {
-                                return address.getHouseIDs().stream().map(Object::toString).collect(Collectors.toList());
-                            }
+                        String[] address = args[3].split(":");
+                        if (address.length == 1) {
+                            return kingdom.getDistrictIDs().stream().toList();
                         }
-                        case "work_address" -> {
-                            if (args.length == 5) {
-                                return new ArrayList<>(KingdomsManager.getKingdomIDs());
-                            }
-                            Kingdom workKingdom = KingdomsManager.getKingdom(args[4]);
-                            if (args.length == 6) {
-                                return new ArrayList<>(workKingdom.getDistrictIDs());
-                            }
-                            District district = workKingdom.getDistrict(args[5]);
-                            if (args.length == 7) {
-                                return new ArrayList<>(district.getAddressIDs());
-                            }
+                        District district = kingdom.getDistrict(address[0]);
+                        if (district == null) return List.of(ChatColor.RED + "Unknown district: " + address[0]);
+                        if (address.length == 2) {
+                            return district.getLocalityIDs().stream().toList();
+                        }
+                        Locality locality = district.getLocality(address[1]);
+                        if (locality == null) return List.of(ChatColor.RED + "Unknown locality: " + address[1]);
+                        if (address.length == 3) {
+                            return locality.getHouseIDs().stream().map(Object::toString).collect(Collectors.toList());
                         }
                     }
                 }
+                case "work_address" -> {
+                    if (args.length == 4) {
+                        String[] address = args[3].split(":");
+                        if (address.length == 1) {
+                            return KingdomsManager.getKingdomIDs().stream().toList();
+                        }
+                        Kingdom workKingdom = KingdomsManager.getKingdom(address[0]);
+                        if (address.length == 2) {
+                            return workKingdom.getDistrictIDs().stream().toList();
+                        }
+                        District district = workKingdom.getDistrict(address[1]);
+                        if (district == null) return List.of(ChatColor.RED + "Unknown district: " + address[1]);
+                        if (address.length == 3) {
+                            return district.getLocalityIDs().stream().toList();
+                        }
+                    }
+                }
+                case "bio" -> {
+                    return List.of("<write some lore about this citizen>");
+                }
             }
-        } catch (IllegalArgumentException e) {
-            return List.of(e.getMessage());
         }
-        return new ArrayList<>(0);
+        return List.of();
     }
 }
