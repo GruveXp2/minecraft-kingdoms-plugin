@@ -419,7 +419,7 @@ public class RailCommand implements CommandExecutor {
                         String districtID = args[4];
                         District district = kingdom.getDistrict(districtID);
                         if (args.length == 5) {
-                            Set<String> addresses = district.getAddressIDs();
+                            Set<String> addresses = district.getLocalityIDs();
                             StringBuilder message = new StringBuilder("There are " + addresses.size() + " addresses in " + districtID + ":\n");
                             for (String address : addresses) {
                                 message.append(address).append(", ");

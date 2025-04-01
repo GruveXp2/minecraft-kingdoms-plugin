@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gruvexp.gruvexp.rail.Entrypoint;
 import gruvexp.gruvexp.rail.Section;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
@@ -17,7 +19,7 @@ public class District {
     private Kingdom kingdom;
 
     private final Material icon;
-    private final HashMap<String, Address> addresses = new HashMap<>();
+    private final HashMap<String, Locality> addresses = new HashMap<>();
     private final HashMap<String, Entrypoint> entrypoints = new HashMap<>(); // key = address
     private final HashMap<String, Section> sections = new HashMap<>();
 
@@ -40,15 +42,11 @@ public class District {
         if (addresses.containsKey(id)) {
             throw new IllegalArgumentException(ChatColor.RED + "Address \"" + id + "\" already exist!");
         }
-        addresses.put(id, new Address(id, this, material));
+        addresses.put(id, new Locality(id, this, material));
     }
 
-    public Address getAddress(String addressID) {
-        Address address = addresses.get(addressID);
-        if (address == null) {
-            throw new IllegalArgumentException(ChatColor.RED + "Address \"" + addressID + "\" doesnt exist!");
-        }
-        return address;
+    public Locality getLocality(String localityID) {
+        return addresses.get(localityID);
     }
 
     public boolean hasAddress(String addressID) {
@@ -56,12 +54,12 @@ public class District {
     }
 
     @JsonIgnore
-    public Set<String> getAddressIDs() {
+    public Set<String> getLocalityIDs() {
         return addresses.keySet();
     }
 
     @SuppressWarnings("unused") @JsonProperty("addresses") @JsonInclude(JsonInclude.Include.NON_NULL) // Blir brukt av JSONParseren
-    private HashMap<String, Address> getAddresses() {
+    private HashMap<String, Locality> getAddresses() {
         if (addresses.isEmpty()) {
             return null;
         }
@@ -124,5 +122,9 @@ public class District {
 
     public void removeEntrypoint(String address) {
         entrypoints.remove(address);
+    }
+
+    public Component name() {
+        return Component.text(id, NamedTextColor.GOLD);
     }
 }

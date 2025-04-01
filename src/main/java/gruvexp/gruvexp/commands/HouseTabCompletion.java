@@ -1,7 +1,7 @@
 package gruvexp.gruvexp.commands;
 
 import gruvexp.gruvexp.Utils;
-import gruvexp.gruvexp.core.Address;
+import gruvexp.gruvexp.core.Locality;
 import gruvexp.gruvexp.core.District;
 import gruvexp.gruvexp.core.Kingdom;
 import gruvexp.gruvexp.core.KingdomsManager;
@@ -35,10 +35,10 @@ public class HouseTabCompletion implements TabCompleter {
             String districtID = args[1];
             District district = kingdom.getDistrict(districtID);
             if (args.length == 3) {
-                return new ArrayList<>(district.getAddressIDs());
+                return new ArrayList<>(district.getLocalityIDs());
             }
             String addressID = args[2];
-            Address address = district.getAddress(addressID);
+            Locality locality = district.getLocality(addressID);
             if (args.length == 4) {
                 return List.of("add", "get", "list", "set", "remove");
             }
@@ -48,7 +48,7 @@ public class HouseTabCompletion implements TabCompleter {
                     case "get":
                     case "set":
                     case "remove":
-                        return address.getHouseIDs().stream().map(Object::toString).collect(Collectors.toList());
+                        return locality.getHouseIDs().stream().map(Object::toString).collect(Collectors.toList());
                 }
             }
             if (oper.equals("set")) {
@@ -59,7 +59,7 @@ public class HouseTabCompletion implements TabCompleter {
                 if (property.equals("door_pos") || property.equals("bed_pos")) {
                     return List.of(Utils.getTargetBlock(p, 10).toString());
                 } else if (property.equals("exit_path")) {
-                    return new ArrayList<>(address.getPathIDs());
+                    return new ArrayList<>(locality.getPathIDs());
                 }
             }
         } catch (IllegalArgumentException e) {

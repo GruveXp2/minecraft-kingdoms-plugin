@@ -144,8 +144,8 @@ public class Entrypoint {
     public void setTargetDistrict(String district) {
         targetDistrict = district;
         stationMenu.setDistrict(district);
-        if (KingdomsManager.getKingdom(targetKingdom).getDistrict(district).getAddressIDs().size() == 1) {
-            setTargetAddress(KingdomsManager.getKingdom(targetKingdom).getDistrict(district).getAddressIDs().iterator().next());
+        if (KingdomsManager.getKingdom(targetKingdom).getDistrict(district).getLocalityIDs().size() == 1) {
+            setTargetAddress(KingdomsManager.getKingdom(targetKingdom).getDistrict(district).getLocalityIDs().iterator().next());
         } else {
             targetAddress = null;
         }

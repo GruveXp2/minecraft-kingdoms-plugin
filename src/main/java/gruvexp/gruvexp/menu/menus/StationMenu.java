@@ -125,7 +125,7 @@ public class StationMenu extends Menu {
     public void setAddress(String address) {
         District district = KingdomsManager.getKingdom(ENTRYPOINT.getTargetKingdom()).getDistrict(ENTRYPOINT.getTargetDistrict());
         if (!chestMode) {
-            inventory.setItem(5, makeItem(district.getAddress(address).getMaterial(), address, "address"));
+            inventory.setItem(5, makeItem(district.getLocality(address).getMaterial(), address, "address"));
         }
     }
 
