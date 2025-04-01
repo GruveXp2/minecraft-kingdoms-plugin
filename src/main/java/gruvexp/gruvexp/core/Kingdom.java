@@ -11,10 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Villager;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class Kingdom {
 
@@ -114,7 +111,7 @@ public class Kingdom {
 
     public Component addCitizen(String name, Villager.Type variant, Villager.Profession profession) {
         if (citizens.containsKey(name)) return Component.text("A villager with that name already exists!", NamedTextColor.RED);
-        citizens.put(name, new Citizen(name, variant, profession, this));
+        citizens.put(name, new Citizen(name, this, variant, profession));
         return Component.text("Successfully added new citizen called ", NamedTextColor.GREEN).append(Component.text(name));
     }
 
