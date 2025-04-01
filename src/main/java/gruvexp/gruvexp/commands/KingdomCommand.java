@@ -24,16 +24,15 @@ public class KingdomCommand implements CommandExecutor {
         if (args.length == 0) {return false;}
         Component result = processCommand(p, args, command);
         p.sendMessage(result);
-
         return true;
     }
 
     private Component processCommand(Player p, String[] args, Command command) {
         String kingdomID = args[0];
         Kingdom kingdom = KingdomsManager.getKingdom(kingdomID);
-        if (kingdom == null) {
-            return Component.text("Kingdom \"" + kingdomID + "\" doesnt exist!", NamedTextColor.RED);
-        }
+        if (kingdom == null) return Component.text("Kingdom \"" + kingdomID + "\" doesnt exist!", NamedTextColor.RED);
+        if (args.length == 1) return Component.text("You must specify an operation [info | set | add | remove]");
+
         String oper = args[1];
         switch (oper) {
             case "info" -> {
@@ -44,7 +43,7 @@ public class KingdomCommand implements CommandExecutor {
                         .append(Component.text(kingdom.getCitizenNames().size())).append(Component.text(" citizens"));
             }
             case "set" -> {
-                if (args.length == 3) return Component.text("You must specify what to set: [king | color] <value>", NamedTextColor.RED);
+                if (args.length < 4) return Component.text("You must specify what to set and a value: set [king | color] <value>", NamedTextColor.RED);
                 String property = args[2];
                 switch (property) {
                     case "king" -> {
@@ -110,7 +109,7 @@ public class KingdomCommand implements CommandExecutor {
                 return Component.text(command.getDescription());
             }
             default -> {
-                return Component.text("Invalid argument! Must be of [info | set | add | remove]", NamedTextColor.RED);
+                return Component.text("Invalid operator! Must be [info | set | add | remove]", NamedTextColor.RED);
             }
         }
     }
