@@ -1,7 +1,7 @@
 package gruvexp.gruvexp.path;
 
 import gruvexp.gruvexp.Main;
-import gruvexp.gruvexp.core.Address;
+import gruvexp.gruvexp.core.Locality;
 import gruvexp.gruvexp.core.District;
 import gruvexp.gruvexp.core.Kingdom;
 import gruvexp.gruvexp.core.KingdomsManager;
@@ -32,7 +32,7 @@ public class WalkPath extends BukkitRunnable {
     final String districtID;
     final String targetAddressID;
     final String addressID;
-    final Address address;
+    final Locality locality;
     final String targetAddressNr;
 
     Vector dPos = new Vector(); // ΔPos, villageren skal ikke gå for fort, bare 4m/s = 0.2m/t.
@@ -53,7 +53,7 @@ public class WalkPath extends BukkitRunnable {
         VILLAGER = villager;
         Kingdom kingdom = KingdomsManager.getKingdom(kingdomID);
         District district = kingdom.getDistrict(districtID);
-        address = district.getAddress(addressID);
+        locality = district.getLocality(addressID);
         VILLAGER.setAI(false);
     }
 
@@ -112,7 +112,7 @@ public class WalkPath extends BukkitRunnable {
                 return;
             }
             int startIndex = path.getBranchEnterIndex(counter);
-            path = address.getPath(pathID);
+            path = locality.getPath(pathID);
             if (!path.hasBranches()) {
                 shutdown("Path " + ChatColor.YELLOW + path + " has no exit points!");
             }

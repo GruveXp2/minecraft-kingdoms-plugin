@@ -1,7 +1,7 @@
 package gruvexp.gruvexp.commands;
 
 import gruvexp.gruvexp.Utils;
-import gruvexp.gruvexp.core.Address;
+import gruvexp.gruvexp.core.Locality;
 import gruvexp.gruvexp.core.District;
 import gruvexp.gruvexp.core.Kingdom;
 import gruvexp.gruvexp.core.KingdomsManager;
@@ -37,10 +37,10 @@ public class PathTabCompletion implements TabCompleter {
             String districtID = args[1];
             District district = kingdom.getDistrict(districtID);
             if (args.length == 3) {
-                return new ArrayList<>(district.getAddressIDs());
+                return new ArrayList<>(district.getLocalityIDs());
             }
             String addressID = args[2];
-            Address address = district.getAddress(addressID);
+            Locality locality = district.getLocality(addressID);
             if (args.length == 4) {
                 return List.of("add", "get", "list", "set", "remove");
             }
@@ -52,7 +52,7 @@ public class PathTabCompletion implements TabCompleter {
                     case "get":
                     case "set":
                     case "remove":
-                        return new ArrayList<>(address.getPathIDs());
+                        return new ArrayList<>(locality.getPathIDs());
                 }
             }
             switch (oper) {
@@ -98,13 +98,13 @@ public class PathTabCompletion implements TabCompleter {
                             if (args.length == 7) {
                                 return List.of("<index (number)>");
                             } else if (args.length == 8) {
-                                List<String> out = new ArrayList<>(address.getPathIDs());
+                                List<String> out = new ArrayList<>(locality.getPathIDs());
                                 out.add("enter_rail 0");
                                 return out;
                             } else if (args.length == 9) {
                                 return List.of("<enter index>");
                             } else {
-                                List<String> out = address.getHouseIDs().stream().map(Object::toString).collect(Collectors.toList());
+                                List<String> out = locality.getHouseIDs().stream().map(Object::toString).collect(Collectors.toList());
                                 out.add("station");
                                 return out;
                             }

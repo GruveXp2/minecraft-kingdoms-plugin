@@ -99,7 +99,7 @@ public class RailTabCompletion implements TabCompleter {
                             return new ArrayList<>(district.getSectionIDs());
                         } else {
                             ArrayList<String> out = new ArrayList<>(7);
-                            out.addAll(district.getAddressIDs());
+                            out.addAll(district.getLocalityIDs());
                             out.addAll(kingdom.getDistrictIDs());
                             out.addAll(KingdomsManager.getKingdomIDs());
                             return out;
@@ -175,9 +175,9 @@ public class RailTabCompletion implements TabCompleter {
                     }
                     district = kingdom.getDistrict(districtID);
                     if (args.length == 5) {
-                        return new ArrayList<>(district.getAddressIDs());
+                        return new ArrayList<>(district.getLocalityIDs());
                     }
-                    if (args.length == 6 && !district.getAddressIDs().contains(args[4])) {
+                    if (args.length == 6 && !district.getLocalityIDs().contains(args[4])) {
                         return null;
                     }
                     if (!Objects.equals(oper2, "add")) {
@@ -216,9 +216,9 @@ public class RailTabCompletion implements TabCompleter {
                     return KingdomsManager.BLOCKS.stream().filter(b -> b.contains(args[4])).collect(Collectors.toList());
                 }
                 if (args.length == 5) {
-                    return new ArrayList<>(district.getAddressIDs());
+                    return new ArrayList<>(district.getLocalityIDs());
                 }
-                if (args.length == 6 && !district.getAddressIDs().contains(args[4])) {
+                if (args.length == 6 && !district.getLocalityIDs().contains(args[4])) {
                     return KingdomsManager.BLOCKS.stream().filter(b -> b.contains(args[5])).collect(Collectors.toList());
                 }
                 break;

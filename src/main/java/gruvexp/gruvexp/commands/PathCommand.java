@@ -1,6 +1,6 @@
 package gruvexp.gruvexp.commands;
 
-import gruvexp.gruvexp.core.Address;
+import gruvexp.gruvexp.core.Locality;
 import gruvexp.gruvexp.core.KingdomsManager;
 import gruvexp.gruvexp.path.Path;
 import gruvexp.gruvexp.rail.Coord;
@@ -30,7 +30,7 @@ public class PathCommand implements CommandExecutor {
             String kingdomID = args[0];
             String districtID = args[1];
             String addressID = args[2];
-            Address address = KingdomsManager.getKingdom(kingdomID).getDistrict(districtID).getAddress(addressID);
+            Locality locality = KingdomsManager.getKingdom(kingdomID).getDistrict(districtID).getLocality(addressID);
             String oper = args[3];
             if (oper.equals("list")) {
                 p.sendMessage("WIP: print list of all paths here");
@@ -61,11 +61,11 @@ public class PathCommand implements CommandExecutor {
                             }
                         }
                     }
-                    address.addPath(pathID, new Path(pathID, startPos, turnMap));
+                    locality.addPath(pathID, new Path(pathID, startPos, turnMap));
                     p.sendMessage("Successfully added path " + ChatColor.YELLOW + pathID);
                 }
                 case "get" -> {
-                    Path path = address.getPath(pathID);
+                    Path path = locality.getPath(pathID);
                     p.sendMessage(String.format("%sPath %s%s%s: %s%s%s: %s%s%s: %s%s%s:",
                             ChatColor.UNDERLINE, ChatColor.GOLD, kingdomID, ChatColor.WHITE, ChatColor.GOLD, districtID, ChatColor.WHITE, ChatColor.GOLD, addressID, ChatColor.WHITE, ChatColor.YELLOW, pathID, ChatColor.WHITE));
 
@@ -95,7 +95,7 @@ public class PathCommand implements CommandExecutor {
                     p.sendMessage(branches.toString());
                 }
                 case "set" -> {
-                    Path path = address.getPath(pathID);
+                    Path path = locality.getPath(pathID);
                     if (args.length == 5) {
                         throw new IllegalArgumentException(ChatColor.RED + "You must choose what property to set\nUsage:" + ChatColor.WHITE + "set [turns | branch]");
                     }

@@ -1,7 +1,7 @@
 package gruvexp.gruvexp.rail;
 
 import gruvexp.gruvexp.Main;
-import gruvexp.gruvexp.core.Address;
+import gruvexp.gruvexp.core.Locality;
 import gruvexp.gruvexp.core.District;
 import gruvexp.gruvexp.core.Kingdom;
 import gruvexp.gruvexp.core.KingdomsManager;
@@ -153,8 +153,8 @@ public class DriveCart extends BukkitRunnable {
                 p.sendMessage(ChatColor.GRAY + "Destination reached: " + ((Math.ceil(totalDistance / 100f))/10f) + " km");
                 CartManager.removeCart(cart.getUniqueId());
             } else if (!cart.getPassengers().isEmpty() && cart.getPassengers().getFirst() instanceof Villager villager) {
-                Address address = district.getAddress(targetAddress);
-                Path path = address.getPath("station_exit"); // hardcode: alle adresses som villidgers kan komme til med rail systemet må ha en path som kalles "station_exit" som villidgersene kan gå på når de er framme.
+                Locality locality = district.getLocality(targetAddress);
+                Path path = locality.getPath("station_exit"); // hardcode: alle adresses som villidgers kan komme til med rail systemet må ha en path som kalles "station_exit" som villidgersene kan gå på når de er framme.
                 villager.teleport(path.getStartPos().toLocation(Main.WORLD));
                 new WalkPath(villager, kingdomID, districtID, targetAddress, kingdomID, districtID, targetAddress, targetAddressNr, path).runTaskTimer(Main.getPlugin(), 0, 1);
             }

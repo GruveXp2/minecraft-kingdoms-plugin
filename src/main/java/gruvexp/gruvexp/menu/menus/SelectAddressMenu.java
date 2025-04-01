@@ -45,13 +45,13 @@ public class SelectAddressMenu extends Menu {
 
     public void updateItems() {
         District district = KingdomsManager.getKingdom(ENTRYPOINT.getTargetKingdom()).getDistrict(ENTRYPOINT.getTargetDistrict());
-        Set<String> addressses = district.getAddressIDs();
+        Set<String> addressses = district.getLocalityIDs();
         if (addressses.isEmpty()) {
             inventory.setItem(0, makeItem(Material.BARRIER, ChatColor.RED + "This district has no addresses"));
         }
         int i = 0;
         for (String address : addressses) {
-            inventory.setItem(i, makeItem(district.getAddress(address).getMaterial(), address));
+            inventory.setItem(i, makeItem(district.getLocality(address).getMaterial(), address));
             i++;
         }
     }

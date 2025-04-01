@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gruvexp.gruvexp.path.Path;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
@@ -11,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class Address {
+public class Locality {
 
     public final String id;
     private District district;
@@ -20,12 +22,12 @@ public class Address {
     private HashMap<String, Path> paths = new HashMap<>();
     private HashMap<Integer, House> houses = new HashMap<>();
 
-    public Address(String id, District district, Material icon) {
+    public Locality(String id, District district, Material icon) {
         this.id = id;
         this.district = district;
         this.icon = icon;
     }
-    public Address(String id, @JsonProperty("material") Material icon) {
+    public Locality(String id, @JsonProperty("material") Material icon) {
         this.id = id;
         this.icon = icon;
     }
@@ -91,7 +93,7 @@ public class Address {
     }
 
     public void addHouse(int houseNumber) {
-        houses.put(houseNumber, new House());
+        houses.put(houseNumber, new House(houseNumber));
     }
 
     public House getHouse(int houseNumber) {
@@ -129,4 +131,7 @@ public class Address {
         KingdomsManager.scheduleAddressInit(this);
     }
 
+    public Component name() {
+        return Component.text(id, NamedTextColor.GOLD);
+    }
 }

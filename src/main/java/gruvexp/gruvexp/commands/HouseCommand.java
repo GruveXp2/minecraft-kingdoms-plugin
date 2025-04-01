@@ -1,6 +1,6 @@
 package gruvexp.gruvexp.commands;
 
-import gruvexp.gruvexp.core.Address;
+import gruvexp.gruvexp.core.Locality;
 import gruvexp.gruvexp.core.Citizen;
 import gruvexp.gruvexp.core.House;
 import gruvexp.gruvexp.core.KingdomsManager;
@@ -35,7 +35,7 @@ public class HouseCommand implements CommandExecutor {
             String kingdomID = args[0];
             String districtID = args[1];
             String addressID = args[2];
-            Address address = KingdomsManager.getKingdom(kingdomID).getDistrict(districtID).getAddress(addressID);
+            Locality locality = KingdomsManager.getKingdom(kingdomID).getDistrict(districtID).getLocality(addressID);
             String oper = args[3];
             int houseNumber = 0;
             if (!oper.equals("list")) {
@@ -50,11 +50,11 @@ public class HouseCommand implements CommandExecutor {
             }
             switch (oper) {
                 case "add" -> {
-                    address.addHouse(houseNumber);
+                    locality.addHouse(houseNumber);
                     p.sendMessage("Successfully added new house with ID " + ChatColor.BLUE + houseNumber);
                 }
                 case "get" -> {
-                    House house = address.getHouse(houseNumber);
+                    House house = locality.getHouse(houseNumber);
                     p.sendMessage(String.format("%sHouse %s%s%s: %s%s%s: %s%s %s%s%s:", ChatColor.UNDERLINE, ChatColor.GOLD, kingdomID, ChatColor.WHITE, ChatColor.GOLD, districtID, ChatColor.WHITE, ChatColor.GOLD, addressID, ChatColor.BLUE, houseNumber, ChatColor.WHITE));
                     HashSet<Citizen> villagers = house.getCitizens();
                     if (villagers != null) {
@@ -80,7 +80,7 @@ public class HouseCommand implements CommandExecutor {
                 }
                 case "list" -> p.sendMessage("WIP: print list of all housenumbers here");
                 case "set" -> {
-                    House house = address.getHouse(houseNumber);
+                    House house = locality.getHouse(houseNumber);
                     if (args.length == 5) {
                         throw new IllegalArgumentException(ChatColor.RED + "You must choose what property to set\nUsage:" + ChatColor.WHITE + "set [door_pos | bed_pos | exit_path]");
                     }
@@ -107,7 +107,7 @@ public class HouseCommand implements CommandExecutor {
                                 throw new IllegalArgumentException(ChatColor.RED + "You must specify the pathID");
                             }
                             String pathID = args[6];
-                            Path exitPath = address.getPath(pathID);
+                            Path exitPath = locality.getPath(pathID);
                             house.setExitPath(exitPath);
                             p.sendMessage(String.format("Successfully set pathID of %s%s %s%s%s to %s%s", ChatColor.GOLD, addressID, ChatColor.BLUE, houseNumber, ChatColor.WHITE, ChatColor.YELLOW, pathID));
                         }
