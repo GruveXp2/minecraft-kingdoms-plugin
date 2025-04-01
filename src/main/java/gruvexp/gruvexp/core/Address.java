@@ -13,12 +13,21 @@ import java.util.Set;
 
 public class Address {
 
-    private final Material MATERIAL;
+    public final String id;
+    private District district;
+
+    private final Material icon;
     private HashMap<String, Path> paths = new HashMap<>();
     private HashMap<Integer, House> houses = new HashMap<>();
 
-    public Address(@JsonProperty("material") Material material) {
-        MATERIAL = material;
+    public Address(String id, District district, Material icon) {
+        this.id = id;
+        this.district = district;
+        this.icon = icon;
+    }
+    public Address(String id, @JsonProperty("material") Material icon) {
+        this.id = id;
+        this.icon = icon;
     }
 
     public void postInit() {
@@ -32,8 +41,17 @@ public class Address {
         }
     }
 
+    public District getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(District district) {
+        if (this.district != null) throw new IllegalStateException("This address already have a district assigned to it!");
+        this.district = district;
+    }
+
     public Material getMaterial() {
-        return MATERIAL;
+        return icon;
     }
 
     public void addPath(String pathID, Path path) {

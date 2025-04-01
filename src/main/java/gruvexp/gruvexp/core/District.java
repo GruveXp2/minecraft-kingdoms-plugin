@@ -14,21 +14,33 @@ import java.util.Set;
 public class District {
 
     public final String id;
+    private Kingdom kingdom;
+
     private final Material icon;
     private final HashMap<String, Address> addresses = new HashMap<>();
     private final HashMap<String, Entrypoint> entrypoints = new HashMap<>(); // key = address
     private final HashMap<String, Section> sections = new HashMap<>();
 
-    public District(String id, Material icon) {
+    public District(String id, Kingdom kingdom, Material icon) {
         this.id = id;
         this.icon = icon;
+        this.kingdom = kingdom;
     }
 
-    public void addAddress(String addressID, Material material) {
-        if (addresses.containsKey(addressID)) {
-            throw new IllegalArgumentException(ChatColor.RED + "Address \"" + addressID + "\" already exist!");
+    public Kingdom getKingdom() {
+        return kingdom;
+    }
+
+    public void setKingdom(Kingdom kingdom) {
+        if (this.kingdom != null) throw new IllegalStateException("This district already have a district assigned to it!");
+        this.kingdom = kingdom;
+    }
+
+    public void addAddress(String id, Material material) {
+        if (addresses.containsKey(id)) {
+            throw new IllegalArgumentException(ChatColor.RED + "Address \"" + id + "\" already exist!");
         }
-        addresses.put(addressID, new Address(material));
+        addresses.put(id, new Address(id, this, material));
     }
 
     public Address getAddress(String addressID) {
@@ -39,8 +51,8 @@ public class District {
         return address;
     }
 
-    public boolean hasAddress(String address) {
-        return addresses.containsKey(address);
+    public boolean hasAddress(String addressID) {
+        return addresses.containsKey(addressID);
     }
 
     @JsonIgnore
