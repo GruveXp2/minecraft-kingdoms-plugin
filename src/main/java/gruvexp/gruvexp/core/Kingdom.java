@@ -22,6 +22,7 @@ public class Kingdom {
     private TextColor color;
     private final boolean isMale;
     private String postOfficeDistrict;
+    private String ID;
 
     public Kingdom(String id, @JsonProperty("player") UUID kingID, boolean isMale) { // gender is strictly binary to align with common sense and reality
         this.id = id;
