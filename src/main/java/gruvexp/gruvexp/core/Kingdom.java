@@ -66,11 +66,7 @@ public class Kingdom {
     }
 
     public District getDistrict(String districtID) {
-        District district = districts.get(districtID);
-        if (district == null) {
-            throw new IllegalArgumentException(ChatColor.RED + "District \"" + districtID + "\" doesnt exist!");
-        }
-        return district;
+        return districts.get(districtID);
     }
 
     @JsonIgnore
@@ -93,8 +89,8 @@ public class Kingdom {
     }
 
     @SuppressWarnings("unused")
-    public void setPostOfficeDistrict(@JsonProperty("postOfficeDistrict") String district) {
-        postOfficeDistrict = district;
+    public void setPostOfficeDistrict(@JsonProperty("postOfficeDistrict") String districtID) {
+        postOfficeDistrict = districtID;
     }
 
     public String getPostOfficeDistrict() {

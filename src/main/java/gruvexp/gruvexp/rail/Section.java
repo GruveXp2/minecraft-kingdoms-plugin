@@ -20,6 +20,7 @@ import java.util.*;
 
 public final class Section { // en delstrekning på en vei, GJØR SÅNN AT ENDPOINTROUTES KAN HA BARE 1 RUTE OG AT MAN IKKE TRENGER Å HA PILER FOR Å VELGE
 
+    public final String id;
     private Coord entry;
     private Coord exit;
     private int length; // hvor mange blokker man må kjøre før man kommer til et kryss
@@ -30,6 +31,11 @@ public final class Section { // en delstrekning på en vei, GJØR SÅNN AT ENDPO
     private final HashMap<String, Rail.Shape> endPointShape = new HashMap<>(); // right: north_south
     private final HashMap<String, String> endPointSection = new HashMap<>(); // right: section_id
     private final HashMap<String, HashSet<String>> endPointAddresses = new HashMap<>(); // right: [pyralix, east_district, kano_bay]
+
+    public Section(String id, Coord entry) {
+        this.id = id;
+        this.entry = entry;
+    }
 
     public void setEntry(Coord entry) {
         this.entry = entry;

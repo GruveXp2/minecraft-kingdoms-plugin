@@ -38,6 +38,12 @@ public final class Main extends JavaPlugin {
         getCommand("kingdoms").setTabCompleter(new KingdomsTabCompletion());
         getCommand("kingdom").setExecutor(new KingdomCommand());
         getCommand("kingdom").setTabCompleter(new KingdomTabCompletion());
+        getCommand("citizen").setExecutor(new CitizenCommand());
+        getCommand("citizen").setTabCompleter(new CitizenTabCompletion());
+        getCommand("district").setExecutor(new DistrictCommand());
+        getCommand("district").setTabCompleter(new DistrictTabCompletion());
+        getCommand("rail").setExecutor(new RailCommand());
+        getCommand("rail").setTabCompleter(new RailTabCompletion());
         getCommand("path").setExecutor(new PathCommand());
         getCommand("path").setTabCompleter(new PathTabCompletion());
         getCommand("home").setExecutor(new HomeCommand());
@@ -46,13 +52,9 @@ public final class Main extends JavaPlugin {
         getCommand("test").setExecutor(new TestCommand());
         getCommand("test").setTabCompleter(new TestTabCompletion());
         getCommand("digitalclock").setExecutor(new ClockCommand());
-        getCommand("rail").setExecutor(new RailCommand());
-        getCommand("rail").setTabCompleter(new RailTabCompletion());
         getCommand("bigthing").setExecutor(new BigThingCommand());
         getCommand("shrink").setExecutor(new ShrinkCommand());
         getCommand("shrink").setTabCompleter(new ShrinkTabCompletion());
-        getCommand("citizen").setExecutor(new CitizenCommand());
-        getCommand("citizen").setTabCompleter(new CitizenTabCompletion());
         getCommand("loadcitizens").setExecutor(new LoadCitizensCommand());
         getCommand("nyttår").setExecutor(new NyttårCommand());
         getCommand("nyttår").setTabCompleter(new NyttårTabCompletion());
