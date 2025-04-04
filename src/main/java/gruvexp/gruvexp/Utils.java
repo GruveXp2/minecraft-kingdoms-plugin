@@ -71,10 +71,14 @@ public class Utils {
         return new Coord(lastBlock.getX(), lastBlock.getY(), lastBlock.getZ());
     }
 
-    public static String ToName(String str) {
-        return Arrays.stream(str.split("_"))
+    public static String toName(String id) {
+        return Arrays.stream(id.split("_"))
                 .map(s -> Character.toUpperCase(s.charAt(0)) + s.substring(1))
                 .collect(Collectors.joining(" "));
+    }
+
+    public static String toID(String name) {
+        return name.toLowerCase().replace(" ", "_");
     }
 
     public static void openDoor(Block doorBlock) {
