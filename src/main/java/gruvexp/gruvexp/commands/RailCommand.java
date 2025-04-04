@@ -327,7 +327,7 @@ public class RailCommand implements CommandExecutor {
                     String districtID = args[3];
                     District district = kingdom.getDistrict(districtID);
                     String address = args[4]; // central_station
-                    if (!district.hasAddress(address)) {
+                    if (!district.hasLocality(address)) {
                         throw new IllegalArgumentException(ChatColor.RED + "Address \"" + address + "\" doesnt exist!");
                     }
                     switch (oper2) {
@@ -395,7 +395,7 @@ public class RailCommand implements CommandExecutor {
                         String address = args[4];
                         material = Utils.getMaterial(args[5]);
                         p.sendMessage("Successfully added new address " + ChatColor.GOLD + address + ChatColor.WHITE + " to " + ChatColor.GOLD + districtID + ChatColor.WHITE + " in " + ChatColor.GOLD + kingdomID);
-                        kingdom.getDistrict(districtID).addAddress(address, material);
+                        kingdom.getDistrict(districtID).addLocality(address, material);
                         KingdomsManager.save = true;
                     } else if (Objects.equals(oper2, "get")) {
                         if (args.length == 2) {

@@ -1,6 +1,8 @@
 package gruvexp.gruvexp.rail;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -53,6 +55,10 @@ public class Coord {
     @Override
     public String toString() {
         return String.format("%s %s %s", x, y, z);
+    }
+
+    public Component name() {
+        return Component.text(toString(), NamedTextColor.BLUE);
     }
 
     public Location toLocation(World world) {

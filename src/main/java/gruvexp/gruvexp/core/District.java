@@ -3,6 +3,7 @@ package gruvexp.gruvexp.core;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import gruvexp.gruvexp.rail.Coord;
 import gruvexp.gruvexp.rail.Entrypoint;
 import gruvexp.gruvexp.rail.Section;
 import net.kyori.adventure.text.Component;
@@ -18,8 +19,8 @@ public class District {
     public final String id;
     private Kingdom kingdom;
 
-    private final Material icon;
-    private final HashMap<String, Locality> addresses = new HashMap<>();
+    private Material icon;
+    private final HashMap<String, Locality> localities = new HashMap<>();
     private final HashMap<String, Entrypoint> entrypoints = new HashMap<>(); // key = address
     private final HashMap<String, Section> sections = new HashMap<>();
 
@@ -38,43 +39,63 @@ public class District {
         this.kingdom = kingdom;
     }
 
-    public void addAddress(String id, Material material) {
-        if (addresses.containsKey(id)) {
-            throw new IllegalArgumentException(ChatColor.RED + "Address \"" + id + "\" already exist!");
+    public Component setIcon(Material icon) {
+        this.icon = icon;
+        return Component.text("Successfully set icon of district ").append(name())
+                .append(Component.text(" to " + icon.toString()));
+    }
+
+    public Component addLocality(String localityID, Material material) {
+        if (localities.containsKey(localityID)) {
+            throw new IllegalArgumentException(ChatColor.RED + "Address \"" + localityID + "\" already exist!");
         }
-        addresses.put(id, new Locality(id, this, material));
+        localities.put(localityID, new Locality(localityID, this, material));
+        return Component.text("Successfully added locality ")
+                .append(Component.text(localityID, NamedTextColor.GOLD))
+                .append(Component.text(" to ", NamedTextColor.GREEN))
+                .append(name())
+                .append(Component.text(" with icon "))
+                .append(Component.text(icon.name().toLowerCase()).color(NamedTextColor.BLUE));
     }
 
     public Locality getLocality(String localityID) {
-        return addresses.get(localityID);
+        return localities.get(localityID);
     }
 
-    public boolean hasAddress(String addressID) {
-        return addresses.containsKey(addressID);
+    public Component removeLocality(String localityID) {
+        if (!localities.containsKey(localityID)) return Component.text("No locality with id \"" + localityID + "\" exists", NamedTextColor.RED);
+        localities.remove(localityID);
+        return Component.text("Successfully removed locality: ").append(Component.text(localityID));
+    }
+
+    public boolean hasLocality(String localityID) {
+        return localities.containsKey(localityID);
     }
 
     @JsonIgnore
     public Set<String> getLocalityIDs() {
-        return addresses.keySet();
+        return localities.keySet();
     }
 
-    @SuppressWarnings("unused") @JsonProperty("addresses") @JsonInclude(JsonInclude.Include.NON_NULL) // Blir brukt av JSONParseren
-    private HashMap<String, Locality> getAddresses() {
-        if (addresses.isEmpty()) {
+    @SuppressWarnings("unused") @JsonProperty("localities") @JsonInclude(JsonInclude.Include.NON_NULL) // Blir brukt av JSONParseren
+    private HashMap<String, Locality> getLocalities() {
+        if (localities.isEmpty()) {
             return null;
         }
-        return addresses;
+        return localities;
     }
 
-    public void addSection(String sectionID, Section section) {
-        if (sections.containsKey(sectionID)) {
-            throw new IllegalArgumentException(ChatColor.RED + "Section \"" + sectionID + "\" already exist!");
-        }
-        sections.put(sectionID, section);
+    public Component addSection(String sectionID, Coord entry) {
+        if (sections.containsKey(sectionID)) return Component.text("Section \"" + sectionID + "\" already exists!", NamedTextColor.RED);
+        sections.put(sectionID, new Section(sectionID, entry));
+        return Component.text("Successfully added new rail section called ", NamedTextColor.GREEN).append(Component.text(sectionID, NamedTextColor.LIGHT_PURPLE))
+                .append(Component.text(" that starts at ")).append(entry.name());
     }
 
-    public void removeSection(String sectionID) {
+    public Component removeSection(String sectionID) {
+        if (!sections.containsKey(sectionID)) return Component.text("No section with id \"" + sectionID + "\" exists", NamedTextColor.RED);
         sections.remove(sectionID);
+        return Component.text("Successfully removed rail section: ").append(Component.text(sectionID));
     }
 
     public Section getSection(String sectionID) {
