@@ -13,6 +13,12 @@ commands:
   kingdom:
     description: This command shows info about the kingdom, can change properties, add or remove citizens and districts
     usage: /kingdom <kingdom> [info | set | add | remove] <property?>
+  district:
+    description: This command shows info about the district, can change properties, add or remove rail sections and localities
+    usage: /district <district> [info | set | add | remove] <property?>
+  locality:
+    description: This command shows info about the locality, can change properties, add or remove path section and houses, and set the rail station. A scope must be set with /kingdoms select <kingdom> <district> before use
+    usage: /locality <locality> [info | set | add | remove] <property?>
   path:
     description: Make paths for villagers. its like a junction with signs pointing what adresses are in which direction.
     usage: /path <pos> [set | get | add | remove] <paths>
