@@ -51,7 +51,7 @@ public class SelectAddressMenu extends Menu {
         }
         int i = 0;
         for (String address : addressses) {
-            inventory.setItem(i, makeItem(district.getLocality(address).getMaterial(), address));
+            inventory.setItem(i, makeItem(district.getLocality(address).getIcon(), address));
             i++;
         }
     }
