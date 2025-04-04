@@ -59,9 +59,8 @@ public class Path {
         };
     }
 
-    public Path(String ID, Coord startPos, HashMap<Integer, Character> turns) {
+    public Path(String ID, Coord startPos) {
         this.startPos = startPos;
-        this.turns = turns;
         this.ID = ID;
         branchPathID = new HashMap<>();
         branchAddresses = new HashMap<>();

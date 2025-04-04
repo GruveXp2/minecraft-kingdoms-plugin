@@ -39,6 +39,10 @@ public class District {
         this.kingdom = kingdom;
     }
 
+    public Material getIcon() {
+        return icon;
+    }
+
     public Component setIcon(Material icon) {
         this.icon = icon;
         return Component.text("Successfully set icon of district ").append(name())
@@ -92,18 +96,14 @@ public class District {
                 .append(Component.text(" that starts at ")).append(entry.name());
     }
 
+    public Section getSection(String sectionID) {
+        return sections.get(sectionID);
+    }
+
     public Component removeSection(String sectionID) {
         if (!sections.containsKey(sectionID)) return Component.text("No section with id \"" + sectionID + "\" exists", NamedTextColor.RED);
         sections.remove(sectionID);
         return Component.text("Successfully removed rail section: ").append(Component.text(sectionID));
-    }
-
-    public Section getSection(String sectionID) {
-        Section section = sections.get(sectionID);
-        if (section == null) {
-            throw new IllegalArgumentException(ChatColor.RED + "Section \"" + sectionID + "\" doesnt exist!");
-        }
-        return section;
     }
 
     @JsonIgnore
@@ -119,10 +119,6 @@ public class District {
 
     public boolean notContainsSection(String sectionID) {
         return !sections.containsKey(sectionID);
-    }
-
-    public Material getMaterial() {
-        return icon;
     }
 
     public void setEntrypoint(String kingdom, String district, String address, String section, char dir) {
@@ -147,5 +143,9 @@ public class District {
 
     public Component name() {
         return Component.text(id, NamedTextColor.GOLD);
+    }
+
+    public Component address() {
+        return kingdom.name().append(Component.text(":")).append(Component.text(id));
     }
 }

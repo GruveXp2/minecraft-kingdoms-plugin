@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gruvexp.gruvexp.core.KingdomsManager;
+import gruvexp.gruvexp.core.Locality;
 import gruvexp.gruvexp.menu.menus.SelectAddressMenu;
 import gruvexp.gruvexp.menu.menus.SelectDistrictMenu;
 import gruvexp.gruvexp.menu.menus.SelectKingdomMenu;
@@ -23,9 +24,11 @@ import java.util.UUID;
 public class Entrypoint {
     private Coord coord;
     private final String sectionID;
+    private Section section;
     private final String kingdomID;
     private final String districtID;
-    private final String address;
+    private final String addressID;
+    private Locality locality;
     private String targetKingdom; // disse variablene brukes til å sette adresse til minecarten som de går oppi
     private String targetDistrict;
     private String targetAddress;
@@ -36,10 +39,17 @@ public class Entrypoint {
     private final char direction;
     private UUID cartUUID; // carten som står på stasjonen
 
+    public Entrypoint(Locality locality, Section section, char direction) {
+        this.locality = locality;
+        this.section = section;
+        this.direction = direction;
+        stationMenu = new StationMenu(this);
+    }
+
     public Entrypoint(@JsonProperty("kingdom") String kingdomID, @JsonProperty("district") String districtID, @JsonProperty("address") String address, @JsonProperty("section") String sectionID, @JsonProperty("direction") char dir) {
         this.kingdomID = kingdomID;
         this.districtID = districtID;
-        this.address = address;
+        this.addressID = address;
         this.sectionID = sectionID;
         direction = dir;
         stationMenu = new StationMenu(this);
@@ -75,13 +85,13 @@ public class Entrypoint {
         return districtID;
     }
 
-    public String getAddress() {
-        return address;
+    public String getAddressID() {
+        return addressID;
     }
 
     @JsonIgnore
     public String[] getFullAddress() {
-        return new String[]{kingdomID, districtID, address};
+        return new String[]{kingdomID, districtID, addressID};
     }
 
     public char getDirection() {
@@ -164,6 +174,6 @@ public class Entrypoint {
 
     @Deprecated
     public String toString() {
-        return address + " " + sectionID + " " + direction + " ";
+        return addressID + " " + sectionID + " " + direction + " ";
     }
 }

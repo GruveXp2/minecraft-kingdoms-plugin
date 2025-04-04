@@ -51,7 +51,7 @@ public class SelectDistrictMenu extends Menu {
         }
         int i = 0;
         for (String district : districts) {
-            inventory.setItem(i, makeItem(kingdom.getDistrict(district).getMaterial(), district));
+            inventory.setItem(i, makeItem(kingdom.getDistrict(district).getIcon(), district));
             i++;
         }
     }

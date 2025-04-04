@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gruvexp.gruvexp.path.Path;
+import gruvexp.gruvexp.rail.Coord;
+import gruvexp.gruvexp.rail.Entrypoint;
+import gruvexp.gruvexp.rail.Section;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
@@ -18,7 +21,8 @@ public class Locality {
     public final String id;
     private District district;
 
-    private final Material icon;
+    private Material icon;
+    private Entrypoint entrypoint;
     private HashMap<String, Path> paths = new HashMap<>();
     private HashMap<Integer, House> houses = new HashMap<>();
 
@@ -52,23 +56,36 @@ public class Locality {
         this.district = district;
     }
 
-    public Material getMaterial() {
+    public Material getIcon() {
         return icon;
     }
 
-    public void addPath(String pathID, Path path) {
-        if (paths.containsKey(pathID)) {
-            throw new IllegalArgumentException(ChatColor.RED + "Path \"" + pathID + "\" already exist!");
-        }
-        paths.put(pathID, path);
+    public Component setIcon(Material icon) {
+        this.icon = icon;
+        return Component.text("Successfully set icon of locality ").append(name())
+                .append(Component.text(" to " + icon.toString()));
+    }
+
+    public Entrypoint getEntrypoint() {
+        return entrypoint;
+    }
+
+    public Component setEntrypoint(Section section, char direction) {
+        entrypoint = new Entrypoint(this, section, direction);
+        return Component.text("Successfully set entrypoint in ", NamedTextColor.GREEN).append(name())
+                .append(Component.text(" entering rail section ")).append(section.name())
+                .append(Component.text(" in direction ")).append(Component.text(direction));
+    }
+
+    public Component addPath(String pathID, Coord startPos) {
+        if (paths.containsKey(pathID)) return Component.text("Section \"" + pathID + "\" already exists!", NamedTextColor.RED);
+        paths.put(pathID, new Path(pathID, startPos));
+        return Component.text("Successfully added new path section called ", NamedTextColor.GREEN).append(Component.text(pathID, NamedTextColor.YELLOW))
+                .append(Component.text(" that starts at ")).append(startPos.name());
     }
 
     public Path getPath(String pathID) {
-        Path path = paths.get(pathID);
-        if (path == null) {
-            throw new IllegalArgumentException(ChatColor.RED + "Path \"" + pathID + "\" doesnt exist!");
-        }
-        return path;
+        return paths.get(pathID);
     }
 
     @JsonIgnore
@@ -88,12 +105,17 @@ public class Locality {
         KingdomsManager.scheduleAddressInit(this);
     }
 
-    public void removePath(String pathID) {
+    public Component removePath(String pathID) {
+        if (!paths.containsKey(pathID)) return Component.text("No path section with id \"" + pathID + "\" exists", NamedTextColor.RED);
         paths.remove(pathID);
+        return Component.text("Successfully removed path section: ").append(Component.text(pathID));
     }
 
-    public void addHouse(int houseNumber) {
+    public Component addHouse(int houseNumber) {
         houses.put(houseNumber, new House(houseNumber));
+        return Component.text("Successfully added a new house with house number ")
+                .append(Component.text(houseNumber, NamedTextColor.BLUE))
+                .append(Component.text(" in locality ")).append(address());
     }
 
     public House getHouse(int houseNumber) {
@@ -104,14 +126,11 @@ public class Locality {
         return house;
     }
 
-    public House getHouse(String houseNumber) {
-        int houseNumberInt;
-        try {
-            houseNumberInt = Integer.parseInt(houseNumber);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(String.format("%sHouse number must be a number!\n%sExpected number, got %s\"%s\"%s instead", ChatColor.RED, ChatColor.WHITE, ChatColor.RED, houseNumber, ChatColor.WHITE));
-        }
-        return getHouse(houseNumberInt);
+    public Component removeHouse(int houseNumber) {
+        if (!houses.containsKey(houseNumber)) return Component.text("No house with house number \"" + houseNumber + "\" exists", NamedTextColor.RED);
+        houses.remove(houseNumber);
+        return Component.text("Successfully removed house: ")
+                .append(name()).appendSpace().append(Component.text(houseNumber));
     }
 
     @JsonIgnore
@@ -133,5 +152,8 @@ public class Locality {
 
     public Component name() {
         return Component.text(id, NamedTextColor.GOLD);
+    }
+    public Component address() {
+        return district.address().append(Component.text(":")).append(Component.text(id));
     }
 }

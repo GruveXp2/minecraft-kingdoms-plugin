@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gruvexp.gruvexp.Main;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -381,5 +383,9 @@ public final class Section { // en delstrekning på en vei, GJØR SÅNN AT ENDPO
         TextDisplay display = (TextDisplay) world.spawnEntity(new Location(world, loc.getX(), loc.getY(), loc.getZ()), EntityType.TEXT_DISPLAY);
         display.setTransformation(new Transformation(new Vector3f(0, 0, 0), new AxisAngle4f(0, 0, 0, 1), new Vector3f(size, size, size), new AxisAngle4f(0, 0, 0, 1)));
         display.addScoreboardTag("rail_section_debug");
+    }
+
+    public Component name() {
+        return Component.text(id, NamedTextColor.LIGHT_PURPLE);
     }
 }

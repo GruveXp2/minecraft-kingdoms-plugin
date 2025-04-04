@@ -117,7 +117,7 @@ public class StationMenu extends Menu {
     public void setDistrict(String districtID) {
         District district = KingdomsManager.getKingdom(ENTRYPOINT.getTargetKingdom()).getDistrict(districtID);
         if (!chestMode) {
-            inventory.setItem(3, makeItem(district.getMaterial(), districtID, "district"));
+            inventory.setItem(3, makeItem(district.getIcon(), districtID, "district"));
             inventory.setItem(5, makeItem(Material.PAPER, "select address", "address"));
         }
     }
@@ -125,7 +125,7 @@ public class StationMenu extends Menu {
     public void setAddress(String address) {
         District district = KingdomsManager.getKingdom(ENTRYPOINT.getTargetKingdom()).getDistrict(ENTRYPOINT.getTargetDistrict());
         if (!chestMode) {
-            inventory.setItem(5, makeItem(district.getLocality(address).getMaterial(), address, "address"));
+            inventory.setItem(5, makeItem(district.getLocality(address).getIcon(), address, "address"));
         }
     }
 

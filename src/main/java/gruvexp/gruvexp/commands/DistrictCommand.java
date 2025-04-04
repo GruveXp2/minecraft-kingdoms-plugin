@@ -38,7 +38,7 @@ public class DistrictCommand implements CommandExecutor {
             case "info" -> {
                 return Component.text("District of ").append(district.name())
                         .append(Component.text(" in ")).append(kingdom.name()).append(Component.text(":\n"))
-                        .append(Component.text("Icon: ")).append(Component.text(district.getMaterial().toString())).appendNewline()
+                        .append(Component.text("Icon: ")).append(Component.text(district.getIcon().toString())).appendNewline()
                         .append(Component.text(district.getLocalityIDs().size())).append(Component.text(" localities:\n"))
                         .append(Component.text(String.join(", ", district.getLocalityIDs()))).appendNewline()
                         .append(Component.text(district.getSectionIDs().size())).append(Component.text(" rail sections"));
