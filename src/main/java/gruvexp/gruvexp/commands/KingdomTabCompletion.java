@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public class KingdomTabCompletion implements TabCompleter {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
+
         if (args.length == 1) return new ArrayList<>(KingdomsManager.getKingdomIDs());
         Kingdom kingdom = KingdomsManager.getKingdom(args[0]);
         if (kingdom == null) return List.of(ChatColor.RED + "Unknown kingdom: " + args[0]);
@@ -66,6 +67,7 @@ public class KingdomTabCompletion implements TabCompleter {
             case "remove" -> {
                 if (args.length == 3) return List.of("district", "citizen");
                 String feature = args[2];
+                if (args.length > 4) break;
                 switch (feature) {
                     case "district" -> {
                         return new ArrayList<>(kingdom.getDistrictIDs());
