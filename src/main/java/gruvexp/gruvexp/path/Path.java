@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gruvexp.gruvexp.rail.Coord;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
 
 import java.util.*;
@@ -12,7 +14,7 @@ public class Path {
 
     public static final HashSet<String> DIRECTIONS = new HashSet<>(Arrays.asList("n", "s", "e", "w", "ne", "nw", "se", "sw"));
     @JsonIgnore
-    private String ID; // pathID
+    private String id; // pathID
     private Coord startPos;
     private HashMap<Integer, Character> turns; // på hvilken retning man skal svinge på index x. retninger: NSEW ZCUM(NE ES SW WN). hver gang man mover, så skjekker man om turns.get(counter) ikke er null, og hvis den ikke er det, så flytter man seg i den retninga.
     private final HashMap<Integer, String> branchPathID; // etter å ha gått x bloccs, er det en utgang på sida som går til en bestemt path
@@ -59,9 +61,9 @@ public class Path {
         };
     }
 
-    public Path(String ID, Coord startPos) {
+    public Path(String id, Coord startPos) {
         this.startPos = startPos;
-        this.ID = ID;
+        this.id = id;
         branchPathID = new HashMap<>();
         branchAddresses = new HashMap<>();
         branchEnterIndex = new HashMap<>();
@@ -76,9 +78,9 @@ public class Path {
         branchEnterIndex = new HashMap<>();
     }
 
-    public void initID(String ID) {
-        if (this.ID == null) {
-            this.ID = ID;
+    public void initID(String id) {
+        if (this.id == null) {
+            this.id = id;
         }
     }
 
@@ -161,6 +163,10 @@ public class Path {
 
     @Override
     public String toString() {
-        return ID;
+        return id;
+    }
+
+    public Component name() {
+        return Component.text(id, NamedTextColor.YELLOW);
     }
 }
