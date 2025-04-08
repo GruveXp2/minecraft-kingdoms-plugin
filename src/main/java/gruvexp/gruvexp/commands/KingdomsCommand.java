@@ -1,8 +1,10 @@
 package gruvexp.gruvexp.commands;
 
 import gruvexp.gruvexp.Main;
+import gruvexp.gruvexp.core.District;
 import gruvexp.gruvexp.core.Kingdom;
 import gruvexp.gruvexp.core.KingdomsManager;
+import gruvexp.gruvexp.core.Locality;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -21,13 +23,13 @@ public class KingdomsCommand implements CommandExecutor {
 
         if (!(sender instanceof Player p)) {return true;}
         if (args.length == 0) {return false;}
-        TextComponent result = processCommand(p, args, command);
+        Component result = processCommand(p, args, command);
         p.sendMessage(result);
 
         return true;
     }
 
-    private TextComponent processCommand(Player p, String[] args, Command command) {
+    private Component processCommand(Player p, String[] args, Command command) {
         String oper = args[0];
         switch (oper) {
             case "info" -> {
@@ -40,6 +42,25 @@ public class KingdomsCommand implements CommandExecutor {
                             .append(kingdom.king())));
                 }
                 return message;
+            }
+            case "select" -> {
+                if (args.length == 1) return Component.text("You must specify what kingdom to select", NamedTextColor.RED);
+
+                String kingdomID = args[1];
+                Kingdom kingdom = KingdomsManager.getKingdom(kingdomID);
+                if (kingdom == null) return Component.text("Kingdom \"" + kingdomID + " doesnt exist!", NamedTextColor.RED);
+                if (args.length == 2) return KingdomsManager.setSelectedKingdom(p, kingdom);
+
+                String districtID = args[2];
+                District district = kingdom.getDistrict(districtID);
+                if (district == null) return Component.text("District \"" + districtID + " doesnt exist!", NamedTextColor.RED);
+                if (args.length == 3) return KingdomsManager.setSelectedDistrict(p, district);
+
+                String localityID = args[3];
+                Locality locality = district.getLocality(localityID);
+                if (locality == null) return Component.text("Locality \"" + localityID + " doesnt exist!", NamedTextColor.RED);
+
+                return KingdomsManager.setSelectedLocality(p, locality);
             }
             case "add" -> {
                 if (args.length == 1) return Component.text("You must specify what to add (probably a kingdom)", NamedTextColor.RED);
