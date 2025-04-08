@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import gruvexp.gruvexp.path.Path;
 import gruvexp.gruvexp.rail.Coord;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 import java.util.HashSet;
 
@@ -17,7 +18,7 @@ public class House {
     private Coord bedPos; //i framtida en liste over senger
     private Path exitPath;
     private String exitPathID;
-    private HashSet<Citizen> citizens = new HashSet<>(8); // når en villager blir adda med et house objekt, så tar man house.addMember(villager)
+    private HashSet<Citizen> residents = new HashSet<>(8); // når en villager blir adda med et house objekt, så tar man house.addMember(villager)
 
     public House(int nr) {
         this.nr = nr;
@@ -34,32 +35,56 @@ public class House {
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public HashSet<Citizen> getCitizens() {
-        if (citizens.isEmpty()) {
+    public HashSet<Citizen> getResidents() {
+        if (residents.isEmpty()) {
             return null;
         }
-        return citizens;
+        return residents;
     }
 
-    @SuppressWarnings("unused") @JsonProperty("citizens")
-    private void setCitizens(HashSet<Citizen> citizens) {
-        this.citizens = citizens;
+    @SuppressWarnings("unused") @JsonProperty("residents")
+    private void setResident(HashSet<Citizen> citizens) {
+        this.residents = citizens;
     }
 
-    public void addCitizen(Citizen citizen) {
-        citizens.add(citizen);
+    public Component addResident(Citizen citizen) {
+        if (residents.contains(citizen)) return Component.text("Nothing happened, that citizen was already a resident of this house", NamedTextColor.YELLOW);
+
+        residents.add(citizen);
+
+        KingdomsManager.save = true;
+        return Component.text("Successfully added resident ").append(citizen.name())
+                .append(Component.text(" to ")).append(name());
     }
 
-    public void setDoorPos(Coord doorPos) {
+    public Component removeResident(Citizen citizen) {
+        if (!residents.contains(citizen)) return citizen.name().append(Component.text(" isnt a resident of this house", NamedTextColor.YELLOW));
+
+        residents.remove(citizen);
+
+        KingdomsManager.save = true;
+        return Component.text("Successfully removed resident ").append(citizen.name())
+                .append(Component.text(" from ")).append(name());
+    }
+
+    public Component setDoorPos(Coord doorPos) {
         this.doorPos = doorPos;
+
+        KingdomsManager.save = true;
+        return Component.text("Successfully set door pos of ").append(name())
+                .append(Component.text(" to ")).append(doorPos.name());
     }
 
     public Coord getDoorPos() {
         return doorPos;
     }
 
-    public void setBedPos(Coord bedPos) {
+    public Component setBedPos(Coord bedPos) {
         this.bedPos = bedPos;
+
+        KingdomsManager.save = true;
+        return Component.text("Successfully set bed pos of ").append(name())
+                .append(Component.text(" to ")).append(bedPos.name());
     }
 
     public Coord getBedPos() {
@@ -80,8 +105,12 @@ public class House {
     }
 
     @JsonIgnore
-    public void setExitPath(Path exitPath) {
+    public Component setExitPath(Path exitPath) {
         this.exitPath = exitPath;
+
+        KingdomsManager.save = true;
+        return Component.text("Successfully set exith path section of ").append(name())
+                .append(Component.text(" to ")).append(exitPath.name());
     }
 
     @SuppressWarnings("unused") @JsonProperty("exitPath")
@@ -89,7 +118,7 @@ public class House {
         this.exitPathID = exitPathID;
     }
 
-    public Component address() {
-        return locality.name().appendSpace().append(Component.text(nr));
+    public Component name() {
+        return locality.name().appendSpace().append(Component.text(nr, NamedTextColor.BLUE));
     }
 }
