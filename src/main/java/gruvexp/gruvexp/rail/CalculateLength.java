@@ -16,19 +16,16 @@ public class CalculateLength extends BukkitRunnable {
     int counter = 0;
     char direction; // hvilken retning carten kjører. når man kommer til svinger vil den nye retninga avhenge av den forrige retninga
     final CommandMinecart cart;
-    final String sectionID;
+    final Section section;
     final Location loc;
     final Location exit;
     final Player p;
     final int start_distance;
-    final District district;
     boolean doubleRun = false; // system som gjør at hver tick flytter han seg 2 hakk
-    public CalculateLength(String kingdomID, String districtID, String sectionID, char direction, Player p) {
-        this.sectionID = sectionID;
+    public CalculateLength(Section section, char direction, Player p) {
+        this.section = section;
         this.direction = direction;
         this.p = p;
-        district = KingdomsManager.getKingdom(kingdomID).getDistrict(districtID);
-        Section section = district.getSection(sectionID);
         Coord coord = section.getEntry();
         World world = p.getWorld();
         loc = new Location(world, coord.getX() + 0.5, coord.getY(), coord.getZ() + 0.5);
@@ -109,7 +106,7 @@ public class CalculateLength extends BukkitRunnable {
         }
         cart.teleport(loc);
         if (loc.equals(exit)) {
-            district.getSection(sectionID).setLength(counter);
+            section.setLength(counter);
             p.sendMessage("100% - Rail length: " + ChatColor.AQUA + counter + "m");
             KingdomsManager.save = true;
             cart.remove();
