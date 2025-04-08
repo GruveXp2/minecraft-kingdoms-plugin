@@ -28,7 +28,7 @@ public class KingdomTabCompletion implements TabCompleter {
         String oper = args[1];
         switch (oper) {
             case "set" -> {
-                if (args.length == 3) return List.of("king", "color");
+                if (args.length == 3) return List.of("king", "color", "post_office");
                 String property = args[2];
                 switch (property) {
                     case "color" -> {
@@ -40,6 +40,9 @@ public class KingdomTabCompletion implements TabCompleter {
                     }
                     case "king" -> {
                         return Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
+                    }
+                    case "post_office" -> {
+                        return new ArrayList<>(kingdom.getDistrictIDs());
                     }
                     default -> {
                         return List.of(ChatColor.RED + "unknown property: " + property);

@@ -21,8 +21,7 @@ public class Kingdom {
     private UUID kingID;
     private TextColor color;
     private final boolean isMale;
-    private String postOfficeDistrict;
-    private String ID;
+    private District postOfficeDistrict;
 
     public Kingdom(String id, @JsonProperty("player") UUID kingID, boolean isMale) { // gender is strictly binary to align with common sense and reality
         this.id = id;
@@ -89,21 +88,19 @@ public class Kingdom {
         return Component.text("Successfully removed district: ").append(Component.text(districtID));
     }
 
-    @SuppressWarnings("unused")
-    public void setPostOfficeDistrict(@JsonProperty("postOfficeDistrict") String districtID) {
-        postOfficeDistrict = districtID;
+    public Component setPostOfficeDistrict(@JsonProperty("postOfficeDistrict") District district) {
+        postOfficeDistrict = district;
+        return  Component.text("Successfully set post office district of ").append(name())
+                .append(Component.text(" to ")).append(district.name());
     }
 
-    public String getPostOfficeDistrict() {
-        if (postOfficeDistrict == null) {
-            throw new IllegalArgumentException(ChatColor.RED + "This kingdom hasnt registered a post office yet!");
-        }
+    public District getPostOfficeDistrict() {
         return postOfficeDistrict;
     }
 
-    @SuppressWarnings("unused") @JsonProperty("postOfficeDistrict") @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("postOfficeDistrict") @JsonInclude(JsonInclude.Include.NON_NULL)
     private String getPostOfficeDistrictJSON() {
-        return postOfficeDistrict;
+        return postOfficeDistrict.id;
     }
 
     public Component addCitizen(String name, Villager.Type variant, Villager.Profession profession) {

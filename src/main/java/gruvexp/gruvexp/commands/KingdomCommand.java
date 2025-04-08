@@ -1,5 +1,6 @@
 package gruvexp.gruvexp.commands;
 
+import gruvexp.gruvexp.core.District;
 import gruvexp.gruvexp.core.Kingdom;
 import gruvexp.gruvexp.core.KingdomsManager;
 import net.kyori.adventure.text.Component;
@@ -36,8 +37,10 @@ public class KingdomCommand implements CommandExecutor {
         String oper = args[1];
         switch (oper) {
             case "info" -> {
+                Component postOffice = kingdom.getPostOfficeDistrict() != null ? kingdom.getPostOfficeDistrict().name() : Component.text("none");
                 return Component.text("Kingdom of ").append(kingdom.name()).append(Component.text(":\n"))
                         .append(Component.text("Ruler: ")).append(kingdom.king()).appendNewline()
+                        .append(Component.text("Post office: ")).append(postOffice)
                         .append(Component.text(kingdom.getDistrictIDs().size())).append(Component.text(" districts:\n"))
                         .append(Component.text(String.join(", ", kingdom.getDistrictIDs()))).appendNewline()
                         .append(Component.text(kingdom.getCitizenNames().size())).append(Component.text(" citizens"));
@@ -57,6 +60,12 @@ public class KingdomCommand implements CommandExecutor {
                         TextColor color = TextColor.fromHexString(colorString);
                         if (color == null) return Component.text("Invalid color format. Must be hex (#rrggbb)", NamedTextColor.RED);
                         return kingdom.setColor(color);
+                    }
+                    case "post office" -> {
+                        String districtID = args[3];
+                        District postOfficeDistrict = kingdom.getDistrict(districtID);
+                        if (postOfficeDistrict == null) return Component.text("District \"" + districtID + "\" doesnt exzist!", NamedTextColor.RED);
+                        return kingdom.setPostOfficeDistrict(postOfficeDistrict);
                     }
                     default -> {
                         return Component.text("Invalid property argument! Syntaks: set [king | color] <value>", NamedTextColor.RED);
