@@ -1,7 +1,6 @@
 package gruvexp.gruvexp.commands;
 
 import gruvexp.gruvexp.core.District;
-import gruvexp.gruvexp.core.Kingdom;
 import gruvexp.gruvexp.core.KingdomsManager;
 import gruvexp.gruvexp.core.Locality;
 import org.bukkit.ChatColor;
@@ -13,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,11 +20,10 @@ public class LocalityTabCompletion implements TabCompleter {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
 
         if (!(sender instanceof Player p)) {return List.of();}
-        Kingdom kingdom = KingdomsManager.getSelectedKingdom(p);
         District district = KingdomsManager.getSelectedDistrict(p);
         if (district == null) return List.of(ChatColor.RED + "You must select a district to work with!", "run /kingdoms select <kingdom> <district>");
 
-        if (args.length == 1) return new ArrayList<>(district.getLocalityIDs());
+        if (args.length == 1) return district.getLocalityIDs().stream().toList();
         Locality locality = district.getLocality(args[0]);
         if (locality == null) return List.of(ChatColor.RED + "Unknown locality: " + args[0]);
 
@@ -34,8 +31,18 @@ public class LocalityTabCompletion implements TabCompleter {
         String oper = args[1];
         switch (oper) {
             case "set" -> {
-                if (args.length == 3) return List.of("icon");
-                if (args.length == 4) return KingdomsManager.BLOCKS.stream().filter(b -> b.contains(args[3])).collect(Collectors.toList());
+                if (args.length == 3) return List.of("icon", "entrypoint");
+                String feature = args[2];
+                switch (feature) {
+                    case "icon" -> {
+                        if (args.length == 4) return KingdomsManager.BLOCKS.stream().filter(b -> b.contains(args[3])).collect(Collectors.toList());
+                    }
+                    case "entrypoint" -> {
+                        if (args.length == 4) return district.getSectionIDs().stream().toList();
+                        if (args.length == 5) return KingdomsManager.DIRECTIONS.stream().toList();
+                    }
+                }
+
             }
             case "add" -> {
                 if (args.length == 3) return List.of("house", "path_section");
@@ -60,10 +67,10 @@ public class LocalityTabCompletion implements TabCompleter {
                 if (args.length > 4) break;
                 switch (feature) {
                     case "house" -> {
-                        return new ArrayList<>(locality.getHouseIDs());
+                        return locality.getHouseIDs().stream().map(Object::toString).toList();
                     }
                     case "path_section" -> {
-                        return new ArrayList<>(locality.getPathIDs());
+                        return locality.getPathIDs().stream().toList();
                     }
                     default -> {
                         return List.of(ChatColor.RED + "unknown property: " + feature);

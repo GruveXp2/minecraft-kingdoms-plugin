@@ -44,8 +44,8 @@ public final class Main extends JavaPlugin {
         getCommand("district").setTabCompleter(new DistrictTabCompletion());
         getCommand("rail").setExecutor(new RailCommand());
         getCommand("rail").setTabCompleter(new RailTabCompletion());
-        getCommand("locality").setExecutor(new DistrictCommand());
-        getCommand("locality").setTabCompleter(new DistrictTabCompletion());
+        getCommand("locality").setExecutor(new LocalityCommand());
+        getCommand("locality").setTabCompleter(new LocalityTabCompletion());
         getCommand("path").setExecutor(new PathCommand());
         getCommand("path").setTabCompleter(new PathTabCompletion());
         getCommand("home").setExecutor(new HomeCommand());
