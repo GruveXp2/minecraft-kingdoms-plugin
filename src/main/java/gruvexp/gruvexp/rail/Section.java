@@ -1,18 +1,20 @@
 package gruvexp.gruvexp.rail;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gruvexp.gruvexp.Main;
+import gruvexp.gruvexp.core.District;
+import gruvexp.gruvexp.core.Kingdom;
+import gruvexp.gruvexp.core.KingdomsManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.data.Rail;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
@@ -20,274 +22,160 @@ import org.joml.Vector3f;
 
 import java.util.*;
 
-public final class Section { // en delstrekning på en vei, GJØR SÅNN AT ENDPOINTROUTES KAN HA BARE 1 RUTE OG AT MAN IKKE TRENGER Å HA PILER FOR Å VELGE
+public final class Section {
 
     public final String id;
     private Coord entry;
     private Coord exit;
     private int length; // hvor mange blokker man må kjøre før man kommer til et kryss
     private int speed = 1; // 1: normal, 2: fast, 3: express
-    private String monoroute = ""; // "": kommer opp piler og man kan velge hvor man skal kjøre. en string: man kommer inn på en spesifik section i slutten uansett hva man gjør
-    private String borderKingdom; // ender kingdom umiddelbart dersom det er spesifisert (dvs non null)
-    private String borderDistrict; // samme som over bare med distrikt istedet
-    private final HashMap<String, Rail.Shape> endPointShape = new HashMap<>(); // right: north_south
-    private final HashMap<String, String> endPointSection = new HashMap<>(); // right: section_id
-    private final HashMap<String, HashSet<String>> endPointAddresses = new HashMap<>(); // right: [pyralix, east_district, kano_bay]
+    private Section nextSection; // når man kommer på slutten, så går man inn i denne seksjonen (overstyrer ruter)
+    private District border; // man sjekker både kdom og distr når man går over grensa
+    private final HashMap<String, RailRoute> routingTable = new HashMap<>(); // finn ut åssen json funker her. mna bare, tar og samler alle RailRoutes i et sett og lagrer sammen med hashset med string adresser
 
     public Section(String id, Coord entry) {
         this.id = id;
         this.entry = entry;
     }
 
-    public void setEntry(Coord entry) {
-        this.entry = entry;
-    }
-
     public Coord getEntry() {return entry;}
 
-    public void setExit(Coord exit) {
-        this.exit = exit;
+    public Component setEntry(Coord entry) {
+        if (this.entry == entry) return Component.text("Nothing happened, that was already set as the entry", NamedTextColor.YELLOW);
+        this.entry = entry;
+
+        KingdomsManager.save = true;
+        return Component.text("Successfully set entry of ").append(name())
+                .append(Component.text(" to ")).append(entry.name());
     }
 
     public Coord getExit() {return exit;}
 
-    public void setRoute(String direction, Rail.Shape railShape, String nextSection, HashSet<String> addresses) {
-        endPointShape.put(direction, railShape);
-        endPointSection.put(direction, nextSection);
-        endPointAddresses.put(direction, addresses);
-        // Gjør sånn at den thrower exceptions hvis man skriver inn feil
+    public Component setExit(Coord exit) {
+        if (this.exit == exit) return Component.text("Nothing happened, that was already set as the ecit", NamedTextColor.YELLOW);
+        this.exit = exit;
+
+        KingdomsManager.save = true;
+        return Component.text("Successfully set exit of ").append(name())
+                .append(Component.text(" to ")).append(entry.name());
     }
 
-    @SuppressWarnings("unused") @JsonProperty("routes")// Blir brukt av JSONParseren
-    private void setRoutes(Map<String, Map<String, Object>> routes) {
-        for (Map.Entry<String, Map<String, Object>> entry : routes.entrySet()) {
-            String direction = entry.getKey();
-            Map<String, Object> directionData = entry.getValue();
-            String shape = (String) directionData.get("shape");
-            String sectionID = (String) directionData.get("section");
-            HashSet<String> addresses = new HashSet<>((ArrayList<String>) directionData.get("addresses"));
-            endPointShape.put(direction, Rail.Shape.valueOf(shape));
-            endPointSection.put(direction, sectionID);
-            endPointAddresses.put(direction, addresses);
-        }
-    }
-
-    @SuppressWarnings("unused") @JsonProperty("routes") @JsonInclude(JsonInclude.Include.NON_NULL) // Blir brukt av JSONParseren
-    private Map<String, Map<String, Object>> getRoutes() {
-        if (endPointShape.isEmpty()) {
-            return null;
-        }
-        Map<String, Map<String, Object>> routes = new HashMap<>();
-        for (String direction : endPointShape.keySet()) {
-            Map<String, Object> route = new HashMap<>();
-            route.put("shape", endPointShape.get(direction).name());
-            route.put("section", endPointSection.get(direction));
-            route.put("addresses", endPointAddresses.get(direction));
-            routes.put(direction, route);
-        }
-        return routes;
-    }
-
-    public void removeRoute(String direction) {
-        endPointShape.remove(direction);
-    }
-
-    public void removeAllRoutes() {
-        endPointShape.clear();
-        endPointSection.clear();
-        endPointAddresses.clear();
-    }
-
-    public Rail.Shape getShape(String direction) {
-        return endPointShape.get(direction);
+    public RailRoute getEndpointRoute(String address) {
+        return routingTable.get(address);
     }
 
     public boolean hasRoutes() {
-        return !endPointShape.isEmpty();
+        return !routingTable.isEmpty();
     }
 
-    public boolean hasRoute(String route) {
-        return endPointShape.containsKey(route);
-    }
+    public Component setRoute(String direction, Rail.Shape railShape, Section nextSection, HashSet<String> addresses) {
+        // GJØR DIRECTION OM TIL ENUM!
+        routingTable.entrySet().removeIf(entry -> direction.equals(entry.getValue().direction())); // removes any routes already using that direction
 
-    public void setMonoroute(String sectionId) { // sets a route at the end position. will disable endPointRoutes, and it will just switch to that route when it gets there no matther what, and the player cant choose
-        monoroute = sectionId;
-    }
-
-    public boolean hasMonoRoute() {
-        return !Objects.equals(monoroute, "");
-    }
-
-    @SuppressWarnings("unused") @JsonProperty("monoroute") @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String getMonoroute() {
-        if (Objects.equals(monoroute, "")) {
-            return null;
+        RailRoute route = new RailRoute(nextSection, railShape, direction);
+        for (String address : addresses) {
+            routingTable.put(address, route); // it works kinda like a router in data communication
         }
-        return monoroute;
+        Component nextSectionWarning = hasNextSection() ?
+                Component.text("\nWarning: this will switch to routing mode, and will overwrite the current set next section", NamedTextColor.YELLOW) : Component.empty();
+        this.nextSection = null;
+
+        KingdomsManager.save = true;
+        return Component.text("Successfully added route:\n")
+                .append(Component.text(String.join(", ", addresses), NamedTextColor.GOLD))
+                .append(Component.text(" -> "))
+                .append(route.name())
+                .append(nextSectionWarning);
     }
 
-    public void setBorder(String kingdom, String district) {
-        borderKingdom = kingdom;
-        borderDistrict = district;
+    public Component removeRoute(String direction) {
+        routingTable.entrySet().removeIf(entry -> direction.equals(entry.getValue().direction()));
+
+        KingdomsManager.save = true;
+        return Component.text("Successfully removed route for direction ").append(Component.text(direction, NamedTextColor.GREEN));
     }
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public String getBorderKingdom() {return borderKingdom;}
+    public Component removeAllRoutes() {
+        if (routingTable.isEmpty()) return Component.text("Nothing happened, there was no routes to remove", NamedTextColor.YELLOW);
+        routingTable.clear();
+        KingdomsManager.save = true;
+        return Component.text("Successfully removed all routes (this will switch to having a specific next section to go to, or being the last stop)");
+    }
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public String getBorderDistrict() {return borderDistrict;}
+    public Section getNextSection() {
+        return nextSection;
+    }
 
-    public void removeBorder() {
-        borderKingdom = null;
-        borderDistrict = null;
+    public boolean hasNextSection() {
+        return nextSection != null;
+    }
+
+    public Component setNextSection(Section section) { // sets a route at the end position. will disable endPointRoutes, and it will just switch to that route when it gets there no matther what, and the player cant choose
+        if (nextSection == section) return Component.text("Nothing happened, that section was already selected as the next rail section", NamedTextColor.YELLOW);
+        nextSection = section;
+        if (section == null) return Component.text("Successfully set ").append(name()).append(Component.text(" as an endpoint"));
+
+        KingdomsManager.save = true;
+        return Component.text("Successfully set next section (the one to link to) of ").append(name())
+                .append(Component.text(" to ")).append(section.name());
+    }
+
+    public District getBorder() {
+        return border;
     }
 
     public boolean hasBorder() {
-        return borderDistrict != null;
+        return border != null;
     }
 
-    public void setSpeed(int speed) {
-        this.speed = speed;
+    public Component setBorder(District targetDistrict) {
+        if (border == targetDistrict) return Component.text("Nothing happened, that was already the border", NamedTextColor.YELLOW);
+        border = targetDistrict;
+
+        KingdomsManager.save = true;
+        return Component.text("Successfully set border of ").append(name())
+                .append(Component.text(" to ")).append(targetDistrict.address());
+    }
+
+    public Component removeBorder() {
+        if (border == null) return Component.text("Nothing happened, this section didnt have a border in the first place", NamedTextColor.YELLOW);
+        border = null;
+
+        KingdomsManager.save = true;
+        return Component.text("Successfullt removed border of ").append(name());
     }
 
     public int getSpeed() {
         return speed;
     }
-    public void setLength(int length) {this.length = length;}
+
+    public Component setSpeed(int speed) {
+        if (this.speed == speed) return Component.text("Nothing happened, speed already had that value", NamedTextColor.YELLOW);
+        this.speed = speed;
+        Component speedName = switch (speed) {
+            case 1 -> Component.text("Normal", NamedTextColor.WHITE);
+            case 2 -> Component.text("Fast", NamedTextColor.YELLOW);
+            case 3 -> Component.text("Express", NamedTextColor.BLUE);
+            default -> throw new IllegalArgumentException("Invalid speed: " + speed);
+        };
+
+        KingdomsManager.save = true;
+        return Component.text("Successfully set speed of ").append(name())
+                .append(Component.text(" to ")).append(speedName);
+    }
 
     public int getLength() {return length;}
 
-    public String[] getEndpointData(String address) { // [dir, section]
-        if (!Objects.equals(monoroute, "")) { // hvis monorute ikke er "" (dvs at seksjonen har en monorute)
-            return new String[]{null, monoroute};
-        }
-        String dir;
-        for (Map.Entry<String, HashSet<String>> entry : endPointAddresses.entrySet()) {
-            if (entry.getValue().contains(address)) {
-                dir = entry.getKey();
-                return new String[]{dir, endPointSection.get(dir)};
-            }
-        }
-        return null; // hvis minecarten ikke fant noen addresse å ta, og det ikke er monorute (da stopper carten opp og det kommer rød blocc over og står error)
-    }
-    public String
-    print(String property) {
-        switch (property) {
-            case "entry" -> {
-                if (entry == null) {
-                    throw new IllegalArgumentException(ChatColor.RED + "This section doesnt have a entry point yet!");
-                }
-                return ChatColor.AQUA + "" + entry.getX() + " " + entry.getY() + " " + entry.getZ();
-            } case "exit" -> {
-                if (exit == null) {
-                    throw new IllegalArgumentException(ChatColor.RED + "This section doesnt have a exit point yet!");
-                }
-                return ChatColor.AQUA + "" + exit.getX() + ", " + exit.getY() + ", " + exit.getZ();
-            } case "length" -> {
-                if (length == 0) {
-                    throw new IllegalArgumentException(ChatColor.RED + "The length of this section is not calculated yet!");
-                }
-                return ChatColor.AQUA + "" + length + "m";
-            } case "monoroute" -> {
-                if (monoroute == null) {
-                    throw new IllegalArgumentException(ChatColor.RED + "This section doesnt have a monoroute!");
-                }
-                return ChatColor.LIGHT_PURPLE + monoroute;
-            } case "border" -> {
-                if (borderDistrict == null) {
-                    return ChatColor.YELLOW + "This section has no borders";
-                }
-                if (borderKingdom == null) {
-                    return ChatColor.GOLD + borderDistrict;
-                }
-                return ChatColor.GOLD + borderKingdom + " : " + borderDistrict;
-            } case "speed" -> { // maybe use int instead
-                switch (speed) {
-                    case 1:
-                        return ChatColor.GREEN + "normal";
-                    case 2:
-                        return ChatColor.GREEN + "fast";
-                    case 3:
-                        return ChatColor.LIGHT_PURPLE + "express";
-                }
-            }
-            default -> throw new IllegalArgumentException(ChatColor.RED + property + " is not a property!");
-        }
-        return null;
+    public Component calculateLength(String direction, Player p) {
+        if (getExit() == null) return Component.text("Cant calculate length! Section must have an exit point", NamedTextColor.RED);
+        new CalculateLength(this, direction.toCharArray()[0], p).runTaskTimer(Main.getPlugin(), 0, 1);
+        return Component.text("Starting to calculate rail length of ").append(name()).append(Component.text(" ..."));
     }
 
-    public String printRoutes() {
-        StringBuilder out = new StringBuilder(ChatColor.BOLD + "Section has the following routes:\n");
-        for (String dir : endPointShape.keySet()) {
-            out.append(ChatColor.RED).append(dir).append(ChatColor.WHITE).append(":\n - Enters section ").append(ChatColor.LIGHT_PURPLE)
-                    .append(endPointSection.get(dir)).append(ChatColor.WHITE).append("\n - Changes rail shape to ")
-                    .append(ChatColor.GREEN).append(endPointShape.get(dir)).append("\n").append(ChatColor.WHITE).append(" - Adresses: ");
-            for (String address : endPointAddresses.get(dir)) {
-                out.append(ChatColor.GOLD).append(address).append(ChatColor.WHITE).append(", ");
-            }
-            out.delete(out.length() - 2, out.length());
-            out.append("\n");
-        }
-        return out.toString();
-    }
-
-    @Override @Deprecated
-    public String toString() {
-        StringBuilder out = new StringBuilder();
-        if (entry != null) {
-            out.append("\nentry ").append(entry.getX()).append(",").append(entry.getY()).append(",").append(entry.getZ());
-        }
-        if (exit != null) {
-            out.append("\nexit ").append(exit.getX()).append(",").append(exit.getY()).append(",").append(exit.getZ());
-        }
-        if (hasRoutes()) {
-            out.append("\nroutes");
-            for (String dir : endPointShape.keySet()) {
-                StringBuilder route = new StringBuilder(" ");
-                route.append(dir).append(";").append(endPointShape.get(dir)).append(";").append(endPointSection.get(dir)).append(";");
-                for (String address : endPointAddresses.get(dir)) {
-                    route.append(address).append(",");
-                }
-                route.delete(route.length() - 1, route.length()); // sletter ekstra komma på slutten
-                out.append(route);
-            }
-        }
-        if (hasMonoRoute()) {
-            out.append("\nmonoroute ").append(monoroute);
-        }
-        if (borderKingdom != null && borderDistrict != null) {
-            out.append("\nborder ").append(borderKingdom).append(" ").append(borderDistrict);
-        }
-        out.append("\nspeed ").append(speed);
-        if (length != 0) {
-            out.append("\nlength ").append(length);
-        }
-        return out.toString();
-    }
-
-    @JsonIgnore
-    public List<String> getProperties() { // brukes i tabcompletion kåmplisjen
-        List<String> out = new ArrayList<>(6);
-        if (entry != null) {
-            out.add("entry");
-        }
-        if (exit != null) {
-            out.add("exit");
-        }
-        if (hasRoutes()) {
-            out.add("routes");
-        }
-        if (hasMonoRoute()) {
-            out.add("monoroute");
-        }
-        if (borderDistrict != null) {
-            out.add("border");
-        }
-        if (length > 0) {
-            out.add("length");
-        }
-        out.add("speed");
-        return out;
+    public void setLength(int length) {
+        if (length == this.length) return;
+        this.length = length;
+        KingdomsManager.save = true;
     }
     // ikke ferdig
     /*public void show() { // viser blockdisplays og tekst om seksjonen
@@ -387,5 +275,99 @@ public final class Section { // en delstrekning på en vei, GJØR SÅNN AT ENDPO
 
     public Component name() {
         return Component.text(id, NamedTextColor.LIGHT_PURPLE);
+    }
+
+    public Component speed() {
+        return switch (speed) {
+            case 1 -> Component.text("Normal", NamedTextColor.WHITE);
+            case 2 -> Component.text("Fast", NamedTextColor.YELLOW);
+            case 3 -> Component.text("Express", NamedTextColor.BLUE);
+            default -> throw new IllegalStateException("Unexpected speed value: " + speed);
+        };
+    }
+
+    public Component routes() {
+        Component routeInfo;
+        if (hasRoutes()) {
+            routeInfo = Component.text("Routes: ");
+            Map<RailRoute, List<String>> reversed = new HashMap<>(); // its gonna map the routes to addresses instead so its easier to read when printed
+
+            for (Map.Entry<String, RailRoute> entry : routingTable.entrySet()) {
+                String address = entry.getKey();
+                RailRoute route = entry.getValue();
+
+                reversed.computeIfAbsent(route, r -> new ArrayList<>()).add(address);
+            }
+
+            for (Map.Entry<RailRoute, List<String>> entry : reversed.entrySet()) {
+                String addresses = String.join(", ", entry.getValue());
+                RailRoute route = entry.getKey();
+                routeInfo = routeInfo.append(Component.text(addresses, NamedTextColor.GOLD))
+                        .append(Component.text(" -> "))
+                        .append(route.name());
+            }
+        } else if (hasNextSection()) {
+            routeInfo = Component.text("Route: enters section ").append(nextSection.name());
+        } else {
+            routeInfo = Component.text("This section doesnt lead to other sections (final stop)");
+        }
+        return routeInfo;
+    }
+
+    @JsonProperty("monoroute") @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String getNextSectionJSON() {
+        return nextSection.id;
+    }
+
+    @JsonProperty("border") @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String getBorderJSON() {
+        return border.address().toString();
+    }
+
+    @JsonProperty("border") @JsonInclude(JsonInclude.Include.NON_NULL)
+    private void setBorderJSON(String border) {
+        String[] districtAddress = border.split(":");
+        Kingdom kingdom = KingdomsManager.getKingdom(districtAddress[0]);
+        this.border = kingdom.getDistrict(districtAddress[1]);
+    }
+
+    @JsonProperty("routes")
+    private void setRoutes(Map<String, Map<String, Object>> routes) {
+        for (Map.Entry<String, Map<String, Object>> entry : routes.entrySet()) {
+            String direction = entry.getKey();
+            Map<String, Object> routeData = entry.getValue();
+            String shape = (String) routeData.get("shape");
+            String sectionID = (String) routeData.get("section");
+            HashSet<String> addresses = new HashSet<>((ArrayList<String>) routeData.get("addresses"));
+            RailRoute route = new RailRoute(border.getSection(sectionID), Rail.Shape.valueOf(shape), direction);
+            for (String address : addresses) {
+                routingTable.put(address, route);
+            }
+        }
+    }
+
+    @JsonProperty("routes") @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Map<String, Map<String, Object>> getRoutes() {
+        if (routingTable.isEmpty()) {
+            return null;
+        }
+        Map<RailRoute, List<String>> reversed = new HashMap<>();
+        for (Map.Entry<String, RailRoute> entry : routingTable.entrySet()) {
+            String address = entry.getKey();
+            RailRoute route = entry.getValue();
+
+            reversed.computeIfAbsent(route, r -> new ArrayList<>()).add(address);
+        }
+        Map<String, Map<String, Object>> routes = new HashMap<>();
+        for (Map.Entry<RailRoute, List<String>> entry : reversed.entrySet()) {
+            RailRoute routeData = entry.getKey();
+            List<String> addresses = entry.getValue();
+            Map<String, Object> route = new HashMap<>();
+            route.put("shape", routeData.railShape());
+            route.put("section", routeData.targetSection().id);
+            route.put("addresses", addresses);
+            routes.put(routeData.direction(), route);
+        }
+        return routes;
     }
 }
