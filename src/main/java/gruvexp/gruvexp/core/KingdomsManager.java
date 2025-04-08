@@ -46,20 +46,23 @@ public final class KingdomsManager {
     public static Locality getSelectedLocality(Player p) {
         return selectedLocality.get(p);
     }
-    public static void setSelectedKingdom(Player p, Kingdom kingdom) {
+    public static Component setSelectedKingdom(Player p, Kingdom kingdom) {
         selectedKingdom.put(p, kingdom);
         selectedDistrict.remove(p);
         selectedLocality.remove(p);
+        return Component.text("Successfully selected kingdom ").append(kingdom.name());
     }
-    public static void setSelectedDistrict(Player p, District district) {
+    public static Component setSelectedDistrict(Player p, District district) {
         selectedKingdom.put(p, district.getKingdom());
         selectedDistrict.put(p, district);
         selectedLocality.remove(p);
+        return Component.text("Successfully selected district ").append(district.address());
     }
-    public static void setSelectedLocality(Player p, Locality locality) {
+    public static Component setSelectedLocality(Player p, Locality locality) {
         selectedKingdom.put(p, locality.getDistrict().getKingdom());
         selectedDistrict.put(p, locality.getDistrict());
         selectedLocality.put(p, locality);
+        return Component.text("Successfully selected locality ").append(locality.address());
     }
 
     public static void init() {
