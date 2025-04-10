@@ -2,10 +2,9 @@ package gruvexp.gruvexp.commands;
 
 import gruvexp.gruvexp.Utils;
 import gruvexp.gruvexp.core.Locality;
-import gruvexp.gruvexp.core.District;
-import gruvexp.gruvexp.core.Kingdom;
 import gruvexp.gruvexp.core.KingdomsManager;
 import gruvexp.gruvexp.path.Path;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -23,97 +22,56 @@ public class PathTabCompletion implements TabCompleter {
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
 
-        Player p = (Player) sender;
+        if (!(sender instanceof Player p)) {return List.of();}
+        Locality locality = KingdomsManager.getSelectedLocality(p);
+        if (locality == null) return List.of(ChatColor.RED + "You must select a locality to work with!", "run /kingdoms select <kingdom> <district> <locality>");
 
-        if (args.length == 1) {
-            return new ArrayList<>(KingdomsManager.getKingdomIDs());
+        if (args.length == 1) return locality.getPathIDs().stream().map(Object::toString).toList();
+
+        if (args.length == 2) {
+            return List.of("info", "set", "remove");
         }
-        try {
-            String kingdomID = args[0];
-            Kingdom kingdom = KingdomsManager.getKingdom(kingdomID);
-            if (args.length == 2) {
-                return new ArrayList<>(kingdom.getDistrictIDs());
-            }
-            String districtID = args[1];
-            District district = kingdom.getDistrict(districtID);
-            if (args.length == 3) {
-                return new ArrayList<>(district.getLocalityIDs());
-            }
-            String addressID = args[2];
-            Locality locality = district.getLocality(addressID);
-            if (args.length == 4) {
-                return List.of("add", "get", "list", "set", "remove");
-            }
-            String oper = args[3];
-            if (args.length == 5) {
-                switch (oper) {
-                    case "add":
-                        return List.of("<path_id>");
-                    case "get":
-                    case "set":
-                    case "remove":
-                        return new ArrayList<>(locality.getPathIDs());
-                }
-            }
-            switch (oper) {
-                case "add":
-                    if (args.length == 6) {
+        String oper = args[1];
+        switch (oper) {
+            case "set" -> {
+                if (args.length == 3) return List.of("start_pos", "turns", "branch");
+
+                String property = args[2];
+                switch (property) {
+                    case "start_pos" -> {
                         return List.of(Utils.getTargetBlock(p, 10).toString());
-                    } else if (args.length == 9) {
-                        return new ArrayList<>(Path.DIRECTIONS);
-                    } else if (args.length > 9) {
+                    }
+                    case "turns" -> {
+                        if (args.length == 4) return Path.DIRECTIONS.stream().toList();
+
                         String arg = args[args.length - 1];
                         if (Objects.equals(arg, "")) {
-                            return List.of("<index (number)>");
+                            return List.of("<index: number>");
                         } else if (!arg.contains(":")) {
                             return List.of(arg + ":");
                         } else if (arg.charAt(arg.length() - 1) == ':') {
-                            return new ArrayList<>(Path.DIRECTIONS);
+                            return Path.DIRECTIONS.stream().toList();
                         }
                     }
-                    break;
-                case "set":
-                    if (args.length == 6) {
-                        return List.of("start_pos", "turns", "branch");
+                    case "branch" -> {
+                        if (args.length == 4) return List.of("<index: number>");
+                        if (args.length == 5) {
+                            List<String> out = new ArrayList<>(locality.getPathIDs().stream().toList());
+                            out.add("enter_rail");
+                            return out;
+                        }
+                        if (args.length == 6) return List.of("<enter index: number>");
+                        List<String> out = locality.getHouseIDs().stream().map(Object::toString).collect(Collectors.toList());
+                        out.add("station");
+                        return out;
                     }
-                    String property = args[5];
-                    switch (property) {
-                        case "start_pos":
-                            return List.of(Utils.getTargetBlock(p, 10).toString());
-                        case "turns":
-                            if (args.length == 7) {
-                                return new ArrayList<>(Path.DIRECTIONS);
-                            } else {
-                                String arg = args[args.length - 1];
-                                if (Objects.equals(arg, "")) {
-                                    return List.of("<index (number)>");
-                                } else if (!arg.contains(":")) {
-                                    return List.of(arg + ":");
-                                } else if (arg.charAt(arg.length() - 1) == ':') {
-                                    return new ArrayList<>(Path.DIRECTIONS);
-                                }
-                            }
-                            break;
-                        case "branch":
-                            if (args.length == 7) {
-                                return List.of("<index (number)>");
-                            } else if (args.length == 8) {
-                                List<String> out = new ArrayList<>(locality.getPathIDs());
-                                out.add("enter_rail 0");
-                                return out;
-                            } else if (args.length == 9) {
-                                return List.of("<enter index>");
-                            } else {
-                                List<String> out = locality.getHouseIDs().stream().map(Object::toString).collect(Collectors.toList());
-                                out.add("station");
-                                return out;
-                            }
-                    }
-                    break;
+                }
             }
-        } catch (IllegalArgumentException e) {
-            return List.of(e.getMessage());
+            case "remove" -> {
+                if (args.length == 3) return List.of("branch");
+                if (args.length == 4) return List.of("<index: number>");
+            }
         }
-        return new ArrayList<>(0);
+        return List.of();
     }
 }
