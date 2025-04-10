@@ -2,7 +2,6 @@ package gruvexp.gruvexp.commands;
 
 import gruvexp.gruvexp.HomeManager;
 import gruvexp.gruvexp.Main;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -13,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-import static gruvexp.gruvexp.HomeManager.PlayerToHomeAdr;
+import static gruvexp.gruvexp.HomeManager.homeLocations;
 
 public class HomeCommand implements CommandExecutor {
     @Override
@@ -23,7 +22,7 @@ public class HomeCommand implements CommandExecutor {
 
         if (args.length == 0) {
             try {
-                String coordStr = PlayerToHomeAdr.get(p.getPlayerListName());
+                String coordStr = homeLocations.get(p.getPlayerListName());
                 String[] coords = coordStr.split(" ");
                 if (p.getName().equals("bossfight3")) {
                     p.teleport(new Location(Main.WORLD_NETHER, Double.parseDouble(coords[0]), Double.parseDouble(coords[1]), Double.parseDouble(coords[2])));
@@ -38,12 +37,11 @@ public class HomeCommand implements CommandExecutor {
         if (args.length == 1 && Objects.equals(args[0], "set")) {
             Location loc = p.getLocation();
             String coords = (Math.round(loc.getX() * 100.0) / 100.0)+" "+loc.getY()+" "+(Math.round(loc.getZ() * 100.0) / 100.0);
-            PlayerToHomeAdr.put(p.getPlayerListName(), coords);
+            homeLocations.put(p.getPlayerListName(), coords);
             p.sendMessage("Your home adress is now " + ChatColor.AQUA + coords);
             HomeManager.saveData();
         }
         // man blir tpa til hjemmet sitt når man skriver /home. skriv /home set <pos> for å sette, og /home get for å få den nåværende posisjonen.
-
         return true;
     }
 }
