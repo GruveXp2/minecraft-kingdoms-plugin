@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 
 public class HouseCommand implements CommandExecutor {
 
-
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
 
@@ -102,8 +101,7 @@ public class HouseCommand implements CommandExecutor {
                 if (args.length == 2) return Component.text("You must specify what to remove: (resident)", NamedTextColor.RED);
                 String feature = args[2];
                 if (feature.equals("resident")) {
-                    if (args.length == 3)
-                        return Component.text("You must specify which resident to remove from this house: remove resident <citizen>");
+                    if (args.length == 3) return Component.text("You must specify which resident to remove from this house: remove resident <citizen>");
                     String citizenName = args[3];
                     Kingdom kingdom = locality.getDistrict().getKingdom();
                     Citizen citizen = kingdom.getCitizen(citizenName);
