@@ -29,14 +29,13 @@ public class LocalityCommand implements CommandExecutor {
     }
 
     private Component processCommand(Player p, String[] args, Command command) {
-        Kingdom kingdom = KingdomsManager.getSelectedKingdom(p);
         District district = KingdomsManager.getSelectedDistrict(p);
         if (district == null) return Component.text("You must specify the scope of this command (what district you wanna work with)" +
                     "\nrun /kingdoms select <kingdom> <district>", NamedTextColor.RED);
 
         String localityID = args[0];
         Locality locality = district.getLocality(localityID);
-        if (locality == null) return Component.text(kingdom.id + ":" + district.id + " has no locality named \"" + localityID + "\"!", NamedTextColor.RED);
+        if (locality == null) return district.address().append(Component.text(" has no locality named \"" + localityID + "\"!", NamedTextColor.RED));
         if (args.length == 1) return Component.text("You must specify an operation [info | set | add | remove]");
 
         String oper = args[1];
