@@ -1,22 +1,22 @@
 package gruvexp.gruvexp.menu.menus;
 
+import gruvexp.gruvexp.core.District;
 import gruvexp.gruvexp.core.Kingdom;
 import gruvexp.gruvexp.menu.Menu;
 import gruvexp.gruvexp.rail.Entrypoint;
-import gruvexp.gruvexp.core.KingdomsManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-import java.util.Set;
+import java.util.Collection;
 
 public class SelectDistrictMenu extends Menu {
 
-    final Entrypoint ENTRYPOINT;
+    final Entrypoint entrypoint;
 
     public SelectDistrictMenu(Entrypoint entrypoint) {
-        ENTRYPOINT = entrypoint;
+        this.entrypoint = entrypoint;
         updateItems();
     }
 
@@ -34,8 +34,8 @@ public class SelectDistrictMenu extends Menu {
     public void handleMenu(InventoryClickEvent e) {
         Player p = (Player) e.getWhoClicked();
         if (e.getSlot() > 8 || e.getCurrentItem().getType() == Material.BARRIER) {return;}
-        ENTRYPOINT.setTargetDistrict(e.getCurrentItem().getItemMeta().getDisplayName());
-        ENTRYPOINT.openInventory(p, "main");
+        entrypoint.setTargetDistrict(entrypoint.getTargetKingdom().getDistrict(e.getCurrentItem().getItemMeta().getDisplayName()));
+        entrypoint.openInventory(p, "main");
     }
 
     @Override
@@ -44,14 +44,14 @@ public class SelectDistrictMenu extends Menu {
     }
 
     public void updateItems() {
-        Kingdom kingdom = KingdomsManager.getKingdom(ENTRYPOINT.getTargetKingdom());
-        Set<String> districts = kingdom.getDistrictIDs();
+        Kingdom kingdom = entrypoint.getTargetKingdom();
+        Collection<District> districts = kingdom.getDistricts();
         if (districts.isEmpty()) {
             inventory.setItem(0, makeItem(Material.BARRIER, ChatColor.RED + "This kingdom has no districts"));
         }
         int i = 0;
-        for (String district : districts) {
-            inventory.setItem(i, makeItem(kingdom.getDistrict(district).getIcon(), district));
+        for (District district : districts) {
+            inventory.setItem(i, makeItem(district.getIcon(), district.id));
             i++;
         }
     }

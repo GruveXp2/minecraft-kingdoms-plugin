@@ -1,28 +1,28 @@
 package gruvexp.gruvexp.menu.menus;
 
 import gruvexp.gruvexp.core.District;
+import gruvexp.gruvexp.core.Locality;
 import gruvexp.gruvexp.menu.Menu;
 import gruvexp.gruvexp.rail.Entrypoint;
-import gruvexp.gruvexp.core.KingdomsManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-import java.util.Set;
+import java.util.Collection;
 
-public class SelectAddressMenu extends Menu {
+public class SelectLocalityMenu extends Menu {
 
-    final Entrypoint ENTRYPOINT;
+    final Entrypoint entrypoint;
 
-    public SelectAddressMenu(Entrypoint entrypoint) {
-        ENTRYPOINT = entrypoint;
+    public SelectLocalityMenu(Entrypoint entrypoint) {
+        this.entrypoint = entrypoint;
         updateItems();
     }
 
     @Override
     public String getMenuName() {
-        return "Select address";
+        return "Select locality";
     }
 
     @Override
@@ -34,8 +34,8 @@ public class SelectAddressMenu extends Menu {
     public void handleMenu(InventoryClickEvent e) {
         Player p = (Player) e.getWhoClicked();
         if (e.getSlot() > 8 || e.getCurrentItem() != null && e.getCurrentItem().getType() == Material.BARRIER) {return;}
-        ENTRYPOINT.setTargetAddress(e.getCurrentItem().getItemMeta().getDisplayName());
-        ENTRYPOINT.openInventory(p, "main");
+        entrypoint.setTargetLocality(entrypoint.getTargetDistrict().getLocality(e.getCurrentItem().getItemMeta().getDisplayName()));
+        entrypoint.openInventory(p, "main");
     }
 
     @Override
@@ -44,14 +44,14 @@ public class SelectAddressMenu extends Menu {
     }
 
     public void updateItems() {
-        District district = KingdomsManager.getKingdom(ENTRYPOINT.getTargetKingdom()).getDistrict(ENTRYPOINT.getTargetDistrict());
-        Set<String> addressses = district.getLocalityIDs();
-        if (addressses.isEmpty()) {
-            inventory.setItem(0, makeItem(Material.BARRIER, ChatColor.RED + "This district has no addresses"));
+        District district = entrypoint.getTargetDistrict();
+        Collection<Locality> localities = district.getLocalities();
+        if (localities.isEmpty()) {
+            inventory.setItem(0, makeItem(Material.BARRIER, ChatColor.RED + "This district has no localities"));
         }
         int i = 0;
-        for (String address : addressses) {
-            inventory.setItem(i, makeItem(district.getLocality(address).getIcon(), address));
+        for (Locality locality : localities) {
+            inventory.setItem(i, makeItem(locality.getIcon(), locality.id));
             i++;
         }
     }

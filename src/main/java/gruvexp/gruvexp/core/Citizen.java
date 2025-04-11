@@ -158,9 +158,7 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
         Location doorPos = home.getDoorPos().toLocation(Main.WORLD);
         Utils.openDoor(doorPos.getBlock());
         villager.teleport(doorPos);
-        String[] workAddressParts = workLocality.split(" ");
-        String[] homeAddressParts = homeAddress.split(" ");
-        new WalkPath(villager, kingdom, homeAddressParts[0], homeAddressParts[1], workAddressParts[0], workAddressParts[1], workAddressParts[2], null, home.getExitPath()).runTaskTimer(Main.getPlugin(), 0, 1);
+        new WalkPath(villager, home.getLocality(), workLocality, null, home.getExitPath()).runTaskTimer(Main.getPlugin(), 0, 1);
         //telporter til døra, sett addressen til jobbaddresse og begynn å gå exitPath.
     }
     // Denne classen skal lagre følgende informasjon: Bostedadresse, jobbaddresse, sengkordinater, profession(skin), variant (biome skin)

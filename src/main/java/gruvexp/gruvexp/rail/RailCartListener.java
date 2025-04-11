@@ -1,9 +1,13 @@
 package gruvexp.gruvexp.rail;
 
 import gruvexp.gruvexp.Main;
+import gruvexp.gruvexp.core.District;
+import gruvexp.gruvexp.core.Kingdom;
 import gruvexp.gruvexp.core.KingdomsManager;
+import gruvexp.gruvexp.core.Locality;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ItemFrame;
@@ -24,26 +28,12 @@ public class RailCartListener implements Listener {
     public void onRailInteract(PlayerInteractEntityEvent e) {
         Player p = e.getPlayer();
         if (e.getRightClicked() instanceof ItemFrame frame) {
-            if (frame.getItem().getType() != Material.COMMAND_BLOCK_MINECART) {return;}
+            if (frame.getItem().getType() != Material.COMMAND_BLOCK_MINECART) return;
             Set<String> tags = frame.getScoreboardTags();
-            if (tags.size() != 1) {return;}
-            String tag = "";
-            for (String s : tags) {
-                tag = s;
-            }
-            String[] tag_data = tag.split("-");
-            Entrypoint entrypoint;
-            try {
-                entrypoint = KingdomsManager.getKingdom(tag_data[0]).getDistrict(tag_data[1]).getEntrypoint(tag_data[2]); // hvis framen ikke er en frame fra en stasjon
-            } catch (NullPointerException ex) {
-                p.sendMessage(ChatColor.RED + "Invalid tag for control panel: " + tag);
-                return;
-            }
-            if (entrypoint == null) {
-                p.sendMessage(ChatColor.RED + "No entrypoint is attached to this address");
-                return;
-            }
-            entrypoint.openInventory(p, "main");
+            if (tags.size() != 1) return;
+
+            p.sendMessage(handlePlayerItemFrameRightClick(p, frame));
+
         } else if (e.getRightClicked() instanceof Minecart cart) {
             Set<String> tags = cart.getScoreboardTags();
             if (tags.contains("running")) {return;}
@@ -51,46 +41,75 @@ public class RailCartListener implements Listener {
             if (!CartManager.isCartRegistered(cartUUID)) {
                 if (tags.isEmpty()) {return;}
                 for (String tag : tags) {
-                    String[] tagData = tag.split("-");
-                    CartManager.registerCart(cartUUID, new String[]{tagData[0], tagData[1], tagData[2]});
+                    String[] address = tag.split("-");
+                    Kingdom kingdom = KingdomsManager.getKingdom(address[0]);
+                    if (kingdom == null) return;
+                    District district = kingdom.getDistrict(address[1]);
+                    if (district == null) return;
+                    Locality locality = district.getLocality(address[2]);
+                    if (locality == null) return;
+                    CartManager.registerCart(cartUUID, locality);
                 }
             } // hvis carten ikke er en cart spawna av stasjonen
-            String[] address = CartManager.getFullAddress(cartUUID);
-            Entrypoint entrypoint = KingdomsManager.getKingdom(address[0]).getDistrict(address[1]).getEntrypoint(address[2]);
-            if (entrypoint.getTargetAddress() == null) {
-                p.sendMessage(ChatColor.RED + "You must set the address before you use the railway");
+            Locality locality = CartManager.getLocality(cartUUID);
+            Entrypoint entrypoint = locality.getEntrypoint();
+            if (entrypoint == null) {
+                p.sendMessage(Component.text("This cart has a tag leading to an entrypoint which doesnt exist", NamedTextColor.RED));
+                e.setCancelled(true);
+                return;
+            }
+            if (entrypoint.getTargetLocality() == null) {
+                p.sendMessage(Component.text("You must set the address before you use the railway!", NamedTextColor.RED));
                 e.setCancelled(true);
                 return;
             }
             if (cart instanceof StorageMinecart) {
                 e.setCancelled(true);
-                if (!entrypoint.getStationMenu().isChestMode()) {
+                if (!entrypoint.getStationMenu().isMailMode()) {
                     Main.getPlugin().getLogger().info("Clicked chest cart but was in drive mode, spawning drive cart");
                     cart.remove();
                     CartManager.removeCart(cartUUID);
-                    spawnCart(entrypoint, address, EntityType.MINECART);
+                    entrypoint.spawnCart(EntityType.MINECART);
                     return;
                 }
-                Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> entrypoint.getStationMenu().driveMode(), 10L);
+                Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> entrypoint.getStationMenu().switchToDriveMode(), 10L);
             } else {
-                if (entrypoint.getStationMenu().isChestMode()) {
+                if (entrypoint.getStationMenu().isMailMode()) {
                     Main.getPlugin().getLogger().info("Clicked drive cart but was in chest mode, spawning cest cart");
                     e.setCancelled(true);
                     cart.remove();
                     CartManager.removeCart(cartUUID);
-                    //spawner ny cart
-                    spawnCart(entrypoint, address, EntityType.CHEST_MINECART);
+
+                    entrypoint.spawnCart(EntityType.CHEST_MINECART);
                     return;
                 }
             }
-            CartManager.driveCart(cartUUID, p, address[0], address[1], entrypoint.getSectionID(), entrypoint.getDirection(), entrypoint.getTargetKingdom(), entrypoint.getTargetDistrict(), entrypoint.getTargetAddress());
-            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> spawnCart(entrypoint, address, EntityType.MINECART), 10L);
+            CartManager.driveCart(cartUUID, p, entrypoint.getSection(), entrypoint.getDirection(), entrypoint.getTargetLocality());
+            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> entrypoint.spawnCart(EntityType.MINECART), 10L);
         }
     }
 
-    public void spawnCart(Entrypoint entrypoint, String[] address, EntityType entityType) {
-        Minecart new_cart = (Minecart) Main.WORLD.spawnEntity(entrypoint.getCoord().toLocation(Main.WORLD), entityType);
-        CartManager.registerCart(new_cart.getUniqueId(), address);
-        new_cart.addScoreboardTag(address[0] + "-" + address[1] + "-" + address[2]);
+    private Component handlePlayerItemFrameRightClick(Player p, ItemFrame frame) {
+        Set<String> tags = frame.getScoreboardTags();
+
+        String tag = tags.iterator().next();
+        String[] address = tag.split("-");
+
+        String kingdomID = address[0];
+        Kingdom kingdom = KingdomsManager.getKingdom(kingdomID);
+        if (kingdom == null) return Component.text("Malformed item frame tag! No kingdom named \"" + kingdomID + "\". Tag format must be <kingdom>:<district>:<locality>", NamedTextColor.RED);
+
+        String districtID = address[1];
+        District district = kingdom.getDistrict(districtID);
+        if (district == null) return Component.text("Malformed item frame tag! No district named \"" + districtID + "\". Tag format must be <kingdom>:<district>:<locality>", NamedTextColor.RED);
+
+        String localityID = address[2];
+        Locality locality = district.getLocality(localityID);
+        if (locality == null) return Component.text("Malformed item frame tag! No district named \"" + localityID + "\". Tag format must be <kingdom>:<district>:<locality>", NamedTextColor.RED);
+
+        Entrypoint entrypoint = locality.getEntrypoint();
+        if (entrypoint == null) return Component.text("No entrypoint is attached to this locality. Run /locality <locality> add entrypoint to add one", NamedTextColor.YELLOW);
+        entrypoint.openInventory(p, "main");
+        return Component.empty();
     }
 }

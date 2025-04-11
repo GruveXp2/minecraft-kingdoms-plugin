@@ -3,10 +3,12 @@ package gruvexp.gruvexp.menu.menus;
 import gruvexp.gruvexp.core.District;
 import gruvexp.gruvexp.core.Kingdom;
 import gruvexp.gruvexp.Main;
+import gruvexp.gruvexp.core.Locality;
 import gruvexp.gruvexp.menu.Menu;
 import gruvexp.gruvexp.rail.CartManager;
 import gruvexp.gruvexp.rail.Entrypoint;
-import gruvexp.gruvexp.core.KingdomsManager;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -20,11 +22,11 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class StationMenu extends Menu {
 
-    final Entrypoint ENTRYPOINT; // refrence til entrypoint
-    boolean chestMode = false; // false -> drivemode
+    final Entrypoint entrypoint; // refrence til entrypoint
+    boolean mailMode = false; // false -> drivemode
 
     public StationMenu(Entrypoint entrypoint) {
-        this.ENTRYPOINT = entrypoint;
+        this.entrypoint = entrypoint;
     }
 
     @Override
@@ -38,15 +40,15 @@ public class StationMenu extends Menu {
     }
 
     public void spawnCart(EntityType entityType) {
-        Minecart newCart = (Minecart) Main.WORLD.spawnEntity(ENTRYPOINT.getCoord().toLocation(Main.WORLD), entityType);
+        Minecart newCart = (Minecart) Main.WORLD.spawnEntity(entrypoint.getCoord().toLocation(Main.WORLD), entityType);
         registerCart(newCart);
     }
 
     private void registerCart(Minecart cart) {
-        String[] fullAddress = ENTRYPOINT.getFullAddress();
-        CartManager.registerCart(cart.getUniqueId(), fullAddress);
-        cart.addScoreboardTag(fullAddress[0] + "-" + fullAddress[1] + "-" + fullAddress[2]);
-        ENTRYPOINT.setCartUUID(cart.getUniqueId());
+        Locality locality = entrypoint.getLocality();
+        CartManager.registerCart(cart.getUniqueId(), entrypoint.getLocality());
+        cart.addScoreboardTag(locality.tag());
+        entrypoint.setCartUUID(cart.getUniqueId());
     }
 
     @Override
@@ -54,13 +56,13 @@ public class StationMenu extends Menu {
         if (e.getSlot() >= getSlots()) {return;}
         Player p = (Player) e.getWhoClicked(); // send player til selectkingdom menu osv.
         switch (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getLore().getFirst())) {
-            case "kingdom" -> ENTRYPOINT.openInventory(p, "kingdom");
-            case "district" -> ENTRYPOINT.openInventory(p, "district");
-            case "address" -> ENTRYPOINT.openInventory(p, "address");
+            case "kingdom" -> entrypoint.openInventory(p, "kingdom");
+            case "district" -> entrypoint.openInventory(p, "district");
+            case "locality" -> entrypoint.openInventory(p, "locality");
             case "respawn" -> spawnCart(EntityType.MINECART);
             case "drive" -> { // change 2 messidge mode
                 // fjerner carten på stasjonen hvis den er der
-                for (Entity entity : Main.WORLD.getNearbyEntities(KingdomsManager.getKingdom(ENTRYPOINT.getKingdomID()).getDistrict(ENTRYPOINT.getDistrictID()).getSection(ENTRYPOINT.getSectionID()).getEntry().toLocation(Main.WORLD), 1, 1, 1)) {
+                for (Entity entity : Main.WORLD.getNearbyEntities(entrypoint.getSection().getEntry().toLocation(Main.WORLD), 1, 1, 1)) {
                     if (!(entity instanceof Minecart)) {continue;}
                     if ((entity instanceof StorageMinecart)) {
                         registerCart((Minecart) entity);
@@ -68,10 +70,10 @@ public class StationMenu extends Menu {
                     }
                     entity.remove();
                 }
-                chestMode();
+                switchToMailMode();
             }
             case "message" -> { // change 2 drive mode
-                for (Entity entity : Main.WORLD.getNearbyEntities(KingdomsManager.getKingdom(ENTRYPOINT.getKingdomID()).getDistrict(ENTRYPOINT.getDistrictID()).getSection(ENTRYPOINT.getSectionID()).getEntry().toLocation(Main.WORLD), 1, 1, 1)) {
+                for (Entity entity : Main.WORLD.getNearbyEntities(entrypoint.getSection().getEntry().toLocation(Main.WORLD), 1, 1, 1)) {
                     if (!(entity instanceof Minecart)) {continue;}
                     if ((entity instanceof RideableMinecart)) {
                         registerCart((Minecart) entity);
@@ -79,16 +81,16 @@ public class StationMenu extends Menu {
                     }
                     entity.remove();
                 }
-                driveMode();
+                switchToDriveMode();
             }
             case "edit the contents" -> {
-                StorageMinecart cart = (StorageMinecart) Bukkit.getEntity(ENTRYPOINT.getCartUUID());
-                if (cart == null) {
-                    p.sendMessage(ChatColor.RED + "Couldnt find the chest minecart! Spawning new one...");
+                StorageMinecart storageCart = (StorageMinecart) Bukkit.getEntity(entrypoint.getCartUUID());
+                if (storageCart == null) {
+                    p.sendMessage(Component.text("Couldnt find the chest minecart! Spawning new one...", NamedTextColor.RED));
                     spawnCart(EntityType.CHEST_MINECART);
-                    cart = (StorageMinecart) Bukkit.getEntity(ENTRYPOINT.getCartUUID());
+                    storageCart = (StorageMinecart) Bukkit.getEntity(entrypoint.getCartUUID());
                 }
-                p.openInventory(cart.getInventory());
+                p.openInventory(storageCart.getInventory());
             }
         }
     }
@@ -100,42 +102,41 @@ public class StationMenu extends Menu {
         inventory.setItem(8, makeItem(Material.MINECART, "Mode", "drive"));
     }
 
-    public void setKingdom(String kingdomID) {
-        Kingdom kingdom = KingdomsManager.getKingdom(ENTRYPOINT.getTargetKingdom());
+    public void setKingdom(Kingdom kingdom) {
         Player p = Bukkit.getPlayer(kingdom.getKingID());
-        if (!chestMode) {
+        if (!mailMode) {
             inventory.setItem(3, makeItem(Material.PAPER, "select district", "district"));
         }
         inventory.setItem(5, null);
-        if (chestMode) {
-            ENTRYPOINT.setTargetDistrict(kingdom.getPostOfficeDistrict());
-            ENTRYPOINT.setTargetAddress("post_office");
+        if (mailMode) {
+            District postOfficeDistrict = kingdom.getPostOfficeDistrict();
+            Locality targetLocality = postOfficeDistrict.getLocality("post_office");
+            if (targetLocality == null) return;
+            entrypoint.setTargetLocality(targetLocality);
         }
-        inventory.setItem(1, makeHeadItem(p, kingdomID, "kingdom", p.getName()));
+        inventory.setItem(1, makeHeadItem(p, kingdom.id, "kingdom", p.getName()));
     }
 
-    public void setDistrict(String districtID) {
-        District district = KingdomsManager.getKingdom(ENTRYPOINT.getTargetKingdom()).getDistrict(districtID);
-        if (!chestMode) {
-            inventory.setItem(3, makeItem(district.getIcon(), districtID, "district"));
+    public void setDistrict(District district) {
+        if (!mailMode) {
+            inventory.setItem(3, makeItem(district.getIcon(), district.id, "district"));
             inventory.setItem(5, makeItem(Material.PAPER, "select address", "address"));
         }
     }
 
-    public void setAddress(String address) {
-        District district = KingdomsManager.getKingdom(ENTRYPOINT.getTargetKingdom()).getDistrict(ENTRYPOINT.getTargetDistrict());
-        if (!chestMode) {
-            inventory.setItem(5, makeItem(district.getLocality(address).getIcon(), address, "address"));
+    public void setLocality(Locality locality) {
+        if (!mailMode) {
+            inventory.setItem(5, makeItem(locality.getIcon(), locality.id, "address"));
         }
     }
 
-    public void driveMode() {
-        chestMode = false;
+    public void switchToDriveMode() {
+        mailMode = false;
         inventory.setItem(7, makeItem(Material.MINECART, "Respawn cart", "respawn"));
         inventory.setItem(8, makeItem(Material.MINECART, "Mode", ChatColor.BLUE + "drive"));
         Minecart prevCart = null;
         try {
-            prevCart = (Minecart) Bukkit.getEntity(ENTRYPOINT.getCartUUID());
+            prevCart = (Minecart) Bukkit.getEntity(entrypoint.getCartUUID());
         } catch (IllegalArgumentException ignored) {
 
         }
@@ -144,23 +145,23 @@ public class StationMenu extends Menu {
         }
     }
 
-    public void chestMode() {
-        chestMode = true;
+    public void switchToMailMode() {
+        mailMode = true;
         inventory.setItem(3, null);
         inventory.setItem(5, null);
         inventory.setItem(7, makeItem(Material.CHEST, "Edit contents", "edit the contents", "of the minecart"));
         inventory.setItem(8, makeItem(Material.CHEST_MINECART, "Mode", ChatColor.GOLD + "message"));
         try {
-            Kingdom kingdom = KingdomsManager.getKingdom(ENTRYPOINT.getTargetKingdom());
-            ENTRYPOINT.setTargetDistrict(kingdom.getPostOfficeDistrict());
-            ENTRYPOINT.setTargetAddress("post_office");
+            District targetDistrict = entrypoint.getTargetKingdom().getPostOfficeDistrict();
+            entrypoint.setTargetDistrict(targetDistrict);
+            entrypoint.setTargetLocality(targetDistrict.getLocality("post_office"));
         } catch (IllegalArgumentException ignored) {
-            ENTRYPOINT.resetAddress();
+            entrypoint.resetAddress();
             inventory.setItem(1, makeItem(Material.PAPER, "Select kingdom", "kingdom"));
         }
         Minecart prevCart = null;
         try {
-            prevCart = (Minecart) Bukkit.getEntity(ENTRYPOINT.getCartUUID());
+            prevCart = (Minecart) Bukkit.getEntity(entrypoint.getCartUUID());
         } catch (IllegalArgumentException ignored) {
 
         }
@@ -169,7 +170,7 @@ public class StationMenu extends Menu {
         }
     }
 
-    public boolean isChestMode() {
-        return chestMode;
+    public boolean isMailMode() {
+        return mailMode;
     }
 }

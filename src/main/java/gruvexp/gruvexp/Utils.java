@@ -1,6 +1,8 @@
 package gruvexp.gruvexp;
 
 import gruvexp.gruvexp.rail.Coord;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -88,5 +90,9 @@ public class Utils {
             door.setOpen(true);
             doorBlock.setBlockData(door);
         }
+    }
+
+    public static Component location(Location loc) {
+        return Component.text(String.format("%.2f %.0f %.2f", loc.getX(), loc.getY(), loc.getZ()), NamedTextColor.BLUE);
     }
 }
