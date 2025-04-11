@@ -17,9 +17,9 @@ import java.util.UUID;
 
 public class Citizen { //holder info om hver villager, som bosted, fabrikk, og personlige egenskaper
 
+    public final String name; //villagerens fulle navn
+    private Kingdom kingdom;
     private Villager villager;
-    Kingdom kingdom;
-    private String name; //villagerens fulle navn
     private final Villager.Type type;
     private Villager.Profession profession;
     private House home;
@@ -29,8 +29,9 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
     private Coord location;
 
     @SuppressWarnings("unused")
-    public Citizen(@JsonProperty("villager") String uuid, @JsonProperty("homeAddress") String homeAddress, @JsonProperty("workAddress") String workAddress,
+    public Citizen(String name, @JsonProperty("villager") String uuid, @JsonProperty("homeAddress") String homeAddress, @JsonProperty("workAddress") String workAddress,
                    @JsonProperty("location") Coord location, @JsonProperty("type") String type, @JsonProperty("profession") String profession) {
+        this.name = name;
         this.workLocality = workAddress;
         this.homeAddress = homeAddress;
         this.uuid = UUID.fromString(uuid);
@@ -40,15 +41,18 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
     }
 
     public Citizen(String name, Kingdom kingdom, Villager.Type type, Villager.Profession profession) {
-        String[] homeAddressStr = homeAddress.split(" ");
-        home = kingdom.getDistrict(homeAddressStr[0]).getLocality(homeAddressStr[1]).getHouse(Integer.parseInt(homeAddressStr[2]));
         this.name = name;
+        this.kingdom = kingdom;
         this.type = type;
         this.profession = profession;
         villager = (Villager) Main.WORLD.spawnEntity(home.getBedPos().toLocation(Main.WORLD), EntityType.VILLAGER);
         uuid = villager.getUniqueId();
         villager.setCustomName(Utils.toName(name));
         villager.setCustomNameVisible(true);
+    }
+
+    public Kingdom getKingdom() {
+        return kingdom;
     }
 
     public void load(boolean respawn) {

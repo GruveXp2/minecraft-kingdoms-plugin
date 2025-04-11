@@ -13,15 +13,16 @@ import java.util.HashSet;
 public class House {
 
     public final int nr;
-    private Locality locality;
+    private final Locality locality;
     private Coord doorPos;
     private Coord bedPos; //i framtida en liste over senger
     private Path exitPath;
     private String exitPathID;
     private HashSet<Citizen> residents = new HashSet<>(8); // når en villager blir adda med et house objekt, så tar man house.addMember(villager)
 
-    public House(int nr) {
+    public House(int nr, Locality locality) {
         this.nr = nr;
+        this.locality = locality;
     }
     // i fremtida liste over paths inni huset, som feks path fra senga til døra
 
