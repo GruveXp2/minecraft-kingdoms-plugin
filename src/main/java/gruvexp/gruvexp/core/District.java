@@ -70,10 +70,6 @@ public class District {
         return Component.text("Successfully removed locality: ").append(Component.text(localityID));
     }
 
-    public boolean hasLocality(String localityID) {
-        return localities.containsKey(localityID);
-    }
-
     @JsonIgnore
     public Set<String> getLocalityIDs() {
         return localities.keySet();
