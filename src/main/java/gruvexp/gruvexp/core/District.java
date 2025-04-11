@@ -89,7 +89,7 @@ public class District {
 
     public Component addSection(String sectionID, Coord entry) {
         if (sections.containsKey(sectionID)) return Component.text("Section \"" + sectionID + "\" already exists!", NamedTextColor.RED);
-        sections.put(sectionID, new Section(sectionID, entry));
+        sections.put(sectionID, new Section(sectionID, this, entry));
         return Component.text("Successfully added new rail section called ", NamedTextColor.GREEN).append(Component.text(sectionID, NamedTextColor.LIGHT_PURPLE))
                 .append(Component.text(" that starts at ")).append(entry.name());
     }
