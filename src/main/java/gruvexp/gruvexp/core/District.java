@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gruvexp.gruvexp.rail.Coord;
-import gruvexp.gruvexp.rail.Entrypoint;
 import gruvexp.gruvexp.rail.Section;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -21,7 +20,6 @@ public class District {
 
     private Material icon;
     private final HashMap<String, Locality> localities = new HashMap<>();
-    private final HashMap<String, Entrypoint> entrypoints = new HashMap<>(); // key = address
     private final HashMap<String, Section> sections = new HashMap<>();
 
     public District(String id, Kingdom kingdom, Material icon) {
