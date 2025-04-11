@@ -1,5 +1,6 @@
 package gruvexp.gruvexp.menu.menus;
 
+import gruvexp.gruvexp.core.Kingdom;
 import gruvexp.gruvexp.menu.Menu;
 import gruvexp.gruvexp.rail.Entrypoint;
 import gruvexp.gruvexp.core.KingdomsManager;
@@ -8,14 +9,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-import java.util.Set;
+import java.util.Collection;
 
 public class SelectKingdomMenu extends Menu {
 
-    final Entrypoint ENTRYPOINT;
+    final Entrypoint entrypoint;
 
     public SelectKingdomMenu(Entrypoint entrypoint) {
-        ENTRYPOINT = entrypoint;
+        this.entrypoint = entrypoint;
     }
 
     @Override
@@ -34,20 +35,20 @@ public class SelectKingdomMenu extends Menu {
         Player p = (Player) e.getWhoClicked();
         if (e.getSlot() > 8) {return;}
         try {
-            ENTRYPOINT.setTargetKingdom(e.getCurrentItem().getItemMeta().getDisplayName());
+            entrypoint.setTargetKingdom(KingdomsManager.getKingdom(e.getCurrentItem().getItemMeta().getDisplayName()));
         } catch (IllegalArgumentException ex) {
             p.sendMessage(ChatColor.RED + ex.getMessage());
         }
-        ENTRYPOINT.openInventory(p, "main");
+        entrypoint.openInventory(p, "main");
     }
 
     @Override
     public void setMenuItems() {
-        Set<String> kingdoms = KingdomsManager.getKingdomIDs();
+        Collection<Kingdom> kingdoms = KingdomsManager.getKingdoms();
         int i = 0;
-        for (String kingdom : kingdoms) {
-            Player p = Bukkit.getPlayer(KingdomsManager.getKingdom(kingdom).getKingID());
-            inventory.setItem(i, makeHeadItem(p, kingdom, p.getName()));
+        for (Kingdom kingdom : kingdoms) {
+            Player p = Bukkit.getPlayer(kingdom.getKingID());
+            inventory.setItem(i, makeHeadItem(p, kingdom.id, p.getName()));
             i++;
         }
     }

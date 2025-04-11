@@ -1,6 +1,7 @@
 package gruvexp.gruvexp.rail;
 
 import gruvexp.gruvexp.Main;
+import gruvexp.gruvexp.core.Locality;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
@@ -12,28 +13,28 @@ import java.util.UUID;
 
 public class CartManager {
 
-    private static final HashMap<UUID, BukkitTask> CARTS = new HashMap<>();
-    private static final HashMap<UUID, String[]> ADDRESSES = new HashMap<>();
+    private static final HashMap<UUID, BukkitTask> carts = new HashMap<>();
+    private static final HashMap<UUID, Locality> localities = new HashMap<>();
 
-    public static void registerCart(UUID cart, String[] address) {
-        ADDRESSES.put(cart, address);
+    public static void registerCart(UUID cart, Locality locality) {
+        localities.put(cart, locality);
     }
 
     public static boolean isCartRegistered(UUID cart) {
-        return ADDRESSES.containsKey(cart);
+        return localities.containsKey(cart);
     }
 
-    public static String[] getFullAddress(UUID cart) {
-        return ADDRESSES.get(cart);
+    public static Locality getLocality(UUID cart) {
+        return localities.get(cart);
     }
 
-    public static void driveCart(UUID cartUUID, Entity passenger, String startKingdom, String startDistrict, String section, char dir, String targetKingdom, String targetDistrict, String targetAddress) {
+    public static void driveCart(UUID cartUUID, Entity passenger, Section section, char dir, Locality targetLocality) {
 
-        CARTS.put(cartUUID, new DriveCart((Minecart) Objects.requireNonNull(Bukkit.getEntity(cartUUID)), passenger, startKingdom, startDistrict, section, dir, targetKingdom, targetDistrict, targetAddress).runTaskTimer(Main.getPlugin(), 0, 1));
+        carts.put(cartUUID, new DriveCart((Minecart) Objects.requireNonNull(Bukkit.getEntity(cartUUID)), passenger, section, dir, targetLocality).runTaskTimer(Main.getPlugin(), 0, 1));
     }
 
     public static void removeCart(UUID uuid) {
-        CARTS.remove(uuid);
+        carts.remove(uuid);
     }
     // add følgende: loadData() som laster data fra en fil som har lagra alle minecarts uuid og rail progress og section. hvis det ikke er lange til neste kryss, så pass på at man fortsatt kan skifte retninger osv.
     // saveData() lagrer alle minecarts som kjører på togbanen (ikke de som står stille på stasjonene) sine uuider, section og progress

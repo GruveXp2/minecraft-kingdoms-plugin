@@ -1,14 +1,20 @@
 package gruvexp.gruvexp.rail;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import gruvexp.gruvexp.Main;
+import gruvexp.gruvexp.core.District;
+import gruvexp.gruvexp.core.Kingdom;
 import gruvexp.gruvexp.core.KingdomsManager;
 import gruvexp.gruvexp.core.Locality;
-import gruvexp.gruvexp.menu.menus.SelectAddressMenu;
+import gruvexp.gruvexp.menu.menus.SelectLocalityMenu;
 import gruvexp.gruvexp.menu.menus.SelectDistrictMenu;
 import gruvexp.gruvexp.menu.menus.SelectKingdomMenu;
 import gruvexp.gruvexp.menu.menus.StationMenu;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -23,19 +29,15 @@ import java.util.UUID;
 
 public class Entrypoint {
     private Coord coord;
-    private final String sectionID;
     private Section section;
-    private final String kingdomID;
-    private final String districtID;
-    private final String addressID;
     private Locality locality;
-    private String targetKingdom; // disse variablene brukes til å sette adresse til minecarten som de går oppi
-    private String targetDistrict;
-    private String targetAddress;
+    private Kingdom targetKingdom; // disse variablene brukes til å sette adresse til minecarten som de går oppi
+    private District targetDistrict;
+    private Locality targetLocality;
     private final StationMenu stationMenu;
     private SelectKingdomMenu selectKingdomMenu;
     private SelectDistrictMenu selectDistrictMenu;
-    private SelectAddressMenu selectAddressMenu;
+    private SelectLocalityMenu selectLocalityMenu;
     private final char direction;
     private UUID cartUUID; // carten som står på stasjonen
 
@@ -46,11 +48,8 @@ public class Entrypoint {
         stationMenu = new StationMenu(this);
     }
 
-    public Entrypoint(@JsonProperty("kingdom") String kingdomID, @JsonProperty("district") String districtID, @JsonProperty("address") String address, @JsonProperty("section") String sectionID, @JsonProperty("direction") char dir) {
-        this.kingdomID = kingdomID;
-        this.districtID = districtID;
-        this.addressID = address;
-        this.sectionID = sectionID;
+    @JsonCreator
+    public Entrypoint(@JsonProperty("section") String sectionID, @JsonProperty("direction") char dir) {
         direction = dir;
         stationMenu = new StationMenu(this);
         try {
@@ -62,7 +61,7 @@ public class Entrypoint {
 
     public void init() {
         selectKingdomMenu = new SelectKingdomMenu(this);
-        coord = KingdomsManager.getKingdom(kingdomID).getDistrict(districtID).getSection(sectionID).getEntry();
+        coord = section.getEntry();
     }
 
     @JsonIgnore
@@ -70,28 +69,13 @@ public class Entrypoint {
         return coord;
     }
 
-    @JsonProperty("section")
-    public String getSectionID() {
-        return sectionID;
-    }
-
-    @JsonProperty("kingdom")
-    public String getKingdomID() {
-        return kingdomID;
-    }
-
-    @JsonProperty("district")
-    public String getDistrictID() {
-        return districtID;
-    }
-
-    public String getAddressID() {
-        return addressID;
+    public Locality getLocality() {
+        return locality;
     }
 
     @JsonIgnore
-    public String[] getFullAddress() {
-        return new String[]{kingdomID, districtID, addressID};
+    public Section getSection() {
+        return section;
     }
 
     public char getDirection() {
@@ -99,18 +83,18 @@ public class Entrypoint {
     }
 
     @JsonIgnore
-    public String getTargetKingdom() {
+    public Kingdom getTargetKingdom() {
         return targetKingdom;
     }
 
     @JsonIgnore
-    public String getTargetDistrict() {
+    public District getTargetDistrict() {
         return targetDistrict;
     }
 
     @JsonIgnore
-    public String getTargetAddress() {
-        return targetAddress;
+    public Locality getTargetLocality() {
+        return targetLocality;
     }
 
     public void setCartUUID(UUID cartUUID) {
@@ -122,49 +106,40 @@ public class Entrypoint {
         return cartUUID;
     }
 
-    public void openInventory(Player p, String menu) {
-        switch (menu) {
-            case "main" -> stationMenu.open(p);
-            case "kingdom" -> selectKingdomMenu.open(p);
-            case "district" -> selectDistrictMenu.open(p);
-            case "address" -> selectAddressMenu.open(p);
-        }
-    }
-
     public void resetAddress() {
         targetKingdom = null;
         targetDistrict = null;
-        targetAddress = null;
+        targetLocality = null;
         selectDistrictMenu = null;
-        selectAddressMenu = null;
+        selectLocalityMenu = null;
     }
 
-    public void setTargetKingdom(String kingdom) {
+    public void setTargetKingdom(Kingdom kingdom) {
         targetKingdom = kingdom;
         stationMenu.setKingdom(kingdom);
-        if (KingdomsManager.getKingdom(kingdom).getDistrictIDs().size() == 1) {
-            setTargetDistrict(KingdomsManager.getKingdom(kingdom).getDistrictIDs().iterator().next());
+        if (kingdom.getDistrictIDs().size() == 1) {
+            setTargetDistrict(kingdom.getDistricts().iterator().next());
         } else {
             targetDistrict = null;
-            targetAddress = null;
+            targetLocality = null;
         }
         selectDistrictMenu = new SelectDistrictMenu(this);
     }
 
-    public void setTargetDistrict(String district) {
+    public void setTargetDistrict(District district) {
         targetDistrict = district;
         stationMenu.setDistrict(district);
-        if (KingdomsManager.getKingdom(targetKingdom).getDistrict(district).getLocalityIDs().size() == 1) {
-            setTargetAddress(KingdomsManager.getKingdom(targetKingdom).getDistrict(district).getLocalityIDs().iterator().next());
+        if (targetDistrict.getLocalityIDs().size() == 1) {
+            setTargetLocality(targetDistrict.getLocalities().iterator().next());
         } else {
-            targetAddress = null;
+            targetLocality = null;
         }
-        selectAddressMenu = new SelectAddressMenu(this);
+        selectLocalityMenu = new SelectLocalityMenu(this);
     }
 
-    public void setTargetAddress(String address) {
-        targetAddress = address;
-        stationMenu.setAddress(address);
+    public void setTargetLocality(Locality locality) {
+        targetLocality = locality;
+        stationMenu.setLocality(locality);
     }
 
     @JsonIgnore
@@ -172,8 +147,23 @@ public class Entrypoint {
         return stationMenu;
     }
 
-    @Deprecated
-    public String toString() {
-        return addressID + " " + sectionID + " " + direction + " ";
+    public void spawnCart(EntityType entityType) {
+        Minecart newCart = (Minecart) Main.WORLD.spawnEntity(getCoord().toLocation(Main.WORLD), entityType);
+        CartManager.registerCart(newCart.getUniqueId(), locality);
+        newCart.addScoreboardTag(locality.getDistrict().getKingdom().id + "-" + locality.getDistrict().id + "-" + locality.id);
+    }
+
+    public void openInventory(Player p, String menu) {
+        switch (menu) {
+            case "main" -> stationMenu.open(p);
+            case "kingdom" -> selectKingdomMenu.open(p);
+            case "district" -> selectDistrictMenu.open(p);
+            case "address" -> selectLocalityMenu.open(p);
+        }
+    }
+
+    @JsonProperty("section")
+    private String getSectionJSON() {
+        return section.id;
     }
 }

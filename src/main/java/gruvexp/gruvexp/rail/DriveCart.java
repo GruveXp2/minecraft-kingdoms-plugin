@@ -4,7 +4,6 @@ import gruvexp.gruvexp.Main;
 import gruvexp.gruvexp.core.Locality;
 import gruvexp.gruvexp.core.District;
 import gruvexp.gruvexp.core.Kingdom;
-import gruvexp.gruvexp.core.KingdomsManager;
 import gruvexp.gruvexp.path.Path;
 import gruvexp.gruvexp.path.WalkPath;
 import org.bukkit.*;
@@ -24,14 +23,11 @@ public class DriveCart extends BukkitRunnable {
     int counter = 0;
     char direction; // hvilken retning carten kjører. når man kommer til svinger vil den nye retninga avhengig av den forrige retninga
     final Minecart cart;
-    String sectionID;
+    Section currentSection;
     final Location loc;
-    final String targetKingdom;
-    String kingdomID;
-    final String targetDistrict;
-    String districtID;
-    final String targetAddress;
-    String targetAddressNr;
+    District currentDistrict;
+    final Locality targetLocality;
+    String targetHouseNr;
     final Entity passenger;
     final int[] dPos = new int[3]; // ΔPos om man kjører treigt blir Δpos huska.
     float speed; // 0.5 = vanlig, 1 = motorvei, 1.5 = motorvei ekspress
@@ -39,30 +35,25 @@ public class DriveCart extends BukkitRunnable {
     float moves = 0; // hvor mange moves som skal gjøres på veien
 
     // DEBUG
-    final Player gruvexp = Bukkit.getPlayer("GruveXp");
+    final Player gruveXp = Bukkit.getPlayer("GruveXp");
 
-    public DriveCart(@NotNull Minecart cart, Entity passenger, String startKingdom, String startDistrict, String sectionID, char direction, String targetKingdom, String targetDistrict, String targetAddress) {
-        this.sectionID = sectionID;
+    public DriveCart(@NotNull Minecart cart, Entity passenger, Section startSection, char direction, Locality targetLocality) {
+        this.targetLocality = targetLocality;
         this.cart = cart;
-        this.direction = direction;
-        this.passenger = passenger;
         loc = cart.getLocation();
-        Kingdom kingdom = KingdomsManager.getKingdom(startKingdom);
-        District district = kingdom.getDistrict(startDistrict);
-        speed = district.getSection(this.sectionID).getSpeed() / 2f;
+        this.direction = direction;
+        currentSection = startSection;
+        this.currentDistrict = startSection.getDistrict();
+        length = currentSection.getLength();
+        speed = currentSection.getSpeed() / 2f;
         cart.setMaxSpeed(speed);
         updateVelocity();
-        kingdomID = startKingdom;
-        districtID = startDistrict;
-        this.targetAddress = targetAddress;
-        this.targetDistrict = targetDistrict;
-        this.targetKingdom = targetKingdom;
-        length = district.getSection(sectionID).getLength();
         cart.addScoreboardTag("running");
+        this.passenger = passenger;
     }
 
-    public DriveCart(Villager villager, Entrypoint entrypoint, String targetKingdom, String targetDistrict, String targetAddress) { //brukes av path systemet
-        this((Minecart) Main.WORLD.spawnEntity(entrypoint.getCoord().toLocation(Main.WORLD), EntityType.MINECART), villager, entrypoint.getKingdomID(), entrypoint.getDistrictID(), entrypoint.getSectionID(), entrypoint.getDirection(), targetKingdom, targetDistrict, targetAddress);
+    public DriveCart(Villager villager, Entrypoint entrypoint, Locality targetLocality) { //brukes av path systemet
+        this((Minecart) Main.WORLD.spawnEntity(entrypoint.getCoord().toLocation(Main.WORLD), EntityType.MINECART), villager, entrypoint.getSection(), entrypoint.getDirection(), targetLocality);
         villager.teleport(cart);
         cart.addPassenger(villager); // villageren setter seg i minecarten
         if (cart.getPassengers().getFirst() instanceof Villager) {
@@ -77,6 +68,18 @@ public class DriveCart extends BukkitRunnable {
         Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(ChatColor.RED + "A minecart got stuck on the railway! Location: " + loc.getX() + " " + (int) loc.getY() + " " + loc.getZ() + "\n" + error));
         cancel(); // i framtida så kommer det rød blocc og tekst som sier hva som gikk galt og at man kan ta /fix for å fikse det eller noe
         cart.remove();
+    }
+
+    public void terminate() {
+        if (!cart.getPassengers().isEmpty() && cart.getPassengers().getFirst() instanceof Player p) {
+            p.sendMessage(ChatColor.GRAY + "Destination reached: " + ((Math.ceil(totalDistance / 100f))/10f) + " km");
+            CartManager.removeCart(cart.getUniqueId());
+        } else if (!cart.getPassengers().isEmpty() && cart.getPassengers().getFirst() instanceof Villager villager) {
+            Path path = targetLocality.getPath("station_exit"); // hardcode: alle adresses som villidgers kan komme til med rail systemet må ha en path som kalles "station_exit" som villidgersene kan gå på når de er framme.
+            villager.teleport(path.getStartPos().toLocation(Main.WORLD));
+            new WalkPath(villager, targetLocality, targetLocality, targetHouseNr, path).runTaskTimer(Main.getPlugin(), 0, 1);
+        }
+        cancel();
     }
 
     private void updateVelocity() {
@@ -120,87 +123,69 @@ public class DriveCart extends BukkitRunnable {
     }
 
     void nextSection() {
-        Kingdom kingdom = KingdomsManager.getKingdom(kingdomID);
-        District district = kingdom.getDistrict(districtID);
-        String[] endpointdata; // [dir, next_section]
-        Section section = district.getSection(sectionID);
-        if (!Objects.equals(kingdomID, targetKingdom)) {
-            endpointdata = section.getEndpointData(targetKingdom);
-            if (endpointdata == null) {
-                endpointdata = section.getEndpointData("center");
-            }
-        } else if (!Objects.equals(districtID, targetDistrict)) {
-            endpointdata = section.getEndpointData(targetDistrict);
-        } else {
-            endpointdata = section.getEndpointData(targetAddress);
-        }
-        if (endpointdata == null) {
-            endpointdata = section.getEndpointData("*"); // hvis det er * så betyr det alt som ikke er spesifisert i de andre rutene
-            if (endpointdata == null) {
-                if (!Objects.equals(kingdomID, targetKingdom)) {
-                    terminate(ChatColor.RED + "Cant find route to kingdom " + ChatColor.BOLD + kingdomID);
-                } else if (!Objects.equals(districtID, targetDistrict)) {
-                    terminate(ChatColor.RED + "Cant find route to district " + ChatColor.BOLD + districtID);
-                } else {
-                    terminate(ChatColor.RED + "Cant find route to address " + ChatColor.BOLD + targetAddress);
+
+        Section nextSection;
+        if (currentSection.hasRoutes()) {
+            RailRoute route;
+
+            Kingdom currentKingdom = currentDistrict.getKingdom();
+
+            District targetDistrict = targetLocality.getDistrict();
+            Kingdom targetKingdom = targetDistrict.getKingdom();
+
+            if (!Objects.equals(currentKingdom, targetKingdom)) {
+                route = currentSection.getEndpointRoute(targetKingdom.id);
+                if (route == null) {
+                    route = currentSection.getEndpointRoute("center");
                 }
-                return;
+            } else if (!Objects.equals(currentDistrict, targetDistrict)) {
+                route = currentSection.getEndpointRoute(targetDistrict.id);
+            } else {
+                route = currentSection.getEndpointRoute(targetLocality.id);
             }
-        }
-        String nextSectionID = endpointdata[1];
-        if (Objects.equals(nextSectionID, "end") || nextSectionID.contains("end:")) { // hvis monoroute blir satt til end/stop så slutter railwayen.
-            if (!cart.getPassengers().isEmpty() && cart.getPassengers().getFirst() instanceof Player p) {
-                p.sendMessage(ChatColor.GRAY + "Destination reached: " + ((Math.ceil(totalDistance / 100f))/10f) + " km");
-                CartManager.removeCart(cart.getUniqueId());
-            } else if (!cart.getPassengers().isEmpty() && cart.getPassengers().getFirst() instanceof Villager villager) {
-                Locality locality = district.getLocality(targetAddress);
-                Path path = locality.getPath("station_exit"); // hardcode: alle adresses som villidgers kan komme til med rail systemet må ha en path som kalles "station_exit" som villidgersene kan gå på når de er framme.
-                villager.teleport(path.getStartPos().toLocation(Main.WORLD));
-                new WalkPath(villager, kingdomID, districtID, targetAddress, kingdomID, districtID, targetAddress, targetAddressNr, path).runTaskTimer(Main.getPlugin(), 0, 1);
+            if (route == null) {
+                route = currentSection.getEndpointRoute("*"); // hvis det er * så betyr det alt som ikke er spesifisert i de andre rutene
+                if (route == null) { // error, no route to destination
+                    if (!Objects.equals(currentKingdom.id, targetKingdom.id)) {
+                        terminate(ChatColor.RED + "Cant find route to kingdom " + ChatColor.BOLD + targetKingdom.id);
+                    } else if (!Objects.equals(currentDistrict.id, targetDistrict.id)) {
+                        terminate(ChatColor.RED + "Cant find route to district " + ChatColor.BOLD + targetDistrict.id);
+                    } else {
+                        terminate(ChatColor.RED + "Cant find route to address " + ChatColor.BOLD + targetLocality.id);
+                    }
+                    return;
+                }
             }
-            cancel();
-            return;
-        }
-        String dir = endpointdata[0];
-        if (dir != null) {
-            //Rail.Shape shape = KingdomsManager.string2Rail.get(section.getShape(dir));
-            Rail.Shape shape = section.getShape(dir);
+            nextSection = route.targetSection();
+
+            Rail.Shape shape = route.railShape();
             Rail rail = (Rail) loc.getBlock().getBlockData();
-            assert shape != null;
             rail.setShape(shape);
             Main.WORLD.setBlockData(loc, rail);
-        }
-
-        String borderKingdomID = section.getBorderKingdom();
-        String borderDistrictID = section.getBorderDistrict();
-        if (borderDistrictID != null) { // oppdaterer borders hvis det er noen endring
-            if (borderKingdomID != null) {
-                kingdomID = borderKingdomID;
-                kingdom = KingdomsManager.getKingdom(kingdomID);
-            }
-            districtID = borderDistrictID;
-            district = kingdom.getDistrict(districtID);
-        }
-
-        if (district.notContainsSection(nextSectionID)) {
-            terminate(ChatColor.RED + "Section " + ChatColor.GOLD + kingdomID + " : " + districtID + ChatColor.RED + " : " + nextSectionID + " doesnt exist");
+        } else if (currentSection.hasNextSection()) {
+            nextSection = currentSection.getNextSection();
+        } else {
+            // terminate, reached destination
+            terminate();
             return;
         }
+
+        if (currentSection.hasBorder()) currentDistrict = currentSection.getBorder();
+
         // resetter stuff og oppdaterer data til å matche den nye seksjonen
         if (length > 7 && loc.distance(cart.getLocation()) > 2) {
-            if (gruvexp.getInventory().getItemInMainHand().getType() != Material.COMMAND_BLOCK) { // DEBUG, remov if statementet i fremtida
+            if (gruveXp.getInventory().getItemInMainHand().getType() != Material.COMMAND_BLOCK) { // DEBUG, remov if statementet i fremtida
                 syncPosition();
             }
         }
         counter = 0;
-        sectionID = nextSectionID;
-        section = district.getSection(sectionID);
-        length = section.getLength();
+        currentSection = nextSection;
+        length = currentSection.getLength();
         if (length == 0) {
-            terminate(ChatColor.RED + "Sector " + sectionID + " length is not calculated!");
+            terminate(ChatColor.RED + "Sector " + currentSection.id + " length is not calculated!");
             return;
         }
-        speed = section.getSpeed() / 2f;
+        speed = currentSection.getSpeed() / 2f;
         cart.setMaxSpeed(speed);
         updateVelocity();
     }
@@ -290,11 +275,11 @@ public class DriveCart extends BukkitRunnable {
             }
         }
         loc.add(dPos[0], dPos[1], dPos[2]);
-        if (counter % 16 == 0 && loc.distance(cart.getLocation()) > 3 && (gruvexp == null || gruvexp.getInventory().getItemInMainHand().getType() != Material.COMMAND_BLOCK)) {
+        if (counter % 16 == 0 && loc.distance(cart.getLocation()) > 3 && (gruveXp == null || gruveXp.getInventory().getItemInMainHand().getType() != Material.COMMAND_BLOCK)) {
             syncPosition();
         }
         // DEBUG
-        if (gruvexp != null && gruvexp.getInventory().getItemInOffHand().getType() == Material.REPEATING_COMMAND_BLOCK) {
+        if (gruveXp != null && gruveXp.getInventory().getItemInOffHand().getType() == Material.REPEATING_COMMAND_BLOCK) {
             trail();
         }
         if (counter == length) { // når minecarten har kjørt til enden av seksjonen

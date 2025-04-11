@@ -95,6 +95,10 @@ public class Path {
                 .append(Component.text(" to ")).append(startPos.name());
     }
 
+    public PathBranch getBranch(int index) {
+        return branches.get(index);
+    }
+
     public Component addBranch(int index, Path targetPath, int enterIndex, HashSet<String> addresses) {
         branches.put(index, new PathBranch(targetPath, enterIndex, addresses));
 
