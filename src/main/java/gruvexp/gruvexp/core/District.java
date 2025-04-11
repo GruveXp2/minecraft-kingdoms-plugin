@@ -142,6 +142,9 @@ public class District {
     public Component name() {
         return Component.text(id, NamedTextColor.GOLD);
     }
+    public String tag() {
+        return kingdom.id + ":" + id;
+    }
 
     public Component address() {
         return kingdom.name().append(Component.text(":")).append(Component.text(id));

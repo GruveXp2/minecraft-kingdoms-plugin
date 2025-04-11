@@ -116,23 +116,19 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
 
     @JsonProperty("homeAddress")
     public String getHomeAddress() {
-        return homeAddress;
+        return home.nationalAddress();
     }
 
     public Component setHome(House house) {
         home = house;
         return Component.text("Successfully set home of ").append(name())
-                .append(Component.text(" to ")).append(house.address())
+                .append(Component.text(" to ")).append(house.name())
                 .append(Component.text(" in ")).append(house.getLocality().getDistrict().name());
     }
 
     @JsonProperty("workAddress") @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getWorkAddress() {
-        return workLocality;
-    }
-
-    public void setWorkAddress(String workAddress) {
-        this.workLocality = workAddress;
+        return workLocality.tag();
     }
 
     public Component setBio(String bio) {
