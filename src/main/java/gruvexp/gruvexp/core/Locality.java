@@ -153,6 +153,9 @@ public class Locality {
     public Component name() {
         return Component.text(id, NamedTextColor.GOLD);
     }
+    public String tag() {
+        return district.tag() + ":" + id;
+    }
     public Component address() {
         return district.address().append(Component.text(":")).append(Component.text(id));
     }

@@ -122,4 +122,8 @@ public class House {
     public Component name() {
         return locality.name().appendSpace().append(Component.text(nr, NamedTextColor.BLUE));
     }
+
+    public String nationalAddress() {
+        return locality.getDistrict().id + ":" + locality.id + "-" + nr;
+    }
 }
