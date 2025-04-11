@@ -112,7 +112,7 @@ public class Locality {
     }
 
     public Component addHouse(int houseNumber) {
-        houses.put(houseNumber, new House(houseNumber));
+        houses.put(houseNumber, new House(houseNumber, this));
         return Component.text("Successfully added a new house with house number ")
                 .append(Component.text(houseNumber, NamedTextColor.BLUE))
                 .append(Component.text(" in locality ")).append(address());

@@ -25,6 +25,7 @@ import java.util.*;
 public final class Section {
 
     public final String id;
+    private final District district;
     private Coord entry;
     private Coord exit;
     private int length; // hvor mange blokker man må kjøre før man kommer til et kryss
@@ -33,9 +34,14 @@ public final class Section {
     private District border; // man sjekker både kdom og distr når man går over grensa
     private final HashMap<String, RailRoute> routingTable = new HashMap<>(); // finn ut åssen json funker her. mna bare, tar og samler alle RailRoutes i et sett og lagrer sammen med hashset med string adresser
 
-    public Section(String id, Coord entry) {
+    public Section(String id, District district, Coord entry) {
         this.id = id;
+        this.district = district;
         this.entry = entry;
+    }
+
+    public District getDistrict() {
+        return district;
     }
 
     public Coord getEntry() {return entry;}
