@@ -121,13 +121,13 @@ public class StationMenu extends Menu {
     public void setDistrict(District district) {
         if (!mailMode) {
             inventory.setItem(3, makeItem(district.getIcon(), district.id, "district"));
-            inventory.setItem(5, makeItem(Material.PAPER, "select address", "address"));
+            inventory.setItem(5, makeItem(Material.PAPER, "select locality", "locality"));
         }
     }
 
     public void setLocality(Locality locality) {
         if (!mailMode) {
-            inventory.setItem(5, makeItem(locality.getIcon(), locality.id, "address"));
+            inventory.setItem(5, makeItem(locality.getIcon(), locality.id, "locality"));
         }
     }
 
