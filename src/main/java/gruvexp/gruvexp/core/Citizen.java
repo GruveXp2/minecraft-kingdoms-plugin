@@ -204,12 +204,12 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
 
     @JsonProperty("type")
     private String getTypeJSON() {
-        return type.toString();
+        return type.toString().toLowerCase();
     }
 
     @JsonProperty("profession")
     private String getProfessionJSON() {
-        return profession.toString();
+        return profession.toString().toLowerCase();
     }
 
 
