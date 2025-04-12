@@ -65,6 +65,15 @@ tasks.withType<Javadoc> {
     options.encoding = "UTF-8"
 }
 
+tasks.processResources {
+    val props = mapOf("version" to project.version.toString())
+    inputs.properties(props)
+    filteringCharset = "UTF-8"
+    filesMatching("plugin.yml") {
+        expand(props)
+    }
+}
+
 tasks.register("incrementBuildNumber") {
     doLast {
         val currentBuildNumber = buildNumberFile.readText().trim().toInt()
