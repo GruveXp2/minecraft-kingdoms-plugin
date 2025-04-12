@@ -169,7 +169,7 @@ public class Path {
                             .append(branch.path().name())
                             .append(Component.text(":" + branch.enterIndex() + " for "))
                             .append(Component.text(String.join(", ", branch.addresses()), NamedTextColor.GOLD))
-                            .append(Component.newline()));
+                            .appendNewline());
                 })
                 .reduce(Component.empty(), Component::append);
 
