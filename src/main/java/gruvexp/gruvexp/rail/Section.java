@@ -384,6 +384,7 @@ public final class Section {
 
     @JsonProperty("border") @JsonInclude(JsonInclude.Include.NON_NULL)
     private String getBorderJSON() {
+        if (border == null) return null;
         return border.tag();
     }
 
