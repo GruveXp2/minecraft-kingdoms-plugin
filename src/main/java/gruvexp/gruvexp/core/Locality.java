@@ -35,9 +35,11 @@ public class Locality {
 
     @JsonCreator
     private Locality(@JsonProperty("id") String id,
-                     @JsonProperty("icon") Material icon) {
+                     @JsonProperty("icon") Material icon,
+                     @JsonProperty("entrypoint") Entrypoint entrypoint) {
         this.id = id;
         this.icon = icon;
+        this.entrypoint = entrypoint;
     }
 
     public District getDistrict() {
