@@ -94,7 +94,7 @@ public class RailCommand implements CommandExecutor {
 
                         String railShapeStr = args[4];
                         if (!KingdomsManager.RAIL_SHAPES.contains(railShapeStr)) return Component.text("\"" + railShapeStr + "\" is not a valid rail shape!", NamedTextColor.RED);
-                        Rail.Shape railShape = Rail.Shape.valueOf(railShapeStr); // north_west
+                        Rail.Shape railShape = Rail.Shape.valueOf(railShapeStr.toUpperCase()); // north_west
 
                         String targetSectionID = args[5];
                         if (section.hasBorder()) district = section.getBorder();
