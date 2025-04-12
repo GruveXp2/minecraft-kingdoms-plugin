@@ -10,7 +10,6 @@ import gruvexp.gruvexp.rail.Entrypoint;
 import gruvexp.gruvexp.rail.Section;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
 import java.util.Collection;
