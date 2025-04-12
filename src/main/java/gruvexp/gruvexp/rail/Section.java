@@ -373,6 +373,7 @@ public final class Section {
 
     @JsonProperty("nextSection") @JsonInclude(JsonInclude.Include.NON_NULL)
     private String getNextSectionJSON() {
+        if (nextSection == null) return null;
         return nextSection.id;
     }
 
