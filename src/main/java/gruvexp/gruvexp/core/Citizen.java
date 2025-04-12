@@ -236,11 +236,11 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
     }
 
     @JsonProperty("workAddress") @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String getWorkAddress() {
+    private String getWorkAddressJSON() {
         return workLocality.tag();
     }
 
-    @JsonProperty("homeAddress")
+    @JsonProperty("workAddress")
     private void setWorkAddressJSON(String workAddress) {
         workLocalityDeferred = workAddress;
     }
