@@ -60,7 +60,7 @@ public class Path {
             case "nw":
                 yield 'W';
             default:
-                throw new IllegalArgumentException(ChatColor.RED + "Illegal direction value!");
+                throw new IllegalArgumentException("Illegal direction value!");
         };
     }
 
@@ -80,7 +80,7 @@ public class Path {
             case 'W':
                 yield "nw";
             default:
-                throw new IllegalArgumentException(ChatColor.RED + "Illegal direction value!");
+                throw new IllegalArgumentException("Illegal direction value!");
         };
     }
 
