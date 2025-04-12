@@ -75,12 +75,17 @@ public abstract class Menu implements InventoryHolder {
         return item;
     }
 
-    public ItemStack makeHeadItem(Player p, String displayName, String... lore) { // i fremtiden gjør sånn at fargen på itemet er kingdommens farge
+    public ItemStack makeHeadItem(OfflinePlayer p, String displayName, String... lore) {
         ItemStack item = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta itemMeta = (SkullMeta) item.getItemMeta();
+
         itemMeta.setDisplayName(displayName);
-        itemMeta.getPersistentDataContainer().set(new NamespacedKey(Main.getPlugin(), "uuid"), PersistentDataType.STRING, p.getUniqueId().toString());
         itemMeta.setLore(Arrays.asList(lore));
+        itemMeta.getPersistentDataContainer().set(
+                new NamespacedKey(Main.getPlugin(), "uuid"),
+                PersistentDataType.STRING,
+                p.getUniqueId().toString()
+        );
         itemMeta.setOwningPlayer(p);
 
         item.setItemMeta(itemMeta);

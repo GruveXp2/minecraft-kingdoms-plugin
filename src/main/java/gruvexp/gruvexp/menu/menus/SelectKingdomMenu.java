@@ -6,6 +6,7 @@ import gruvexp.gruvexp.rail.Entrypoint;
 import gruvexp.gruvexp.core.KingdomsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
@@ -47,7 +48,7 @@ public class SelectKingdomMenu extends Menu {
         Collection<Kingdom> kingdoms = KingdomsManager.getKingdoms();
         int i = 0;
         for (Kingdom kingdom : kingdoms) {
-            Player p = Bukkit.getPlayer(kingdom.getKingID());
+            OfflinePlayer p = Bukkit.getOfflinePlayer(kingdom.getKingID());
             inventory.setItem(i, makeHeadItem(p, kingdom.id, p.getName()));
             i++;
         }

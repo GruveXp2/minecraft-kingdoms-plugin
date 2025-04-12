@@ -12,6 +12,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Minecart;
@@ -103,7 +104,7 @@ public class StationMenu extends Menu {
     }
 
     public void setKingdom(Kingdom kingdom) {
-        Player p = Bukkit.getPlayer(kingdom.getKingID());
+        OfflinePlayer p = Bukkit.getOfflinePlayer(kingdom.getKingID());
         if (!mailMode) {
             inventory.setItem(3, makeItem(Material.PAPER, "select district", "district"));
         }
