@@ -37,10 +37,12 @@ public class TestCommand implements CommandExecutor {
         switch (args[0]) {
             case "rail" -> {
                 if (args.length < 9) {
-                    p.sendMessage("Skriv inn fler args. /test rail <cart uuid> <start kdom> <start distr> <section id> <dir> <kdom> <distr> <addr>");
+                    p.sendMessage("Skriv inn fler args. /test rail <cart uuid> <start kdom> <start distr> <start section> <dir> <kdom> <distr> <locality>");
                     return true;
                 }
-                CartManager.driveCart(UUID.fromString(args[1]), p, args[2], args[3], args[4], args[5].toCharArray()[0], args[6], args[7], args[8]);
+                CartManager.driveCart(UUID.fromString(args[1]), p,
+                        KingdomsManager.getKingdom(args[2]).getDistrict(args[3]).getSection(args[4]), args[5].toCharArray()[0],
+                        KingdomsManager.getKingdom(args[6]).getDistrict(args[7]).getLocality(args[8]));
             }
             case "round" -> {
                 if (args.length < 4) {

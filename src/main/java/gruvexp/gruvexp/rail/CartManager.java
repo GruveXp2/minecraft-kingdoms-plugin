@@ -28,9 +28,9 @@ public class CartManager {
         return localities.get(cart);
     }
 
-    public static void driveCart(UUID cartUUID, Entity passenger, Section section, char dir, Locality targetLocality) {
+    public static void driveCart(UUID cartUUID, Entity passenger, Section startSection, char dir, Locality targetLocality) {
 
-        carts.put(cartUUID, new DriveCart((Minecart) Objects.requireNonNull(Bukkit.getEntity(cartUUID)), passenger, section, dir, targetLocality).runTaskTimer(Main.getPlugin(), 0, 1));
+        carts.put(cartUUID, new DriveCart((Minecart) Objects.requireNonNull(Bukkit.getEntity(cartUUID)), passenger, startSection, dir, targetLocality).runTaskTimer(Main.getPlugin(), 0, 1));
     }
 
     public static void removeCart(UUID uuid) {
