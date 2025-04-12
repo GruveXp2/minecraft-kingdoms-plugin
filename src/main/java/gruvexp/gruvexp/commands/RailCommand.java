@@ -48,11 +48,11 @@ public class RailCommand implements CommandExecutor {
         String oper = args[1];
         switch (oper) {
             case "info" -> {
-                Component borderInfo = section.hasBorder() ? Component.text("Border: ").append(section.getBorder().address()) : Component.empty();
+                Component borderInfo = section.hasBorder() ? Component.text("Border: ").append(section.getBorder().address()).appendNewline() : Component.empty();
                 return Component.text("Rail section ").append(section.name()).append(Component.text(" has the following data:\n"))
-                        .append(Component.text("Entry: ")).append(section.getEntry().name())
-                        .append(Component.text("Exit: ")).append(section.getExit().name())
-                        .append(Component.text("Speed: ")).append(section.speed())
+                        .append(Component.text("Entry: ")).append(section.getEntry().name()).appendNewline()
+                        .append(Component.text("Exit: ")).append(section.getExit().name()).appendNewline()
+                        .append(Component.text("Speed: ")).append(section.speed()).appendNewline()
                         .append(borderInfo)
                         .append(section.routes());
 
