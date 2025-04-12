@@ -35,6 +35,15 @@ public final class KingdomsManager {
     private static final HashMap<Player, Locality> selectedLocality = new HashMap<>();
 
     public static Kingdom getSelectedKingdom(Player p) {
+        if (selectedKingdom.get(p) == null) {
+            UUID playerID = p.getUniqueId();
+            for (Kingdom kingdom : getKingdoms()) {
+                if (kingdom.getKingID() == playerID) {
+                    setSelectedKingdom(p, kingdom);
+                    break;
+                }
+            }
+        }
         return selectedKingdom.get(p);
     }
     public static District getSelectedDistrict(Player p) {
