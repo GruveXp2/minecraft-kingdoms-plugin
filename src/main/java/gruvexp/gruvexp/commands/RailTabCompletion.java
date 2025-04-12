@@ -3,12 +3,9 @@ package gruvexp.gruvexp.commands;
 import gruvexp.gruvexp.core.District;
 import gruvexp.gruvexp.core.Kingdom;
 import gruvexp.gruvexp.Utils;
-import gruvexp.gruvexp.core.Locality;
 import gruvexp.gruvexp.rail.Coord;
 import gruvexp.gruvexp.core.KingdomsManager;
 import gruvexp.gruvexp.rail.Section;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -18,8 +15,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class RailTabCompletion implements TabCompleter {
 
