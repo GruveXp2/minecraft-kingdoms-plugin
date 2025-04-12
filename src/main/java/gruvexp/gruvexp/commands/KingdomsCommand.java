@@ -39,7 +39,7 @@ public class KingdomsCommand implements CommandExecutor {
 
                 for (Kingdom kingdom : kingdoms) {
                     message = message.append(kingdom.name().append(Component.text(": ", NamedTextColor.WHITE)
-                            .append(kingdom.king())));
+                            .append(kingdom.king()))).appendNewline();
                 }
                 return message;
             }
