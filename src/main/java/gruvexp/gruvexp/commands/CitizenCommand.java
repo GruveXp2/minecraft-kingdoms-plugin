@@ -59,6 +59,9 @@ public class CitizenCommand implements CommandExecutor {
                         if (locality == null) return Component.text("Locality \"" + homeAddressParts[1] + "\" doesnt exist!", NamedTextColor.RED);
                         House house = locality.getHouse(Integer.parseInt(homeAddressParts[1]));
                         if (house == null) return Component.text("House \"" + homeAddressParts[1] + " " + homeAddressParts[2] + "\" doesnt exist!", NamedTextColor.RED);
+                        House oldHouse = citizen.getHome();
+                        if (oldHouse != house) oldHouse.removeResident(citizen);
+                        house.addResident(citizen);
                         return citizen.setHome(house);
                     }
                     case "bio" -> {
