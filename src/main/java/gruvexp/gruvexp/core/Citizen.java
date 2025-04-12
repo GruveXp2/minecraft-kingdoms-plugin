@@ -221,13 +221,15 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
         return new Coord(location.getX(), location.getY(), location.getZ());
     }
 
-    @JsonProperty("villager")
+    @JsonProperty("villager") @JsonInclude(JsonInclude.Include.NON_NULL)
     private String getVillagerJSON() {
+        if (uuid == null) return null;
         return uuid.toString();
     }
 
-    @JsonProperty("homeAddress")
+    @JsonProperty("homeAddress") @JsonInclude(JsonInclude.Include.NON_NULL)
     private String getHomeAddressJSON() {
+        if (home == null) return null;
         return home.nationalAddress();
     }
 
@@ -238,6 +240,7 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
 
     @JsonProperty("workAddress") @JsonInclude(JsonInclude.Include.NON_NULL)
     private String getWorkAddressJSON() {
+        if (workLocality == null) return null;
         return workLocality.tag();
     }
 
