@@ -20,12 +20,12 @@ public class HouseCommand implements CommandExecutor {
 
         if (!(sender instanceof Player p)) {return true;}
         if (args.length == 0) {return false;}
-        Component result = processCommand(p, args, command);
+        Component result = processCommand(p, args);
         p.sendMessage(result);
         return true;
     }
 
-    private Component processCommand(Player p, String[] args, Command command) {
+    private Component processCommand(Player p, String[] args) {
         Locality locality = KingdomsManager.getSelectedLocality(p);
         if (locality == null) return Component.text("You must specify the scope of this command (what locality you wanna work with)" +
                 "\nrun /kingdoms select <kingdom> <district> <locality>", NamedTextColor.RED);
