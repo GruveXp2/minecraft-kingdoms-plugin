@@ -138,7 +138,9 @@ public class Kingdom {
     }
 
     public Component king() {
-        return Component.text(isMale ? "King " : "Queen ").append(Component.text(Objects.requireNonNull(Bukkit.getOfflinePlayer(kingID).getName())));
+        String playerName = Bukkit.getOfflinePlayer(kingID).getName();
+        if (playerName == null) playerName = "failed to load name of ruler";
+        return Component.text(isMale ? "King " : "Queen ").append(Component.text(playerName, NamedTextColor.LIGHT_PURPLE));
     }
 
     private boolean resolved = false;
