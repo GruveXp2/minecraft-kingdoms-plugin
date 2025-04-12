@@ -99,11 +99,7 @@ public class Locality {
     }
 
     public House getHouse(int houseNumber) {
-        House house = houses.get(houseNumber);
-        if (house == null) {
-            throw new IllegalArgumentException(ChatColor.RED + "House number \"" + houseNumber + "\" doesnt exist!");
-        }
-        return house;
+        return houses.get(houseNumber);
     }
 
     public Collection<House> getHouses() {

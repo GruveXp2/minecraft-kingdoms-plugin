@@ -99,9 +99,6 @@ public class Kingdom {
     }
 
     public Citizen getCitizen(String name) {
-        if (!citizens.containsKey(name)) {
-            throw new IllegalArgumentException(ChatColor.RED + "Citizen \"" + name + "\" doesnt exist!");
-        }
         return citizens.get(name);
     }
 
