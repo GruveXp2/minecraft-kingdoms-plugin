@@ -63,6 +63,7 @@ public class Entrypoint {
         return section.getEntry();
     }
 
+    @JsonIgnore
     public Locality getLocality() {
         return locality;
     }
