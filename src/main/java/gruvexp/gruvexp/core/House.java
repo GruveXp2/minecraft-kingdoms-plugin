@@ -30,8 +30,12 @@ public class House {
     }
 
     @JsonCreator
-    private House(@JsonProperty("nr") int nr) {
+    private House(@JsonProperty("nr") int nr,
+                  @JsonProperty("doorPos") Coord doorPos,
+                  @JsonProperty("bedPos") Coord bedPos) {
         this.nr = nr;
+        this.doorPos = doorPos;
+        this.bedPos = bedPos;
     }
     // i framtida liste over paths inni huset, som feks path fra senga til døra
 
