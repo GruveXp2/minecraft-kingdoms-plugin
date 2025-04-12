@@ -32,6 +32,7 @@ public class Kingdom {
         this.isMale = isMale;
     }
 
+    @JsonIgnore
     public UUID getKingID() {
         return kingID;
     }
