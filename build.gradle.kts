@@ -83,7 +83,7 @@ tasks.register("renameJar") {
         val renamed = renamedFile.get().asFile
 
         if (jar.exists()) {
-            println("Renaming JAR file to ${renamed.name}")
+            println("Renaming JAR file from ${jar.name} to ${renamed.name}")
             jar.renameTo(renamed)
         } else {
             println("No JAR file found to rename.")
