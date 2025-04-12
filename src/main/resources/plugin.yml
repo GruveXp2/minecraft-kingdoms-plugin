@@ -1,5 +1,5 @@
 name: Kingdoms
-version: '${project.version}'
+version: '${version}'
 main: gruvexp.gruvexp.Main
 api-version: 1.21
 authors: [ GruveXp ]
