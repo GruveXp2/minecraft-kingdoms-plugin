@@ -46,6 +46,8 @@ public class District {
 
     public Component setIcon(Material icon) {
         this.icon = icon;
+
+        KingdomsManager.save = true;
         return Component.text("Successfully set icon of district ").append(name())
                 .append(Component.text(" to " + icon.toString()));
     }
@@ -54,6 +56,8 @@ public class District {
         if (localities.containsKey(localityID)) return Component.text("Locality \"" + id + "\" already exists!", NamedTextColor.RED);
 
         localities.put(localityID, new Locality(localityID, this, material));
+
+        KingdomsManager.save = true;
         return Component.text("Successfully added locality ")
                 .append(Component.text(localityID, NamedTextColor.GOLD))
                 .append(Component.text(" to ", NamedTextColor.GREEN))
@@ -78,12 +82,16 @@ public class District {
     public Component removeLocality(String localityID) {
         if (!localities.containsKey(localityID)) return Component.text("No locality with id \"" + localityID + "\" exists", NamedTextColor.RED);
         localities.remove(localityID);
+
+        KingdomsManager.save = true;
         return Component.text("Successfully removed locality: ").append(Component.text(localityID));
     }
 
     public Component addSection(String sectionID, Coord entry) {
         if (sections.containsKey(sectionID)) return Component.text("Section \"" + sectionID + "\" already exists!", NamedTextColor.RED);
         sections.put(sectionID, new Section(sectionID, this, entry));
+
+        KingdomsManager.save = true;
         return Component.text("Successfully added new rail section called ", NamedTextColor.GREEN).append(Component.text(sectionID, NamedTextColor.LIGHT_PURPLE))
                 .append(Component.text(" that starts at ")).append(entry.name());
     }
@@ -103,6 +111,8 @@ public class District {
     public Component removeSection(String sectionID) {
         if (!sections.containsKey(sectionID)) return Component.text("No section with id \"" + sectionID + "\" exists", NamedTextColor.RED);
         sections.remove(sectionID);
+
+        KingdomsManager.save = true;
         return Component.text("Successfully removed rail section: ").append(Component.text(sectionID));
     }
 

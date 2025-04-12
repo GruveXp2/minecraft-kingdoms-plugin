@@ -131,9 +131,9 @@ public final class Section {
     public Component setNextSection(Section section) { // sets a route at the end position. will disable endPointRoutes, and it will just switch to that route when it gets there no matther what, and the player cant choose
         if (nextSection == section) return Component.text("Nothing happened, that section was already selected as the next rail section", NamedTextColor.YELLOW);
         nextSection = section;
-        if (section == null) return Component.text("Successfully set ").append(name()).append(Component.text(" as an endpoint"));
 
         KingdomsManager.save = true;
+        if (section == null) return Component.text("Successfully set ").append(name()).append(Component.text(" as an endpoint"));
         return Component.text("Successfully set next section (the one to link to) of ").append(name())
                 .append(Component.text(" to ")).append(section.name());
     }

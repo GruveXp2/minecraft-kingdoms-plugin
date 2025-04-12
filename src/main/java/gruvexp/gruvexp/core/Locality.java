@@ -50,6 +50,8 @@ public class Locality {
 
     public Component setIcon(Material icon) {
         this.icon = icon;
+
+        KingdomsManager.save = true;
         return Component.text("Successfully set icon of locality ").append(name())
                 .append(Component.text(" to " + icon.toString()));
     }
@@ -60,6 +62,8 @@ public class Locality {
 
     public Component setEntrypoint(Section section, char direction) {
         entrypoint = new Entrypoint(this, section, direction);
+
+        KingdomsManager.save = true;
         return Component.text("Successfully set entrypoint in ", NamedTextColor.GREEN).append(name())
                 .append(Component.text(" entering rail section ")).append(section.name())
                 .append(Component.text(" in direction ")).append(Component.text(direction));
@@ -68,6 +72,8 @@ public class Locality {
     public Component addPath(String pathID, Coord startPos) {
         if (paths.containsKey(pathID)) return Component.text("Section \"" + pathID + "\" already exists!", NamedTextColor.RED);
         paths.put(pathID, new Path(pathID, this, startPos));
+
+        KingdomsManager.save = true;
         return Component.text("Successfully added new path section called ", NamedTextColor.GREEN).append(Component.text(pathID, NamedTextColor.YELLOW))
                 .append(Component.text(" that starts at ")).append(startPos.name());
     }
@@ -88,11 +94,15 @@ public class Locality {
     public Component removePath(String pathID) {
         if (!paths.containsKey(pathID)) return Component.text("No path section with id \"" + pathID + "\" exists", NamedTextColor.RED);
         paths.remove(pathID);
+
+        KingdomsManager.save = true;
         return Component.text("Successfully removed path section: ").append(Component.text(pathID));
     }
 
     public Component addHouse(int houseNumber) {
         houses.put(houseNumber, new House(houseNumber, this));
+
+        KingdomsManager.save = true;
         return Component.text("Successfully added a new house with house number ")
                 .append(Component.text(houseNumber, NamedTextColor.BLUE))
                 .append(Component.text(" in locality ")).append(address());
@@ -114,6 +124,8 @@ public class Locality {
     public Component removeHouse(int houseNumber) {
         if (!houses.containsKey(houseNumber)) return Component.text("No house with house number \"" + houseNumber + "\" exists", NamedTextColor.RED);
         houses.remove(houseNumber);
+
+        KingdomsManager.save = true;
         return Component.text("Successfully removed house: ")
                 .append(name()).appendSpace().append(Component.text(houseNumber));
     }

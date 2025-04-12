@@ -97,6 +97,8 @@ public final class KingdomsManager {
         if (kingdoms.containsKey(ID)) return Component.text("Kingdom \"" + ID + "\" already exists!", NamedTextColor.RED);
 
         kingdoms.put(ID, new Kingdom(ID, king.getUniqueId(), isMale));
+
+        KingdomsManager.save = true;
         return Component.text("Kingdom ")
                 .append(Component.text(ID, NamedTextColor.GOLD))
                 .append(Component.text(" successfully added", NamedTextColor.GREEN))
@@ -123,6 +125,8 @@ public final class KingdomsManager {
             return Component.text("Kingdom \"" + kingdomID + "\" doesnt exist!", NamedTextColor.RED);
         }
         if (!Objects.equals(password, "kjør_kano_det_forurenser_ikke")) return Component.text("Wrong password", NamedTextColor.RED);
+
+        KingdomsManager.save = true;
         return Component.text("Successfully removed kingdom ")
                 .append(Component.text(kingdomID, NamedTextColor.GOLD))
                 .append(Component.text(". TO UNDO THIS ACTION, BACKUP THE JSON FILE BEFORE THE SERVER CLOSES"));
