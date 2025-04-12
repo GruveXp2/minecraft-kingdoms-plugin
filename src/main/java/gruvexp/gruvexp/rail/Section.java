@@ -336,7 +336,7 @@ public final class Section {
 
     private boolean resolved = false;
     private String nextSectionDeferred;
-    private String borderDeferred;
+    private String[] borderDeferred;
     Map<String, Map<String, Object>> routesDeferred;
 
     public void resolveReferences(District parentDistrict) {
@@ -344,9 +344,8 @@ public final class Section {
 
         this.district = parentDistrict;
         if (borderDeferred != null) {
-            String[] districtAddress = borderDeferred.split(":");
-            Kingdom kingdom = KingdomsManager.getKingdom(districtAddress[0]);
-            this.border = kingdom.getDistrict(districtAddress[1]);
+            Kingdom kingdom = KingdomsManager.getKingdom(borderDeferred[0]);
+            this.border = kingdom.getDistrict(borderDeferred[1]);
             borderDeferred = null;
         }
         if (nextSectionDeferred != null) {
@@ -387,7 +386,7 @@ public final class Section {
     }
 
     @JsonProperty("border") @JsonInclude(JsonInclude.Include.NON_NULL)
-    private void setBorderJSON(String border) {
+    private void setBorderJSON(String[] border) {
         borderDeferred = border;
     }
 
@@ -415,7 +414,7 @@ public final class Section {
         return routes;
     }
 
-    @JsonProperty("routes")
+    @JsonProperty("routingTable")
     private void setRoutes(Map<String, Map<String, Object>> routes) {
         routesDeferred = routes;
     }
