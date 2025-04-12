@@ -1,5 +1,7 @@
 package gruvexp.gruvexp.rail;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gruvexp.gruvexp.Main;
@@ -17,6 +19,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.util.Transformation;
+import org.jetbrains.annotations.NotNull;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
@@ -25,11 +28,13 @@ import java.util.*;
 public final class Section {
 
     public final String id;
-    private final District district;
+    private District district;
+
     private Coord entry;
     private Coord exit;
     private int length; // hvor mange blokker man må kjøre før man kommer til et kryss
     private int speed = 1; // 1: normal, 2: fast, 3: express
+
     private Section nextSection; // når man kommer på slutten, så går man inn i denne seksjonen (overstyrer ruter)
     private District border; // man sjekker både kdom og distr når man går over grensa
     private final HashMap<String, RailRoute> routingTable = new HashMap<>(); // finn ut åssen json funker her. mna bare, tar og samler alle RailRoutes i et sett og lagrer sammen med hashset med string adresser
@@ -37,6 +42,12 @@ public final class Section {
     public Section(String id, District district, Coord entry) {
         this.id = id;
         this.district = district;
+        this.entry = entry;
+    }
+
+    @JsonCreator
+    private Section(String id, Coord entry) {
+        this.id = id;
         this.entry = entry;
     }
 
@@ -108,6 +119,7 @@ public final class Section {
         return Component.text("Successfully removed all routes (this will switch to having a specific next section to go to, or being the last stop)");
     }
 
+    @JsonIgnore
     public Section getNextSection() {
         return nextSection;
     }
@@ -126,6 +138,7 @@ public final class Section {
                 .append(Component.text(" to ")).append(section.name());
     }
 
+    @JsonIgnore
     public District getBorder() {
         return border;
     }
@@ -263,7 +276,7 @@ public final class Section {
         }
     }*/
 
-    private void summonBlockMarker(Location loc, Material block) {
+    private void summonBlockMarker(@NotNull Location loc, Material block) {
         World world = Main.WORLD;
         float size = 0.5f;
         BlockDisplay display = (BlockDisplay) world.spawnEntity(new Location(world, loc.getX(), loc.getY(), loc.getZ()), EntityType.BLOCK_DISPLAY);
@@ -271,7 +284,7 @@ public final class Section {
         display.addScoreboardTag("rail_section_debug");
     }
 
-    private void summonTextMarker(Location loc, String text) {
+    private void summonTextMarker(@NotNull Location loc, String text) {
         World world = Main.WORLD;
         float size = 0.5f;
         TextDisplay display = (TextDisplay) world.spawnEntity(new Location(world, loc.getX(), loc.getY(), loc.getZ()), EntityType.TEXT_DISPLAY);
@@ -279,7 +292,7 @@ public final class Section {
         display.addScoreboardTag("rail_section_debug");
     }
 
-    public Component name() {
+    public @NotNull Component name() {
         return Component.text(id, NamedTextColor.LIGHT_PURPLE);
     }
 
@@ -320,43 +333,67 @@ public final class Section {
         return routeInfo;
     }
 
-    @JsonProperty("monoroute") @JsonInclude(JsonInclude.Include.NON_NULL)
+    private boolean resolved = false;
+    private String nextSectionDeferred;
+    private String borderDeferred;
+    Map<String, Map<String, Object>> routesDeferred;
+
+    public void resolveReferences(District parentDistrict) {
+        if (resolved) throw new IllegalStateException("Tried to resolve references a second time, but resolving should only be done once!");
+
+        this.district = parentDistrict;
+        if (borderDeferred != null) {
+            String[] districtAddress = borderDeferred.split(":");
+            Kingdom kingdom = KingdomsManager.getKingdom(districtAddress[0]);
+            this.border = kingdom.getDistrict(districtAddress[1]);
+            borderDeferred = null;
+        }
+        if (nextSectionDeferred != null) {
+            nextSection = border != null ? border.getSection(nextSectionDeferred) : district.getSection(nextSectionDeferred);
+            nextSectionDeferred = null;
+        }
+        if (routesDeferred != null) {
+            for (Map.Entry<String, Map<String, Object>> entry : routesDeferred.entrySet()) {
+                String direction = entry.getKey();
+                Map<String, Object> routeData = entry.getValue();
+                String shape = (String) routeData.get("shape");
+                String sectionID = (String) routeData.get("section");
+                HashSet<String> addresses = new HashSet<>((ArrayList<String>) routeData.get("addresses"));
+                RailRoute route = new RailRoute(border.getSection(sectionID), Rail.Shape.valueOf(shape), direction);
+                for (String address : addresses) {
+                    routingTable.put(address, route);
+                }
+            }
+            routesDeferred = null;
+        }
+        resolved = true;
+    }
+
+    @JsonProperty("nextSection") @JsonInclude(JsonInclude.Include.NON_NULL)
     private String getNextSectionJSON() {
         return nextSection.id;
     }
 
+    @JsonProperty("nextSection") @JsonInclude(JsonInclude.Include.NON_NULL)
+    private void setNextSectionJSON(String nextSection) {
+        if (Objects.equals(nextSection, "end")) return;
+        nextSectionDeferred = nextSection;
+    }
+
     @JsonProperty("border") @JsonInclude(JsonInclude.Include.NON_NULL)
     private String getBorderJSON() {
-        return border.address().toString();
+        return border.tag();
     }
 
     @JsonProperty("border") @JsonInclude(JsonInclude.Include.NON_NULL)
     private void setBorderJSON(String border) {
-        String[] districtAddress = border.split(":");
-        Kingdom kingdom = KingdomsManager.getKingdom(districtAddress[0]);
-        this.border = kingdom.getDistrict(districtAddress[1]);
-    }
-
-    @JsonProperty("routes")
-    private void setRoutes(Map<String, Map<String, Object>> routes) {
-        for (Map.Entry<String, Map<String, Object>> entry : routes.entrySet()) {
-            String direction = entry.getKey();
-            Map<String, Object> routeData = entry.getValue();
-            String shape = (String) routeData.get("shape");
-            String sectionID = (String) routeData.get("section");
-            HashSet<String> addresses = new HashSet<>((ArrayList<String>) routeData.get("addresses"));
-            RailRoute route = new RailRoute(border.getSection(sectionID), Rail.Shape.valueOf(shape), direction);
-            for (String address : addresses) {
-                routingTable.put(address, route);
-            }
-        }
+        borderDeferred = border;
     }
 
     @JsonProperty("routes") @JsonInclude(JsonInclude.Include.NON_NULL)
     private Map<String, Map<String, Object>> getRoutes() {
-        if (routingTable.isEmpty()) {
-            return null;
-        }
+        if (routingTable.isEmpty()) return null;
+
         Map<RailRoute, List<String>> reversed = new HashMap<>();
         for (Map.Entry<String, RailRoute> entry : routingTable.entrySet()) {
             String address = entry.getKey();
@@ -375,5 +412,10 @@ public final class Section {
             routes.put(routeData.direction(), route);
         }
         return routes;
+    }
+
+    @JsonProperty("routes")
+    private void setRoutes(Map<String, Map<String, Object>> routes) {
+        routesDeferred = routes;
     }
 }

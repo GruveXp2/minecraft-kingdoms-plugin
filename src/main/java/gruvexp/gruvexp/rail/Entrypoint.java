@@ -28,9 +28,10 @@ import java.util.UUID;
  */
 
 public class Entrypoint {
-    private Coord coord;
-    private Section section;
     private Locality locality;
+
+    public final char direction;
+    private Section section;
     private Kingdom targetKingdom; // disse variablene brukes til å sette adresse til minecarten som de går oppi
     private District targetDistrict;
     private Locality targetLocality;
@@ -38,7 +39,6 @@ public class Entrypoint {
     private SelectKingdomMenu selectKingdomMenu;
     private SelectDistrictMenu selectDistrictMenu;
     private SelectLocalityMenu selectLocalityMenu;
-    private final char direction;
     private UUID cartUUID; // carten som står på stasjonen
 
     public Entrypoint(Locality locality, Section section, char direction) {
@@ -49,24 +49,16 @@ public class Entrypoint {
     }
 
     @JsonCreator
-    public Entrypoint(@JsonProperty("section") String sectionID, @JsonProperty("direction") char dir) {
-        direction = dir;
+    private Entrypoint(char direction, String cartUUID) {
+        this.direction = direction;
+        this.cartUUID = UUID.fromString(cartUUID);
         stationMenu = new StationMenu(this);
-        try {
-            init();
-        } catch (NullPointerException e) {
-            KingdomsManager.scheduleEntrypointInit(this); // sånn at coord og menus kan bli inita seinere etter at kingdoms hashmappet er ferig bygd
-        }
-    }
-
-    public void init() {
         selectKingdomMenu = new SelectKingdomMenu(this);
-        coord = section.getEntry();
     }
 
     @JsonIgnore
     public Coord getCoord() {
-        return coord;
+        return section.getEntry();
     }
 
     public Locality getLocality() {
@@ -162,8 +154,26 @@ public class Entrypoint {
         }
     }
 
+    private boolean resolved = false;
+    private String sectionDeferred;
+
+    public void resolveReferences(Locality parentLocality) {
+        if (resolved) throw new IllegalStateException("Tried to resolve references a second time, but resolving should only be done once!");
+        resolved = true;
+        this.locality = parentLocality;
+        if (sectionDeferred != null) {
+            section = locality.getDistrict().getSection(sectionDeferred);
+            sectionDeferred = null;
+        }
+    }
+
     @JsonProperty("section")
     private String getSectionJSON() {
         return section.id;
+    }
+
+    @JsonProperty("section")
+    private void setSectionJSON(String section) {
+        sectionDeferred = section;
     }
 }

@@ -1,5 +1,6 @@
 package gruvexp.gruvexp.core;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,43 +10,39 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class House {
 
     public final int nr;
-    private final Locality locality;
+    private Locality locality;
+
     private Coord doorPos;
     private Coord bedPos; //i framtida en liste over senger
     private Path exitPath;
-    private String exitPathID;
-    private HashSet<Citizen> residents = new HashSet<>(8); // når en villager blir adda med et house objekt, så tar man house.addMember(villager)
+
+    private final HashSet<Citizen> residents = new HashSet<>(8); // når en villager blir adda med et house objekt, så tar man house.addMember(villager)
 
     public House(int nr, Locality locality) {
         this.nr = nr;
         this.locality = locality;
     }
-    // i fremtida liste over paths inni huset, som feks path fra senga til døra
 
-    public void postInit(Locality locality) {
-        if (exitPathID == null) {return;}
-        exitPath = locality.getPath(exitPathID);
+    @JsonCreator
+    private House(int nr) {
+        this.nr = nr;
     }
+    // i framtida liste over paths inni huset, som feks path fra senga til døra
 
+    @JsonIgnore
     public Locality getLocality() {
         return locality;
     }
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonIgnore
     public HashSet<Citizen> getResidents() {
-        if (residents.isEmpty()) {
-            return null;
-        }
         return residents;
-    }
-
-    @SuppressWarnings("unused") @JsonProperty("residents")
-    private void setResident(HashSet<Citizen> citizens) {
-        this.residents = citizens;
     }
 
     public Component addResident(Citizen citizen) {
@@ -68,6 +65,10 @@ public class House {
                 .append(Component.text(" from ")).append(name());
     }
 
+    public Coord getDoorPos() {
+        return doorPos;
+    }
+
     public Component setDoorPos(Coord doorPos) {
         this.doorPos = doorPos;
 
@@ -76,8 +77,8 @@ public class House {
                 .append(Component.text(" to ")).append(doorPos.name());
     }
 
-    public Coord getDoorPos() {
-        return doorPos;
+    public Coord getBedPos() {
+        return bedPos;
     }
 
     public Component setBedPos(Coord bedPos) {
@@ -88,24 +89,11 @@ public class House {
                 .append(Component.text(" to ")).append(bedPos.name());
     }
 
-    public Coord getBedPos() {
-        return bedPos;
-    }
-
     @JsonIgnore
     public Path getExitPath() {
         return exitPath;
     }
 
-    @SuppressWarnings("unused") @JsonProperty("exitPath") @JsonInclude(JsonInclude.Include.NON_NULL)
-    public String getExitPathID() {
-        if (exitPath == null) {
-            return null;
-        }
-        return exitPath.toString();
-    }
-
-    @JsonIgnore
     public Component setExitPath(Path exitPath) {
         this.exitPath = exitPath;
 
@@ -114,16 +102,56 @@ public class House {
                 .append(Component.text(" to ")).append(exitPath.name());
     }
 
-    @SuppressWarnings("unused") @JsonProperty("exitPath")
-    public void setExitPath(String exitPathID) {
-        this.exitPathID = exitPathID;
-    }
-
     public Component name() {
         return locality.name().appendSpace().append(Component.text(nr, NamedTextColor.BLUE));
     }
 
     public String nationalAddress() {
         return locality.getDistrict().id + ":" + locality.id + "-" + nr;
+    }
+
+    private boolean resolved = false;
+    private String exitPathDeferred;
+    HashSet<String> residentsDeferred;
+
+    public void resolveReferences(Locality parentLocality) {
+        if (resolved) throw new IllegalStateException("Tried to resolve references a second time, but resolving should only be done once!");
+
+        this.locality = parentLocality;
+        if (exitPathDeferred != null) {
+            exitPath = locality.getPath(exitPathDeferred);
+            exitPathDeferred = null;
+        }
+        if (residentsDeferred != null) {
+            for (String citizenName : residentsDeferred) {
+                Kingdom kingdom = locality.getDistrict().getKingdom();
+                Citizen resident = kingdom.getCitizen(citizenName);
+                residents.add(resident);
+            }
+            residentsDeferred = null;
+        }
+        resolved = true;
+    }
+
+    @JsonProperty("exitPath") @JsonInclude(JsonInclude.Include.NON_NULL)
+    public String getExitPathJSON() {
+        if (exitPath == null) return null;
+        return exitPath.id;
+    }
+
+    @JsonProperty("exitPath")
+    private void setExitPathJSON(String exitPath) {
+        this.exitPathDeferred = exitPath;
+    }
+
+    @JsonProperty("residents") @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Set<String> getResidentsJSON() {
+        if (residents.isEmpty()) return null;
+        return residents.stream().map(citizen -> citizen.name).collect(Collectors.toSet());
+    }
+
+    @JsonProperty("residents")
+    private void setResidentsJSON(HashSet<String> residents) {
+        this.residentsDeferred = residents;
     }
 }

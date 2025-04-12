@@ -1,5 +1,6 @@
 package gruvexp.gruvexp.core;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -17,38 +18,34 @@ import java.util.UUID;
 
 public class Citizen { //holder info om hver villager, som bosted, fabrikk, og personlige egenskaper
 
-    public final String name; //villagerens fulle navn
+    public final String name;
     private Kingdom kingdom;
+
     private Villager villager;
-    private final Villager.Type type;
+    public final Villager.Type type;
     private Villager.Profession profession;
-    private House home;
-    private Locality workLocality;
     private String bio;
     private UUID uuid;
     private Coord location;
 
-    @SuppressWarnings("unused")
-    public Citizen(String name, @JsonProperty("villager") String uuid, @JsonProperty("homeAddress") String homeAddress, @JsonProperty("workAddress") String workAddress,
-                   @JsonProperty("location") Coord location, @JsonProperty("type") String type, @JsonProperty("profession") String profession) {
-        this.name = name;
-        this.workLocality = workAddress;
-        this.homeAddress = homeAddress;
-        this.uuid = UUID.fromString(uuid);
-        this.location = location;
-        this.type = Registry.VILLAGER_TYPE.get(new NamespacedKey("minecraft", type));
-        this.profession = Registry.VILLAGER_PROFESSION.get(new NamespacedKey("minecraft", profession));
-    }
+    private House home;
+    private Locality workLocality;
 
     public Citizen(String name, Kingdom kingdom, Villager.Type type, Villager.Profession profession) {
         this.name = name;
         this.kingdom = kingdom;
         this.type = type;
         this.profession = profession;
-        villager = (Villager) Main.WORLD.spawnEntity(home.getBedPos().toLocation(Main.WORLD), EntityType.VILLAGER);
-        uuid = villager.getUniqueId();
-        villager.setCustomName(Utils.toName(name));
-        villager.setCustomNameVisible(true);
+    }
+
+    @JsonCreator()
+    private Citizen(String name, @JsonProperty("villager") String uuid, Coord location, String type, String profession) {
+        this.name = name;
+        this.uuid = UUID.fromString(uuid);
+        this.location = location;
+        this.type = Registry.VILLAGER_TYPE.get(new NamespacedKey("minecraft", type));
+        if (this.type == null) throw new IllegalArgumentException("Invalid villager type: " + type);
+        this.profession = Registry.VILLAGER_PROFESSION.get(new NamespacedKey("minecraft", profession));
     }
 
     public Kingdom getKingdom() {
@@ -65,9 +62,9 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
         villager = (Villager) Bukkit.getEntity(this.uuid);
         if (villager == null) {
             if (respawn) {
-                Bukkit.broadcastMessage(ChatColor.YELLOW + name + " was found (prob ded), spawning new villager");
+                Bukkit.broadcast(Component.text(name + " was found (prob ded), spawning new villager", NamedTextColor.YELLOW));
                 villager = (Villager) Main.WORLD.spawnEntity(home.getBedPos().toLocation(Main.WORLD), EntityType.VILLAGER);
-                villager.setCustomName(Utils.toName(name));
+                villager.customName(Component.text(Utils.toName(name)));
                 villager.setCustomNameVisible(true);
                 uuid = villager.getUniqueId();
             } else {
@@ -77,35 +74,11 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
         }
     }
 
-    public void postInit(String name, Kingdom kingdom) {
-        kingdomID = kingdom.toString();
-        this.name = name;
-        String[] homeAddressStr = homeAddress.split(" ");
-        home = kingdom.getDistrict(homeAddressStr[0]).getLocality(homeAddressStr[1]).getHouse(Integer.parseInt(homeAddressStr[2]));
-        load(false);
-    }
-
-    @SuppressWarnings("unused") @JsonProperty("villager")
-    private String getVillagerID() {
-        return uuid.toString();
-    }
-
     @JsonIgnore
     public Villager getVillager() {return villager;}
 
-    @JsonIgnore
-    public String getName() {
-        return name;
-    }
-
-    @JsonProperty("type")
-    public String getType() {
-        return type.toString();
-    }
-
-    @JsonProperty("profession")
-    public String getProfession() {
-        return profession.toString();
+    public Villager.Profession getProfession() {
+        return profession;
     }
 
     public Component setProfession(Villager.Profession profession) {
@@ -114,21 +87,24 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
                 .append(Component.text(" to ")).append(Component.text(profession.toString()));
     }
 
-    @JsonProperty("homeAddress")
-    public String getHomeAddress() {
-        return home.nationalAddress();
+    @JsonIgnore
+    public House getHome() {
+        return home;
     }
 
     public Component setHome(House house) {
+        if (home == null && house != null) {
+            villager = (Villager) Main.WORLD.spawnEntity(house.getBedPos().toLocation(Main.WORLD), EntityType.VILLAGER);
+            uuid = villager.getUniqueId();
+            villager.customName(Component.text(Utils.toName(name)));
+            villager.setCustomNameVisible(true);
+        }
         home = house;
+        if (house == null) return Component.text("This villager is now homeless");
+
         return Component.text("Successfully set home of ").append(name())
                 .append(Component.text(" to ")).append(house.name())
                 .append(Component.text(" in ")).append(house.getLocality().getDistrict().name());
-    }
-
-    @JsonProperty("workAddress") @JsonInclude(JsonInclude.Include.NON_NULL)
-    public String getWorkAddress() {
-        return workLocality.tag();
     }
 
     public Component setBio(String bio) {
@@ -136,23 +112,9 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
         return Component.text("Successfully updated bio of ").append(name());
     }
 
-    @JsonProperty("bio") @JsonInclude(JsonInclude.Include.NON_NULL)
-    public String getBio() {
-        return bio;
-    }
-
-    @SuppressWarnings("unused")  @JsonProperty("location") @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Coord getLocation() {
-        if (villager == null) {
-            return null;
-        }
-        Location location = villager.getLocation();
-        return new Coord(location.getX(), location.getY(), location.getZ());
-    }
-
     public void goToWork() {
         if (workLocality == null) {
-            Bukkit.broadcastMessage(ChatColor.RED + name + " failed to go to work, this citizen is not registered i a workplace");
+            Bukkit.broadcast(Component.text(name + " failed to go to work, this citizen is not registered i a workplace", NamedTextColor.RED));
             return;
         }
         Location doorPos = home.getDoorPos().toLocation(Main.WORLD);
@@ -187,5 +149,89 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
 
     public Component bio() {
         return Component.text(bio);
+    }
+
+    private boolean resolved = false;
+    private String workLocalityDeferred;
+    private String homeDeferred;
+
+    public void resolveReferences(Kingdom parentKingdom) {
+        if (resolved) throw new IllegalStateException("Tried to resolve references a second time, but resolving should only be done once!");
+        this.kingdom = parentKingdom;
+        if (workLocalityDeferred != null) {
+            String[] address = workLocalityDeferred.split(":");
+
+            Kingdom kingdom = KingdomsManager.getKingdom(address[0]);
+            if (kingdom == null) throw new IllegalArgumentException("Kingdom \"" + address[0] + "\" doesnt exist!");
+            District district = kingdom.getDistrict(address[1]);
+            if (district == null) throw new IllegalArgumentException("District \"" + address[1] + "\" doesnt exist!");
+            Locality locality = district.getLocality(address[2]);
+            if (locality == null) throw new IllegalArgumentException("Locality \"" + address[2] + "\" doesnt exist!");
+            workLocality = locality;
+            workLocalityDeferred = null;
+        }
+        if (homeDeferred != null) {
+            String[] address = homeDeferred.split(":");
+
+            District district = kingdom.getDistrict(address[0]);
+            if (district == null) throw new IllegalArgumentException("District \"" + address[1] + "\" doesnt exist!");
+            String[] houseAddress = address[1].split("-");
+            Locality locality = district.getLocality(houseAddress[0]);
+            if (locality == null) throw new IllegalArgumentException("Locality \"" + address[2] + "\" doesnt exist!");
+
+            this.home = locality.getHouse(Integer.parseInt(houseAddress[1]));
+            homeDeferred = null;
+        }
+        load(false);
+        resolved = true;
+    }
+
+    @JsonProperty("bio") @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String getBio() {
+        return bio;
+    }
+
+    @JsonProperty("type")
+    private String getTypeJSON() {
+        return type.toString();
+    }
+
+    @JsonProperty("profession")
+    private String getProfessionJSON() {
+        return profession.toString();
+    }
+
+
+    @JsonProperty("location") @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Coord getLocationJSON() {
+        if (villager == null) return null;
+
+        Location location = villager.getLocation();
+        return new Coord(location.getX(), location.getY(), location.getZ());
+    }
+
+    @JsonProperty("villager")
+    private String getVillagerJSON() {
+        return uuid.toString();
+    }
+
+    @JsonProperty("homeAddress")
+    private String getHomeAddressJSON() {
+        return home.nationalAddress();
+    }
+
+    @JsonProperty("homeAddress")
+    private void setHomeAddressJSON(String homeAddress) {
+        homeDeferred = homeAddress;
+    }
+
+    @JsonProperty("workAddress") @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String getWorkAddress() {
+        return workLocality.tag();
+    }
+
+    @JsonProperty("homeAddress")
+    private void setWorkAddressJSON(String workAddress) {
+        workLocalityDeferred = workAddress;
     }
 }

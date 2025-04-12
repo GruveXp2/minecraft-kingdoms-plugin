@@ -36,7 +36,7 @@ public class CitizenCommand implements CommandExecutor {
         switch (oper) {
             case "info" -> {
                 return Component.text("Citizen ").append(citizen.name()).append(Component.text(" has the following data:\n"))
-                        .append(Component.text("Type: " + citizen.getType() + " " + citizen.getProfession()))
+                        .append(Component.text("Type: " + citizen.type.toString() + " " + citizen.getProfession().toString()))
                         .append(Component.text("Home address: ")).append(citizen.homeAddress())
                         .append(Component.text("Work address: ")).append(citizen.workAddress())
                         .append(Component.text("Bio: ")).append(citizen.bio());
