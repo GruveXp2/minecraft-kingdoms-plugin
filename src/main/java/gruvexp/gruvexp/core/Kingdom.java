@@ -25,7 +25,9 @@ public class Kingdom {
     private final HashMap<String, Citizen> citizens = new HashMap<>(); // holder alle villagers i kingdomet. key=navnet
     private final HashMap<String, District> districts = new HashMap<>();
 
-    public Kingdom(String id, @JsonProperty("king") UUID kingID, boolean isMale) { // gender is binary to align with common sense and reality
+    public Kingdom(@JsonProperty("id") String id,
+                   @JsonProperty("king") UUID kingID,
+                   @JsonProperty("isMale") boolean isMale) { // gender is binary to align with common sense and reality
         this.id = id;
         this.kingID = kingID;
         this.isMale = isMale;

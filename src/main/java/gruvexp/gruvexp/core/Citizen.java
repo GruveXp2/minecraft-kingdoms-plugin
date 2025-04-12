@@ -39,7 +39,11 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
     }
 
     @JsonCreator()
-    private Citizen(String name, @JsonProperty("villager") String uuid, Coord location, String type, String profession) {
+    private Citizen(@JsonProperty("name") String name,
+                    @JsonProperty("villager") String uuid,
+                    @JsonProperty("location") Coord location,
+                    @JsonProperty("type") String type,
+                    @JsonProperty("profession") String profession) {
         this.name = name;
         this.uuid = UUID.fromString(uuid);
         this.location = location;

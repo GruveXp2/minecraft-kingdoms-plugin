@@ -31,7 +31,8 @@ public class District {
     }
 
     @JsonCreator
-    private District(String id, Material icon) {
+    private District(@JsonProperty("id") String id,
+                     @JsonProperty("icon") Material icon) {
         this.id = id;
         this.icon = icon;
     }
