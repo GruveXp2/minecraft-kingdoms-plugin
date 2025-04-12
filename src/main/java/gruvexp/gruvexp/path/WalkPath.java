@@ -99,7 +99,7 @@ public class WalkPath extends BukkitRunnable {
             Path path = branch.path();
             if (path == null) {
                 // enterRail() // funksjon som gjør at villageren setter seg i en cart og kjører avgårde
-                if (branch.addresses().contains("rail_entrypoint")) enterRail();
+                if (branch.addresses().contains("enter_rail")) enterRail();
                 return;
             }
             int enterIndex = branch.enterIndex();

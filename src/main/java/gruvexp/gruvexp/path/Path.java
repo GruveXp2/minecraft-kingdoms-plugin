@@ -208,7 +208,12 @@ public class Path {
             int index = entry.getKey();
             PathBranch branchData = entry.getValue();
             Map<String, Object> branch = new HashMap<>();
-            branch.put("path", branchData.path().id);
+            Path branchPath = branchData.path();
+            if (branchPath == null && branchData.addresses().contains("enter_rail")) {
+                branch.put("path", "end");
+            } else if (branchPath != null) {
+                branch.put("path", branchData.path().id);
+            }
             branch.put("enterIndex", branchData.enterIndex());
             branch.put("addresses", branchData.addresses());
             branches.put(index, branch);
