@@ -54,7 +54,6 @@ public class Entrypoint {
         this.direction = direction;
         this.cartUUID = UUID.fromString(cartUUID);
         stationMenu = new StationMenu(this);
-        selectKingdomMenu = new SelectKingdomMenu(this);
     }
 
     @JsonIgnore
@@ -166,6 +165,7 @@ public class Entrypoint {
             section = locality.getDistrict().getSection(sectionDeferred);
             sectionDeferred = null;
         }
+        selectKingdomMenu = new SelectKingdomMenu(this);
     }
 
     @JsonProperty("section")
