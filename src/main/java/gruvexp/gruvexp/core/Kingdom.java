@@ -37,6 +37,8 @@ public class Kingdom {
 
     public Component setKingID(UUID kingID) {
         this.kingID = kingID;
+
+        KingdomsManager.save = true;
         return Component.text("Successfully set king of ").append(name())
                 .append(Component.text(" to ")).append(king());
     }
@@ -45,6 +47,8 @@ public class Kingdom {
 
     public Component setColor(TextColor color) {
         this.color = color;
+
+        KingdomsManager.save = true;
         return Component.text("Successfully set color of ").append(name())
                 .append(Component.text(" to ")).append(Component.text(color.asHexString(), color));
     }
@@ -64,6 +68,8 @@ public class Kingdom {
         if (districts.containsKey(districtID)) return Component.text("District \"" + id + "\" already exists!", NamedTextColor.RED);
 
         districts.put(districtID, new District(districtID, this, icon));
+
+        KingdomsManager.save = true;
         return Component.text("Successfully added district ")
                 .append(Component.text(districtID, NamedTextColor.GOLD))
                 .append(Component.text(" to ", NamedTextColor.GREEN))
@@ -89,12 +95,16 @@ public class Kingdom {
     public Component removeDistrict(String districtID) {
         if (!districts.containsKey(districtID)) return Component.text("No distric twith id \"" + districtID + "\" exists", NamedTextColor.RED);
         districts.remove(districtID);
+
+        KingdomsManager.save = true;
         return Component.text("Successfully removed district: ").append(Component.text(districtID));
     }
 
     public Component addCitizen(String name, Villager.Type variant, Villager.Profession profession) {
         if (citizens.containsKey(name)) return Component.text("A villager with that name already exists!", NamedTextColor.RED);
         citizens.put(name, new Citizen(name, this, variant, profession));
+
+        KingdomsManager.save = true;
         return Component.text("Successfully added new citizen called ", NamedTextColor.GREEN).append(Component.text(name));
     }
 
@@ -110,6 +120,8 @@ public class Kingdom {
     public Component removeCitizen(String name) {
         if (!citizens.containsKey(name)) return Component.text("No citizen with name \"" + name + "\" exitst", NamedTextColor.RED);
         citizens.remove(name);
+
+        KingdomsManager.save = true;
         return Component.text("Successfully removed citizen called ").append(Component.text(name));
     }
 
