@@ -15,11 +15,12 @@ import java.util.List;
 public class KingdomsTabCompletion implements TabCompleter {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
-        if (args.length == 1) return List.of("info", "add", "remove");
+        if (args.length == 1) return List.of("info", "add kingdom", "remove kingdom");
         String oper = args[0];
         switch (oper) {
             case "add", "remove" -> {
-                return KingdomsManager.getKingdomIDs().stream().toList();
+                if (args.length == 2) return List.of("kingdom");
+                if (args.length == 3) return KingdomsManager.getKingdomIDs().stream().toList();
             }
             case "select" -> {
                 if (args.length == 2) return KingdomsManager.getKingdomIDs().stream().toList();
