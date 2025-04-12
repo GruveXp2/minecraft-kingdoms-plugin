@@ -49,7 +49,8 @@ public class Entrypoint {
     }
 
     @JsonCreator
-    private Entrypoint(char direction, String cartUUID) {
+    private Entrypoint(@JsonProperty("direction") char direction,
+                       @JsonProperty("cartUUID") String cartUUID) {
         this.direction = direction;
         this.cartUUID = UUID.fromString(cartUUID);
         stationMenu = new StationMenu(this);

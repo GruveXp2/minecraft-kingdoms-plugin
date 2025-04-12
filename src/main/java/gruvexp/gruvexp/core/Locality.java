@@ -35,7 +35,8 @@ public class Locality {
     }
 
     @JsonCreator
-    private Locality(String id, Material icon) {
+    private Locality(@JsonProperty("id") String id,
+                     @JsonProperty("icon") Material icon) {
         this.id = id;
         this.icon = icon;
     }

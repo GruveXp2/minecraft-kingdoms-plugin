@@ -33,7 +33,9 @@ public class Path {
     }
 
     @JsonCreator
-    private Path(String id, Coord startPos, HashMap<Integer, Character> turns) {
+    private Path(@JsonProperty("id") String id,
+                 @JsonProperty("startPos") Coord startPos,
+                 @JsonProperty("turns") HashMap<Integer, Character> turns) {
         this.id = id;
         this.startPos = startPos;
         this.turns = turns;

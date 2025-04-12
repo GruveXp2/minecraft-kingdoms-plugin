@@ -46,7 +46,8 @@ public final class Section {
     }
 
     @JsonCreator
-    private Section(String id, Coord entry) {
+    private Section(@JsonProperty("id") String id,
+                    @JsonProperty("entry") Coord entry) {
         this.id = id;
         this.entry = entry;
     }
