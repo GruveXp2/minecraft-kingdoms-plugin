@@ -153,6 +153,7 @@ public class Kingdom {
 
     @JsonProperty("postOfficeDistrict") @JsonInclude(JsonInclude.Include.NON_NULL)
     private String getPostOfficeDistrictJSON() {
+        if (postOfficeDistrict == null) return null;
         return postOfficeDistrict.id;
     }
 
