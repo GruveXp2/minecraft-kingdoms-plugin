@@ -189,7 +189,7 @@ public class Path {
                 int index = entry.getKey();
                 Map<String, Object> branchData = entry.getValue();
                 String pathID = (String) branchData.get("path");
-                int enterIndex = (int) branchData.get("shape");
+                int enterIndex = (int) branchData.get("enterIndex");
                 HashSet<String> addresses = new HashSet<>((ArrayList<String>) branchData.get("addresses"));
                 PathBranch branch = new PathBranch(locality.getPath(pathID), enterIndex, addresses);
                 branches.put(index, branch);
