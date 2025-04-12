@@ -137,7 +137,7 @@ public class Kingdom {
     }
 
     public Component king() {
-        return Component.text(isMale ? "King " : "Queen ").append(Bukkit.getPlayer(kingID).name());
+        return Component.text(isMale ? "King " : "Queen ").append(Component.text(Objects.requireNonNull(Bukkit.getOfflinePlayer(kingID).getName())));
     }
 
     private boolean resolved = false;
@@ -150,6 +150,11 @@ public class Kingdom {
         postOfficeDistrictIdDeferred = null;
         getDistricts().forEach(district -> district.resolveReferences(this));
         getCitizens().forEach(citizen -> citizen.resolveReferences(this));
+    }
+
+    @JsonProperty("king")
+    private String getKing() {
+        return kingID.toString();
     }
 
     @JsonProperty("postOfficeDistrict") @JsonInclude(JsonInclude.Include.NON_NULL)
