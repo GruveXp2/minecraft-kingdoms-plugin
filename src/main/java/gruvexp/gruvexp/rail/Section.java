@@ -360,7 +360,8 @@ public final class Section {
                 String shape = (String) routeData.get("shape");
                 String sectionID = (String) routeData.get("section");
                 HashSet<String> addresses = new HashSet<>((ArrayList<String>) routeData.get("addresses"));
-                RailRoute route = new RailRoute(border.getSection(sectionID), Rail.Shape.valueOf(shape), direction);
+                District routeDistrict = border != null ? border : district;
+                RailRoute route = new RailRoute(routeDistrict.getSection(sectionID), Rail.Shape.valueOf(shape), direction);
                 for (String address : addresses) {
                     routingTable.put(address, route);
                 }
