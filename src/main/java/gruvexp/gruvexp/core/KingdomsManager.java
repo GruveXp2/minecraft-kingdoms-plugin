@@ -139,11 +139,9 @@ public final class KingdomsManager {
             Set<Kingdom> kingdomSet = mapper.readValue(file, new TypeReference<>() {
             });
 
-            kingdomSet.forEach(Kingdom::resolveReferences);
-
-            // Oppretter et HashMap basert på Map
             kingdoms = new HashMap<>();
             kingdomSet.forEach(kingdom -> kingdoms.put(kingdom.id, kingdom));
+            kingdomSet.forEach(Kingdom::resolveReferences);
         } catch (IOException e) {
             e.printStackTrace();
         }
