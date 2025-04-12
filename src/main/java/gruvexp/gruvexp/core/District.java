@@ -37,6 +37,7 @@ public class District {
         this.icon = icon;
     }
 
+    @JsonIgnore
     public Kingdom getKingdom() {
         return kingdom;
     }

@@ -52,6 +52,7 @@ public final class Section {
         this.entry = entry;
     }
 
+    @JsonIgnore
     public District getDistrict() {
         return district;
     }

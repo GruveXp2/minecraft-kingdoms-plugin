@@ -42,6 +42,7 @@ public class Locality {
         this.entrypoint = entrypoint;
     }
 
+    @JsonIgnore
     public District getDistrict() {
         return district;
     }
