@@ -310,7 +310,7 @@ public final class Section {
     public Component routes() {
         Component routeInfo;
         if (hasRoutes()) {
-            routeInfo = Component.text("Routes: ");
+            routeInfo = Component.text("Routes:\n");
             Map<RailRoute, List<String>> reversed = new HashMap<>(); // its gonna map the routes to addresses instead so its easier to read when printed
 
             for (Map.Entry<String, RailRoute> entry : routingTable.entrySet()) {
@@ -323,9 +323,11 @@ public final class Section {
             for (Map.Entry<RailRoute, List<String>> entry : reversed.entrySet()) {
                 String addresses = String.join(", ", entry.getValue());
                 RailRoute route = entry.getKey();
-                routeInfo = routeInfo.append(Component.text(addresses, NamedTextColor.GOLD))
+                routeInfo = routeInfo.append(Component.text(route.direction(), NamedTextColor.BLUE))
                         .append(Component.text(" -> "))
-                        .append(route.name());
+                        .append(route.targetSection().name()).append(Component.text(", rail state: "))
+                        .append(Component.text(route.railShape().name(), NamedTextColor.GREEN)).appendNewline()
+                        .append(Component.text(" - for addresses: ").append(Component.text(addresses, NamedTextColor.GOLD))).appendNewline();
             }
         } else if (hasNextSection()) {
             routeInfo = Component.text("Route: enters section ").append(nextSection.name());

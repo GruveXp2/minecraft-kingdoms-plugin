@@ -58,7 +58,7 @@ public class Coord {
     }
 
     public Component name() {
-        return Component.text(toString(), NamedTextColor.BLUE);
+        return Component.text(toString(), NamedTextColor.AQUA);
     }
 
     public Location toLocation(World world) {
