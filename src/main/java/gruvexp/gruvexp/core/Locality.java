@@ -148,7 +148,9 @@ public class Locality {
         if (resolved) throw new IllegalStateException("Tried to resolve references a second time, but resolving should only be done once!");
         resolved = true;
         this.district = parentDistrict;
-        entrypoint.resolveReferences(this);
+        if (entrypoint != null) {
+            entrypoint.resolveReferences(this);
+        }
         getPaths().forEach(path -> path.resolveReferences(this));
         getHouses().forEach(house -> house.resolveReferences(this));
     }
