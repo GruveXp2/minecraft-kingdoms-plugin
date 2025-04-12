@@ -44,6 +44,7 @@ public class Kingdom {
                 .append(Component.text(" to ")).append(king());
     }
 
+    @JsonProperty("color") @JsonInclude(JsonInclude.Include.NON_NULL)
     public TextColor getColor() {return color;}
 
     public Component setColor(TextColor color) {
