@@ -153,7 +153,7 @@ public class Entrypoint {
             case "main" -> stationMenu.open(p);
             case "kingdom" -> selectKingdomMenu.open(p);
             case "district" -> selectDistrictMenu.open(p);
-            case "address" -> selectLocalityMenu.open(p);
+            case "locality" -> selectLocalityMenu.open(p);
         }
     }
 
