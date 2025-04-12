@@ -92,7 +92,7 @@ public class HouseCommand implements CommandExecutor {
                     Kingdom kingdom = locality.getDistrict().getKingdom();
                     Citizen citizen = kingdom.getCitizen(citizenName);
                     if (citizen == null) return Component.text("Found no citizen with name \"" + citizenName + "\" in kingdom ", NamedTextColor.RED).append(kingdom.name());
-
+                    citizen.setHome(house);
                     return house.addResident(citizen);
                 }
                 return Component.text("\"" + feature + "\" is not a feature that can be added to a house", NamedTextColor.RED);
@@ -107,6 +107,7 @@ public class HouseCommand implements CommandExecutor {
                     Citizen citizen = kingdom.getCitizen(citizenName);
                     if (citizen == null) return Component.text("Found no citizen with name \"" + citizenName + "\" in kingdom ", NamedTextColor.RED).append(kingdom.name());
 
+                    citizen.setHome(null);
                     return house.removeResident(citizen);
                 }
                 return Component.text("\"" + feature + "\" is not a feature that can be removed from a house", NamedTextColor.RED);
