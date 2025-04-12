@@ -15,7 +15,7 @@ import java.util.List;
 public class KingdomsTabCompletion implements TabCompleter {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
-        if (args.length == 1) return List.of("info", "add kingdom", "remove kingdom");
+        if (args.length == 1) return List.of("info", "select", "add kingdom", "remove kingdom");
         String oper = args[0];
         switch (oper) {
             case "add", "remove" -> {
