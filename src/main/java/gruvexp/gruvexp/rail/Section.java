@@ -418,7 +418,7 @@ public final class Section {
         return routes;
     }
 
-    @JsonProperty("routingTable")
+    @JsonProperty("routes")
     private void setRoutes(Map<String, Map<String, Object>> routes) {
         routesDeferred = routes;
     }
