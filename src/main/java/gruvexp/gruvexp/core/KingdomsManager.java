@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import gruvexp.gruvexp.FilePath;
-import gruvexp.gruvexp.rail.Entrypoint;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -20,6 +19,7 @@ import java.util.*;
 
 public final class KingdomsManager {
 
+    // make all these sets into enums (much better)
     public static final ImmutableSet<String> RAIL_SHAPES = ImmutableSet.of("north_south", "east_west", "north_east", "north_west", "south_east", "south_west");
     public static final ImmutableSet<String> ROUTES = ImmutableSet.of("forward", "right", "left");
     public static final ImmutableSet<String> SIGNS = ImmutableSet.of("forward", "right", "left", "forward_roundabout", "right_roundabout", "left_roundabout", "u_turn");
@@ -28,9 +28,6 @@ public final class KingdomsManager {
     public static final HashSet<String> BLOCKS = new HashSet<>();
     public static boolean save = false;
 
-    private static final HashSet<Entrypoint> entrypointPostInit = new HashSet<>();
-    private static final HashSet<Locality> LOCALITY_POST_INIT = new HashSet<>();
-    private static final HashSet<Kingdom> kingdomPostInit = new HashSet<>();
     private static final HashSet<Citizen> citizenPostInit = new HashSet<>();
 
     private static final HashMap<Player, Kingdom> selectedKingdom = new HashMap<>();
@@ -71,18 +68,6 @@ public final class KingdomsManager {
                 BLOCKS.add(material.toString().toLowerCase());
             }
         }
-        for (Entrypoint entrypoint : entrypointPostInit) {
-            entrypoint.init();
-        }
-        entrypointPostInit.clear();
-        for (Locality locality : LOCALITY_POST_INIT) {
-            locality.postInit();
-        }
-        LOCALITY_POST_INIT.clear();
-        for (Kingdom kingdom : kingdomPostInit) {
-            kingdom.postInit();
-        }
-        kingdomPostInit.clear();
     }
 
     public static void loadCitizens(boolean respawn) {
@@ -106,15 +91,6 @@ public final class KingdomsManager {
         }
     }
 
-    public static void scheduleKingdomInit(Kingdom kingdom) {
-        kingdomPostInit.add(kingdom);
-    }
-    public static void scheduleEntrypointInit(Entrypoint entrypoint) {
-        entrypointPostInit.add(entrypoint);
-    }
-    public static void scheduleAddressInit(Locality locality) {
-        LOCALITY_POST_INIT.add(locality);
-    }
     public static void scheduleCitizenInit(Citizen citizen) {citizenPostInit.add(citizen);}
 
     public static TextComponent addKingdom(String ID, Player king, boolean isMale) {
@@ -133,6 +109,14 @@ public final class KingdomsManager {
         return kingdoms.get(kingdomID);
     }
 
+    public static Collection<Kingdom> getKingdoms() {
+        return kingdoms.values();
+    }
+
+    public static Set<String> getKingdomIDs() {
+        return kingdoms.keySet();
+    }
+
     public static TextComponent removeKingdom(String kingdomID, String password) {
         Kingdom kingdom = kingdoms.get(kingdomID);
         if (kingdom == null) {
@@ -144,12 +128,21 @@ public final class KingdomsManager {
                 .append(Component.text(". TO UNDO THIS ACTION, BACKUP THE JSON FILE BEFORE THE SERVER CLOSES"));
     }
 
-    public static Set<String> getKingdomIDs() {
-        return kingdoms.keySet();
-    }
+    public static void loadData() {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            File file = new File(FilePath.SERVER_FOLDER + FilePath.SERVER_NAME + "\\plugin data\\kingdoms_data.json");
+            Set<Kingdom> kingdomSet = mapper.readValue(file, new TypeReference<>() {
+            });
 
-    public static Collection<Kingdom> getKingdoms() {
-        return kingdoms.values();
+            kingdomSet.forEach(Kingdom::resolveReferences);
+
+            // Oppretter et HashMap basert på Map
+            kingdoms = new HashMap<>();
+            kingdomSet.forEach(kingdom -> kingdoms.put(kingdom.id, kingdom));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void saveData() {
@@ -158,24 +151,10 @@ public final class KingdomsManager {
         }
         ObjectMapper mapper = new ObjectMapper();
         try {
-            String json = mapper.writeValueAsString(kingdoms);
+            String json = mapper.writeValueAsString(kingdoms.values());
             FileWriter fileWriter = new FileWriter(FilePath.SERVER_FOLDER + FilePath.SERVER_NAME + "\\plugin data\\kingdoms_data.json");
             fileWriter.write(json);
             fileWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void loadData() {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            File file = new File(FilePath.SERVER_FOLDER + FilePath.SERVER_NAME + "\\plugin data\\kingdoms_data.json");
-            Map<String, Kingdom> kingdomMap = mapper.readValue(file, new TypeReference<>() {
-            });
-
-            // Oppretter et HashMap basert på Map
-            kingdoms = new HashMap<>(kingdomMap);
         } catch (IOException e) {
             e.printStackTrace();
         }

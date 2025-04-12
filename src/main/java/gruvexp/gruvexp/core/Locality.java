@@ -1,5 +1,6 @@
 package gruvexp.gruvexp.core;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,8 +13,8 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 public class Locality {
@@ -22,38 +23,25 @@ public class Locality {
     private District district;
 
     private Material icon;
+
     private Entrypoint entrypoint;
-    private HashMap<String, Path> paths = new HashMap<>();
-    private HashMap<Integer, House> houses = new HashMap<>();
+    private final HashMap<String, Path> paths = new HashMap<>();
+    private final HashMap<Integer, House> houses = new HashMap<>();
 
     public Locality(String id, District district, Material icon) {
         this.id = id;
         this.district = district;
         this.icon = icon;
     }
-    public Locality(String id, @JsonProperty("material") Material icon) {
+
+    @JsonCreator
+    private Locality(String id, Material icon) {
         this.id = id;
         this.icon = icon;
     }
 
-    public void postInit() {
-        for (Map.Entry<String, Path> pathEntry: paths.entrySet()) {
-            pathEntry.getValue().initID(pathEntry.getKey());
-        }
-        if (!houses.isEmpty()) {
-            for (House house : houses.values()) {
-                house.postInit(this);
-            }
-        }
-    }
-
     public District getDistrict() {
         return district;
-    }
-
-    public void setDistrict(District district) {
-        if (this.district != null) throw new IllegalStateException("This address already have a district assigned to it!");
-        this.district = district;
     }
 
     public Material getIcon() {
@@ -79,7 +67,7 @@ public class Locality {
 
     public Component addPath(String pathID, Coord startPos) {
         if (paths.containsKey(pathID)) return Component.text("Section \"" + pathID + "\" already exists!", NamedTextColor.RED);
-        paths.put(pathID, new Path(pathID, startPos));
+        paths.put(pathID, new Path(pathID, this, startPos));
         return Component.text("Successfully added new path section called ", NamedTextColor.GREEN).append(Component.text(pathID, NamedTextColor.YELLOW))
                 .append(Component.text(" that starts at ")).append(startPos.name());
     }
@@ -88,21 +76,13 @@ public class Locality {
         return paths.get(pathID);
     }
 
+    public Collection<Path> getPaths() {
+        return paths.values();
+    }
+
     @JsonIgnore
     public Set<String> getPathIDs() {
         return paths.keySet();
-    }
-
-    @SuppressWarnings("unused") @JsonProperty("paths") @JsonInclude(JsonInclude.Include.NON_NULL)
-    private HashMap<String, Path> getPaths() {
-        if (paths.isEmpty()) {return null;}
-        return paths;
-    }
-
-    @SuppressWarnings("unused")
-    private void setPaths(@JsonProperty("paths") HashMap<String, Path> paths) {
-        this.paths = paths;
-        KingdomsManager.scheduleAddressInit(this);
     }
 
     public Component removePath(String pathID) {
@@ -126,11 +106,8 @@ public class Locality {
         return house;
     }
 
-    public Component removeHouse(int houseNumber) {
-        if (!houses.containsKey(houseNumber)) return Component.text("No house with house number \"" + houseNumber + "\" exists", NamedTextColor.RED);
-        houses.remove(houseNumber);
-        return Component.text("Successfully removed house: ")
-                .append(name()).appendSpace().append(Component.text(houseNumber));
+    public Collection<House> getHouses() {
+        return houses.values();
     }
 
     @JsonIgnore
@@ -138,16 +115,11 @@ public class Locality {
         return houses.keySet();
     }
 
-    @SuppressWarnings("unused") @JsonProperty("houses") @JsonInclude(JsonInclude.Include.NON_NULL)
-    private HashMap<Integer, House> getHouses() {
-        if (houses.isEmpty()) {return null;}
-        return houses;
-    }
-
-    @SuppressWarnings("unused")
-    private void setHouses(@JsonProperty("houses") HashMap<Integer, House> houses) {
-        this.houses = houses;
-        KingdomsManager.scheduleAddressInit(this);
+    public Component removeHouse(int houseNumber) {
+        if (!houses.containsKey(houseNumber)) return Component.text("No house with house number \"" + houseNumber + "\" exists", NamedTextColor.RED);
+        houses.remove(houseNumber);
+        return Component.text("Successfully removed house: ")
+                .append(name()).appendSpace().append(Component.text(houseNumber));
     }
 
     public Component name() {
@@ -158,5 +130,38 @@ public class Locality {
     }
     public Component address() {
         return district.address().append(Component.text(":")).append(Component.text(id));
+    }
+
+    private boolean resolved = false;
+
+    public void resolveReferences(District parentDistrict) {
+        if (resolved) throw new IllegalStateException("Tried to resolve references a second time, but resolving should only be done once!");
+        resolved = true;
+        this.district = parentDistrict;
+        entrypoint.resolveReferences(this);
+        getPaths().forEach(path -> path.resolveReferences(this));
+        getHouses().forEach(house -> house.resolveReferences(this));
+    }
+
+    @JsonProperty("houses") @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Collection<House> getHousesJSON() {
+        if (houses.isEmpty()) return null;
+        return houses.values();
+    }
+
+    @JsonProperty("houses")
+    private void setHousesJSON(@JsonProperty("houses") Collection<House> houses) {
+        houses.forEach(house -> this.houses.put(house.nr, house));
+    }
+
+    @JsonProperty("paths") @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Collection<Path> getPathsJSON() {
+        if (paths.isEmpty()) return null;
+        return paths.values();
+    }
+
+    @JsonProperty("paths")
+    private void setPathsJSON(@JsonProperty("paths") Collection<Path> paths) {
+        paths.forEach(path -> this.paths.put(path.id, path));
     }
 }

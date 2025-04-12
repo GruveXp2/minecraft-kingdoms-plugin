@@ -1,9 +1,11 @@
 package gruvexp.gruvexp.path;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gruvexp.gruvexp.core.KingdomsManager;
+import gruvexp.gruvexp.core.Locality;
 import gruvexp.gruvexp.rail.Coord;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -15,32 +17,31 @@ import java.util.stream.Collectors;
 public class Path {
 
     public static final HashSet<String> DIRECTIONS = new HashSet<>(Arrays.asList("n", "s", "e", "w", "ne", "nw", "se", "sw"));
+
     public final String id;
+    private Locality locality;
+
     private Coord startPos;
     private HashMap<Integer, Character> turns; // på hvilken retning man skal svinge på index x. retninger: NSEW ZCUM(NE ES SW WN). hver gang man mover, så skjekker man om turns.get(counter) ikke er null, og hvis den ikke er det, så flytter man seg i den retninga.
-    private final HashMap<Integer, PathBranch> branches;
-    private final HashMap<Integer, String> branchPathID; // etter å ha gått x bloccs, er det en utgang på sida som går til en bestemt path
-    private final HashMap<Integer, Integer> branchEnterIndex; // forteller hvor man kommer inn på pathen. null val = default val = 0.
-    private final HashMap<Integer, HashSet<String>> branchAddresses; // pathen etter x bloccs har en metylgruppe som går til en annen path. branchAddresses.get(blocc som man er på nå), if not null så er det en branch der, skjekk addressene
 
-    public Path(String id, Coord startPos) {
+    private final HashMap<Integer, PathBranch> branches = new HashMap<>();
+
+    public Path(String id, Locality parentLocality, Coord startPos) {
         this.id = id;
+        this.locality = parentLocality;
         this.startPos = startPos;
-        branches = new HashMap<>();
-        branchPathID = new HashMap<>();
-        branchAddresses = new HashMap<>();
-        branchEnterIndex = new HashMap<>();
     }
 
-    @SuppressWarnings("unused")
-    public Path(String id, @JsonProperty("startPos") Coord startPos, @JsonProperty("turns") HashMap<Integer, Character> turns) {
+    @JsonCreator
+    private Path(String id, Coord startPos, HashMap<Integer, Character> turns) {
         this.id = id;
         this.startPos = startPos;
         this.turns = turns;
-        branches = new HashMap<>();
-        branchPathID = new HashMap<>();
-        branchAddresses = new HashMap<>();
-        branchEnterIndex = new HashMap<>();
+    }
+
+    @JsonIgnore
+    public Locality getLocality() {
+        return locality;
     }
 
     public static char dirToChar(String direction) {
@@ -95,72 +96,13 @@ public class Path {
                 .append(Component.text(" to ")).append(startPos.name());
     }
 
-    public PathBranch getBranch(int index) {
-        return branches.get(index);
-    }
-
     public Component addBranch(int index, Path targetPath, int enterIndex, HashSet<String> addresses) {
         branches.put(index, new PathBranch(targetPath, enterIndex, addresses));
-
-        this.branchAddresses.put(index, addresses);
-        branchPathID.put(index, targetPath.id);
-        branchEnterIndex.put(index, enterIndex);
 
         KingdomsManager.save = true;
         return Component.text("Successfully added branch at ").append(nameIndex(index).appendNewline())
                 .append(Component.text("entering path section ")).append(targetPath.nameIndex(enterIndex)).appendNewline()
                 .append(Component.text("with addresses ")).append(Component.text(String.join(", ", addresses), NamedTextColor.GOLD));
-    }
-
-    public Component removeBranch(int index) {
-        if (!branches.containsKey(index)) return Component.text("Nothing happened, this path has no branch at index " + index, NamedTextColor.YELLOW);
-
-        branches.remove(index);
-
-        KingdomsManager.save = true;
-        return Component.text("Successfully removed branch at ").append(nameIndex(index));
-    }
-
-    public boolean hasBranch(int index) {return branchPathID.containsKey(index);}
-
-    public boolean hasBranches() {return !branchPathID.isEmpty();}
-
-    @JsonIgnore
-    public HashSet<String> getBranchAddresses(int index) {return branchAddresses.get(index);}
-
-    @JsonIgnore
-    public String getBranchPathID(int index) {return branchPathID.get(index);}
-
-    public int getBranchEnterIndex(int index) {return branchEnterIndex.get(index);}
-
-    @SuppressWarnings("unused") @JsonProperty("branches") @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Map<Integer, Map<String, Object>> getBranches() {
-        if (branchPathID.isEmpty()) {
-            return null;
-        }
-        Map<Integer, Map<String, Object>> branches = new HashMap<>();
-        for (int index : branchPathID.keySet()) {
-            Map<String, Object> branch = new HashMap<>();
-            branch.put("path", branchPathID.get(index));
-            branch.put("enterIndex", branchEnterIndex.get(index));
-            branch.put("addresses", branchAddresses.get(index));
-            branches.put(index, branch);
-        }
-        return branches;
-    }
-
-    @SuppressWarnings("unused") @JsonProperty("branches")
-    private void setBranches(Map<Integer, Map<String, Object>> branches) {
-        for (Map.Entry<Integer, Map<String, Object>> branch : branches.entrySet()) {
-            int index = branch.getKey();
-            Map<String, Object> branchData = branch.getValue();
-            String pathID = (String) branchData.get("path");
-            int enterIndex = (int) branchData.get("enterIndex");
-            HashSet<String> addresses = new HashSet<>((ArrayList<String>) branchData.get("addresses"));
-            branchPathID.put(index, pathID);
-            branchEnterIndex.put(index, enterIndex);
-            branchAddresses.put(index, addresses);
-        }
     }
 
     public Character getTurn(int index) {
@@ -178,13 +120,25 @@ public class Path {
         return Component.text("Successfully set turn data for path section ").append(name());
     }
 
-    public boolean isEndpoint(int index) {
-        return Collections.max(branchPathID.keySet()) == index;
+    public PathBranch getBranch(int index) {
+        return branches.get(index);
     }
 
-    @Override
-    public String toString() {
-        return id;
+    public boolean hasBranch(int index) {return branches.containsKey(index);}
+
+    public boolean hasBranches() {return !branches.isEmpty();}
+
+    public boolean isEndpoint(int index) {
+        return Collections.max(branches.keySet()) == index;
+    }
+
+    public Component removeBranch(int index) {
+        if (!branches.containsKey(index)) return Component.text("Nothing happened, this path has no branch at index " + index, NamedTextColor.YELLOW);
+
+        branches.remove(index);
+
+        KingdomsManager.save = true;
+        return Component.text("Successfully removed branch at ").append(nameIndex(index));
     }
 
     public Component name() {
@@ -220,5 +174,49 @@ public class Path {
 
         return branches.isEmpty() ? Component.text("none", NamedTextColor.YELLOW)
                 : branchInfo;
+    }
+
+    private boolean resolved = false;
+    Map<Integer, Map<String, Object>> branchesDeferred;
+
+    public void resolveReferences(Locality parentLocality) {
+        if (resolved) throw new IllegalStateException("Tried to resolve references a second time, but resolving should only be done once!");
+
+        this.locality = parentLocality;
+        if (branchesDeferred != null) {
+            for (Map.Entry<Integer, Map<String, Object>> entry : branchesDeferred.entrySet()) {
+                int index = entry.getKey();
+                Map<String, Object> branchData = entry.getValue();
+                String pathID = (String) branchData.get("path");
+                int enterIndex = (int) branchData.get("shape");
+                HashSet<String> addresses = new HashSet<>((ArrayList<String>) branchData.get("addresses"));
+                PathBranch branch = new PathBranch(locality.getPath(pathID), enterIndex, addresses);
+                branches.put(index, branch);
+            }
+            branchesDeferred = null;
+        }
+        resolved = true;
+    }
+
+    @JsonProperty("branches") @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Map<Integer, Map<String, Object>> getBranchesJSON() {
+        if (branches.isEmpty()) return null;
+
+        Map<Integer, Map<String, Object>> branches = new HashMap<>();
+        for (Map.Entry<Integer, PathBranch> entry : this.branches.entrySet()) {
+            int index = entry.getKey();
+            PathBranch branchData = entry.getValue();
+            Map<String, Object> branch = new HashMap<>();
+            branch.put("path", branchData.path().id);
+            branch.put("enterIndex", branchData.enterIndex());
+            branch.put("addresses", branchData.addresses());
+            branches.put(index, branch);
+        }
+        return branches;
+    }
+
+    @JsonProperty("branches")
+    private void setBranchesJSON(Map<Integer, Map<String, Object>> branches) {
+        branchesDeferred = branches;
     }
 }

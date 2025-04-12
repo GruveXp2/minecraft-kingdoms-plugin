@@ -16,23 +16,19 @@ import java.util.*;
 public class Kingdom {
 
     public final String id;
-    private final HashMap<String, District> districts = new HashMap<>();
-    private HashMap<String, Citizen> citizens = new HashMap<>(); // holder alle villagers i kingdomet. key=navnet
+
     private UUID kingID;
     private TextColor color;
     private final boolean isMale;
-    private District postOfficeDistrict;
 
-    public Kingdom(String id, @JsonProperty("player") UUID kingID, boolean isMale) { // gender is strictly binary to align with common sense and reality
+    private District postOfficeDistrict;
+    private final HashMap<String, Citizen> citizens = new HashMap<>(); // holder alle villagers i kingdomet. key=navnet
+    private final HashMap<String, District> districts = new HashMap<>();
+
+    public Kingdom(String id, @JsonProperty("king") UUID kingID, boolean isMale) { // gender is binary to align with common sense and reality
         this.id = id;
         this.kingID = kingID;
         this.isMale = isMale;
-    }
-
-    public void postInit() {
-        for (Map.Entry<String, Citizen> citizenEntry : citizens.entrySet()) {
-            citizenEntry.getValue().postInit(citizenEntry.getKey(), this);
-        }
     }
 
     public UUID getKingID() {
@@ -51,6 +47,17 @@ public class Kingdom {
         this.color = color;
         return Component.text("Successfully set color of ").append(name())
                 .append(Component.text(" to ")).append(Component.text(color.asHexString(), color));
+    }
+
+    @JsonIgnore
+    public District getPostOfficeDistrict() {
+        return postOfficeDistrict;
+    }
+
+    public Component setPostOfficeDistrict(District district) {
+        postOfficeDistrict = district;
+        return  Component.text("Successfully set post office district of ").append(name())
+                .append(Component.text(" to ")).append(district.name());
     }
 
     public Component addDistrict(String districtID, Material icon) {
@@ -74,33 +81,15 @@ public class Kingdom {
         return districts.keySet();
     }
 
-    @SuppressWarnings("unused") @JsonProperty("districts") @JsonInclude(JsonInclude.Include.NON_NULL) // Blir brukt av JSONParseren
-    private HashMap<String, District> getDistricts() {
-        if (districts.isEmpty()) { // sånn at det ikke kommer med i josn hvis egenskapen ikke er der. TA PÅ DE ANDRE OGSÅ FOR Å FRIGJØRE PLASS!
-            return null;
-        }
-        return districts;
+    @JsonIgnore
+    public Collection<District> getDistricts() {
+        return districts.values();
     }
 
     public Component removeDistrict(String districtID) {
         if (!districts.containsKey(districtID)) return Component.text("No distric twith id \"" + districtID + "\" exists", NamedTextColor.RED);
         districts.remove(districtID);
         return Component.text("Successfully removed district: ").append(Component.text(districtID));
-    }
-
-    public Component setPostOfficeDistrict(@JsonProperty("postOfficeDistrict") District district) {
-        postOfficeDistrict = district;
-        return  Component.text("Successfully set post office district of ").append(name())
-                .append(Component.text(" to ")).append(district.name());
-    }
-
-    public District getPostOfficeDistrict() {
-        return postOfficeDistrict;
-    }
-
-    @JsonProperty("postOfficeDistrict") @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String getPostOfficeDistrictJSON() {
-        return postOfficeDistrict.id;
     }
 
     public Component addCitizen(String name, Villager.Type variant, Villager.Profession profession) {
@@ -116,6 +105,11 @@ public class Kingdom {
         return citizens.get(name);
     }
 
+    @JsonIgnore
+    public Collection<Citizen> getCitizens() {
+        return citizens.values();
+    }
+
     public Component removeCitizen(String name) {
         if (!citizens.containsKey(name)) return Component.text("No citizen with name \"" + name + "\" exitst", NamedTextColor.RED);
         citizens.remove(name);
@@ -127,30 +121,55 @@ public class Kingdom {
         return citizens.keySet();
     }
 
-    @SuppressWarnings("unused") @JsonProperty("citizens") @JsonInclude(JsonInclude.Include.NON_NULL)
-    private HashMap<String, Citizen> getCitizens() {
-        if (citizens.isEmpty()) {
-            return null;
-        }
-        return citizens;
-    }
-
-    @SuppressWarnings("unused")
-    private void setCitizens(@JsonProperty("citizens") HashMap<String, Citizen> citizens) {
-        this.citizens = citizens;
-        KingdomsManager.scheduleKingdomInit(this);
-    }
-
-    @Override
-    public String toString() {
-        return id;
-    }
-
     public Component name() {
         return Component.text(Character.toUpperCase(id.charAt(0)) + id.substring(1), NamedTextColor.GOLD);
     }
 
     public Component king() {
         return Component.text(isMale ? "King " : "Queen ").append(Bukkit.getPlayer(kingID).name());
+    }
+
+    private boolean resolved = false;
+    private String postOfficeDistrictIdDeferred;
+
+    public void resolveReferences() {
+        if (resolved) throw new IllegalStateException("Tried to resolve references a second time, but resolving should only be done once!");
+        resolved = true;
+        postOfficeDistrict = getDistrict(postOfficeDistrictIdDeferred);
+        postOfficeDistrictIdDeferred = null;
+        getDistricts().forEach(district -> district.resolveReferences(this));
+        getCitizens().forEach(citizen -> citizen.resolveReferences(this));
+    }
+
+    @JsonProperty("postOfficeDistrict") @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String getPostOfficeDistrictJSON() {
+        return postOfficeDistrict.id;
+    }
+
+    @JsonProperty("postOfficeDistrict")
+    private void setPostOfficeDistrictJSON(String postOfficeDistrict) {
+        postOfficeDistrictIdDeferred = postOfficeDistrict;
+    }
+
+    @JsonProperty("districts") @JsonInclude(JsonInclude.Include.NON_NULL) // Blir brukt av JSONParseren
+    private Collection<District> getDistrictsJSON() {
+        if (districts.isEmpty()) return null;
+        return districts.values();
+    }
+
+    @JsonProperty("districts")
+    private void setDistrictsJSON(@JsonProperty("citizens") Collection<District> districts) {
+        districts.forEach(district -> this.districts.put(district.id, district));
+    }
+
+    @JsonProperty("citizens") @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Collection<Citizen> getCitizensJSON() {
+        if (citizens.isEmpty()) return null;
+        return citizens.values();
+    }
+
+    @JsonProperty("citizens")
+    private void setCitizensJSON(@JsonProperty("citizens") Collection<Citizen> citizens) {
+        citizens.forEach(citizen -> this.citizens.put(citizen.name, citizen));
     }
 }

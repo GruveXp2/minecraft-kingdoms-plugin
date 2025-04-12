@@ -1,5 +1,6 @@
 package gruvexp.gruvexp.core;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -7,9 +8,9 @@ import gruvexp.gruvexp.rail.Coord;
 import gruvexp.gruvexp.rail.Section;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -19,8 +20,9 @@ public class District {
     private Kingdom kingdom;
 
     private Material icon;
-    private final HashMap<String, Locality> localities = new HashMap<>();
+
     private final HashMap<String, Section> sections = new HashMap<>();
+    private final HashMap<String, Locality> localities = new HashMap<>();
 
     public District(String id, Kingdom kingdom, Material icon) {
         this.id = id;
@@ -28,13 +30,14 @@ public class District {
         this.kingdom = kingdom;
     }
 
-    public Kingdom getKingdom() {
-        return kingdom;
+    @JsonCreator
+    private District(String id, Material icon) {
+        this.id = id;
+        this.icon = icon;
     }
 
-    public void setKingdom(Kingdom kingdom) {
-        if (this.kingdom != null) throw new IllegalStateException("This district already have a district assigned to it!");
-        this.kingdom = kingdom;
+    public Kingdom getKingdom() {
+        return kingdom;
     }
 
     public Material getIcon() {
@@ -48,9 +51,8 @@ public class District {
     }
 
     public Component addLocality(String localityID, Material material) {
-        if (localities.containsKey(localityID)) {
-            throw new IllegalArgumentException(ChatColor.RED + "Address \"" + localityID + "\" already exist!");
-        }
+        if (localities.containsKey(localityID)) return Component.text("Locality \"" + id + "\" already exists!", NamedTextColor.RED);
+
         localities.put(localityID, new Locality(localityID, this, material));
         return Component.text("Successfully added locality ")
                 .append(Component.text(localityID, NamedTextColor.GOLD))
@@ -64,10 +66,8 @@ public class District {
         return localities.get(localityID);
     }
 
-    public Component removeLocality(String localityID) {
-        if (!localities.containsKey(localityID)) return Component.text("No locality with id \"" + localityID + "\" exists", NamedTextColor.RED);
-        localities.remove(localityID);
-        return Component.text("Successfully removed locality: ").append(Component.text(localityID));
+    public Collection<Locality> getLocalities() {
+        return localities.values();
     }
 
     @JsonIgnore
@@ -75,12 +75,10 @@ public class District {
         return localities.keySet();
     }
 
-    @SuppressWarnings("unused") @JsonProperty("localities") @JsonInclude(JsonInclude.Include.NON_NULL) // Blir brukt av JSONParseren
-    private HashMap<String, Locality> getLocalities() {
-        if (localities.isEmpty()) {
-            return null;
-        }
-        return localities;
+    public Component removeLocality(String localityID) {
+        if (!localities.containsKey(localityID)) return Component.text("No locality with id \"" + localityID + "\" exists", NamedTextColor.RED);
+        localities.remove(localityID);
+        return Component.text("Successfully removed locality: ").append(Component.text(localityID));
     }
 
     public Component addSection(String sectionID, Coord entry) {
@@ -94,55 +92,61 @@ public class District {
         return sections.get(sectionID);
     }
 
+    @JsonIgnore
+    public Collection<Section> getSections() {
+        return sections.values();
+    }
+
+    @JsonIgnore
+    public Set<String> getSectionIDs() {return sections.keySet();}
+
     public Component removeSection(String sectionID) {
         if (!sections.containsKey(sectionID)) return Component.text("No section with id \"" + sectionID + "\" exists", NamedTextColor.RED);
         sections.remove(sectionID);
         return Component.text("Successfully removed rail section: ").append(Component.text(sectionID));
     }
 
-    @JsonIgnore
-    public Set<String> getSectionIDs() {return sections.keySet();}
-
-    @SuppressWarnings("unused") @JsonProperty("sections") @JsonInclude(JsonInclude.Include.NON_NULL) // Blir brukt av JSONParseren
-    private HashMap<String, Section> getSections() {
-        if (sections.isEmpty()) {
-            return null;
-        }
-        return sections;
-    }
-
-    public boolean notContainsSection(String sectionID) {
-        return !sections.containsKey(sectionID);
-    }
-
-    public void setEntrypoint(String kingdom, String district, String address, String section, char dir) {
-        entrypoints.put(address, new Entrypoint(kingdom, district, address, section, dir));
-    }
-
-    public Entrypoint getEntrypoint(String address) {
-        return entrypoints.get(address);
-    }
-
-    @SuppressWarnings("unused") @JsonProperty("entrypoints") @JsonInclude(JsonInclude.Include.NON_NULL) // Blir brukt av JSONParseren
-    private HashMap<String, Entrypoint> getEntrypoints() {
-        if (entrypoints.isEmpty()) {
-            return null;
-        }
-        return entrypoints;
-    }
-
-    public void removeEntrypoint(String address) {
-        entrypoints.remove(address);
-    }
-
     public Component name() {
         return Component.text(id, NamedTextColor.GOLD);
     }
+
     public String tag() {
         return kingdom.id + ":" + id;
     }
 
     public Component address() {
         return kingdom.name().append(Component.text(":")).append(Component.text(id));
+    }
+
+    private boolean resolved = false;
+
+    public void resolveReferences(Kingdom parentKingdom) {
+        if (resolved) throw new IllegalStateException("Tried to resolve references a second time, but resolving should only be done once!");
+        resolved = true;
+        this.kingdom = parentKingdom;
+        getLocalities().forEach(locality -> locality.resolveReferences(this));
+        getSections().forEach(section -> section.resolveReferences(this));
+    }
+
+    @JsonProperty("sections") @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Collection<Section> getSectionsJSON() {
+        if (sections.isEmpty()) return null;
+        return sections.values();
+    }
+
+    @JsonProperty("sections")
+    private void setSectionsJSON(Collection<Section> sections) {
+        sections.forEach(section -> this.sections.put(section.id, section));
+    }
+
+    @JsonProperty("localities") @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Collection<Locality> getLocalitiesJSON() {
+        if (localities.isEmpty())  return null;
+        return localities.values();
+    }
+
+    @JsonProperty("localities")
+    private void setLocalitiesJSON(Collection<Locality> localities) {
+        localities.forEach(locality -> this.localities.put(locality.id, locality));
     }
 }
