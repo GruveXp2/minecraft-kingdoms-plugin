@@ -52,6 +52,7 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
         this.profession = Registry.VILLAGER_PROFESSION.get(new NamespacedKey("minecraft", profession));
     }
 
+    @JsonIgnore
     public Kingdom getKingdom() {
         return kingdom;
     }
