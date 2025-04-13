@@ -5,6 +5,7 @@ import gruvexp.gruvexp.core.Kingdom;
 import gruvexp.gruvexp.core.KingdomsManager;
 import gruvexp.gruvexp.core.Locality;
 import gruvexp.gruvexp.rail.Coord;
+import gruvexp.gruvexp.rail.Section;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
@@ -37,12 +38,13 @@ public class DistrictCommand implements CommandExecutor {
         String oper = args[1];
         switch (oper) {
             case "info" -> {
-                return Component.text("District ", District.LABEL_COLOR).append(district.name())
+                return Component.newline()
+                        .append(Component.text("District ", District.LABEL_COLOR)).append(district.name())
                         .append(Component.text(" in ")).append(kingdom.name()).append(Component.text(":\n"))
-                        .append(Component.text("Icon: ")).append(Component.text(district.getIcon().toString())).appendNewline()
+                        .append(Component.text("Icon: ")).append(Component.text(district.getIcon().toString(), NamedTextColor.GREEN)).appendNewline()
                         .append(Component.text(district.getLocalityIDs().size())).append(Component.text(" localities", Locality.LABEL_COLOR)).append(Component.text(": "))
                         .append(Component.text(String.join(", ", district.getLocalityIDs()), Locality.VALUE_COLOR)).appendNewline()
-                        .append(Component.text(district.getSectionIDs().size())).append(Component.text(" rail sections"));
+                        .append(Component.text(district.getSectionIDs().size(), Section.VALUE_COLOR)).append(Component.text(" rail sections", Section.LABEL_COLOR));
             }
             case "set" -> {
                 if (args.length < 4) return Component.text("You must specify what to set and a value: set [king | color] <value>", NamedTextColor.RED);

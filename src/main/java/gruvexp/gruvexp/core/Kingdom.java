@@ -14,8 +14,8 @@ import java.util.*;
 
 public class Kingdom {
 
-    public static final TextColor LABEL_COLOR = TextColor.color(0xff9f80);
-    public static final TextColor VALUE_COLOR = TextColor.color(0xffcfbf);
+    public static final TextColor LABEL_COLOR = TextColor.color(0xff6633);
+    public static final TextColor VALUE_COLOR = TextColor.color(0xff9f80);
 
     public final String id;
 

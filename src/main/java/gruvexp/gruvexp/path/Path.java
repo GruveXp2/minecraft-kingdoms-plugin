@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 
 public class Path {
 
-    public static final TextColor LABEL_COLOR = TextColor.color(0xeaff80);
-    public static final TextColor VALUE_COLOR = TextColor.color(0xf4ffbf);
+    public static final TextColor LABEL_COLOR = TextColor.color(0xddff33);
+    public static final TextColor VALUE_COLOR = TextColor.color(0xeaff80);
 
     public static final HashSet<String> DIRECTIONS = new HashSet<>(Arrays.asList("n", "s", "e", "w", "ne", "nw", "se", "sw"));
 
