@@ -13,6 +13,8 @@ import gruvexp.gruvexp.menu.menus.SelectLocalityMenu;
 import gruvexp.gruvexp.menu.menus.SelectDistrictMenu;
 import gruvexp.gruvexp.menu.menus.SelectKingdomMenu;
 import gruvexp.gruvexp.menu.menus.StationMenu;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
@@ -109,9 +111,19 @@ public class Entrypoint {
         selectLocalityMenu = null;
     }
 
-    public void setTargetKingdom(Kingdom kingdom) {
+    public Component setTargetKingdom(Kingdom kingdom) {
         targetKingdom = kingdom;
         stationMenu.setKingdom(kingdom);
+        if (stationMenu.isMailMode()) {
+            District postOfficeDistrict = kingdom.getPostOfficeDistrict();
+            if (postOfficeDistrict == null) return kingdom.name().append(Component.text(" has no registered post office!\n", NamedTextColor.RED))
+                    .append(Component.text("To register a post office, run /kingdom set post_office", NamedTextColor.WHITE));
+            Locality targetLocality = postOfficeDistrict.getLocality("post_office");
+            if (targetLocality == null) return postOfficeDistrict.name().append(Component.text(" has no locality named post_office!\n", NamedTextColor.RED))
+                    .append(Component.text("Fix this by adding a locality named \"post_office\".\nAnd remember to add an entrypoint", NamedTextColor.WHITE));
+            setTargetLocality(targetLocality);
+            return null;
+        }
         if (kingdom.getDistrictIDs().size() == 1) {
             setTargetDistrict(kingdom.getDistricts().iterator().next());
         } else {
@@ -119,6 +131,7 @@ public class Entrypoint {
             targetLocality = null;
         }
         selectDistrictMenu = new SelectDistrictMenu(this);
+        return null;
     }
 
     public void setTargetDistrict(District district) {
