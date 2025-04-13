@@ -6,9 +6,12 @@ import gruvexp.gruvexp.core.District;
 import gruvexp.gruvexp.core.Kingdom;
 import gruvexp.gruvexp.path.Path;
 import gruvexp.gruvexp.path.WalkPath;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
 import org.bukkit.block.data.Rail;
 import org.bukkit.entity.*;
+import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -59,20 +62,20 @@ public class DriveCart extends BukkitRunnable {
         if (cart.getPassengers().getFirst() instanceof Villager) {
             //Bukkit.broadcastMessage("a villager sits in the cart");
         } else {
-            Bukkit.broadcastMessage(".addPassenger() is trash and dont work");
+            Bukkit.broadcast(Component.text(".addPassenger() is trash and dont work"));
         }
         //Bukkit.broadcastMessage("as you clearly see, the villager is now sitting in the minecart");
     }
 
     public void terminate(String error) {
-        Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(ChatColor.RED + "A minecart got stuck on the railway! Location: " + loc.getX() + " " + (int) loc.getY() + " " + loc.getZ() + "\n" + error));
+        Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(Component.text("A minecart got stuck on the railway! Location: " + loc.getX() + " " + (int) loc.getY() + " " + loc.getZ() + "\n" + error, NamedTextColor.RED)));
         cancel(); // i framtida så kommer det rød blocc og tekst som sier hva som gikk galt og at man kan ta /fix for å fikse det eller noe
         cart.remove();
     }
 
     public void terminate() {
         if (!cart.getPassengers().isEmpty() && cart.getPassengers().getFirst() instanceof Player p) {
-            p.sendMessage(ChatColor.GRAY + "Destination reached: " + ((Math.ceil(totalDistance / 100f))/10f) + " km");
+            p.sendMessage(Component.text("Destination reached: " + ((Math.ceil(totalDistance / 100f))/10f) + " km", NamedTextColor.GRAY));
             CartManager.removeCart(cart.getUniqueId());
         } else if (!cart.getPassengers().isEmpty() && cart.getPassengers().getFirst() instanceof Villager villager) {
             Path path = targetLocality.getPath("station_exit"); // hardcode: alle adresses som villidgers kan komme til med rail systemet må ha en path som kalles "station_exit" som villidgersene kan gå på når de er framme.
@@ -101,16 +104,24 @@ public class DriveCart extends BukkitRunnable {
     }
 
     void syncPosition() { // telporterer til server posisjon hvis carten er for langt unna
-        if (cart.isDead() || cart.getPassengers().isEmpty()) { // hvis man leaver carten midt i
+        if (cart.isDead()) {
             cancel();
-            cart.remove();
             return;
         }
-        if (cart.getPassengers().contains(passenger)) {
-            cart.removePassenger(passenger);
+        if (cart instanceof RideableMinecart) { // hvis man leaver carten midt i
+            if (cart.getPassengers().isEmpty()) {
+                cart.remove();
+                cancel();
+                return;
+            }
+            if (cart.getPassengers().contains(passenger)) {
+                cart.removePassenger(passenger);
+            }
         }
         cart.teleport(loc);
-        cart.addPassenger(passenger);
+        if (cart instanceof RideableMinecart) {
+            cart.addPassenger(passenger);
+        }
         updateVelocity();
     }
 
@@ -147,11 +158,11 @@ public class DriveCart extends BukkitRunnable {
                 route = currentSection.getEndpointRoute("*"); // hvis det er * så betyr det alt som ikke er spesifisert i de andre rutene
                 if (route == null) { // error, no route to destination
                     if (!Objects.equals(currentKingdom.id, targetKingdom.id)) {
-                        terminate(ChatColor.RED + "Cant find route to kingdom " + ChatColor.BOLD + targetKingdom.id);
+                        terminate("Cant find route to kingdom " + targetKingdom.id);
                     } else if (!Objects.equals(currentDistrict.id, targetDistrict.id)) {
-                        terminate(ChatColor.RED + "Cant find route to district " + ChatColor.BOLD + targetDistrict.id);
+                        terminate("Cant find route to district " + targetDistrict.id);
                     } else {
-                        terminate(ChatColor.RED + "Cant find route to address " + ChatColor.BOLD + targetLocality.id);
+                        terminate("Cant find route to address " + targetLocality.id);
                     }
                     return;
                 }
@@ -182,7 +193,7 @@ public class DriveCart extends BukkitRunnable {
         currentSection = nextSection;
         length = currentSection.getLength();
         if (length == 0) {
-            terminate(ChatColor.RED + "Sector " + currentSection.id + " length is not calculated!");
+            terminate("Sector " + currentSection.id + " length is not calculated!");
             return;
         }
         speed = currentSection.getSpeed() / 2f;
