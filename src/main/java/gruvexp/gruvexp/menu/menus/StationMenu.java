@@ -109,12 +109,6 @@ public class StationMenu extends Menu {
             inventory.setItem(3, makeItem(Material.PAPER, "select district", "district"));
         }
         inventory.setItem(5, null);
-        if (mailMode) {
-            District postOfficeDistrict = kingdom.getPostOfficeDistrict();
-            Locality targetLocality = postOfficeDistrict.getLocality("post_office");
-            if (targetLocality == null) return;
-            entrypoint.setTargetLocality(targetLocality);
-        }
         inventory.setItem(1, makeHeadItem(p, kingdom.id, "kingdom", p.getName()));
     }
 

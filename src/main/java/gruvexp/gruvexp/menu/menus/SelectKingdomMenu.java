@@ -4,8 +4,8 @@ import gruvexp.gruvexp.core.Kingdom;
 import gruvexp.gruvexp.menu.Menu;
 import gruvexp.gruvexp.rail.Entrypoint;
 import gruvexp.gruvexp.core.KingdomsManager;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -35,11 +35,8 @@ public class SelectKingdomMenu extends Menu {
         if (e.getSlot() >= getSlots()) {return;}
         Player p = (Player) e.getWhoClicked();
         if (e.getSlot() > 8) {return;}
-        try {
-            entrypoint.setTargetKingdom(KingdomsManager.getKingdom(e.getCurrentItem().getItemMeta().getDisplayName()));
-        } catch (IllegalArgumentException ex) {
-            p.sendMessage(ChatColor.RED + ex.getMessage());
-        }
+        Component result = entrypoint.setTargetKingdom(KingdomsManager.getKingdom(e.getCurrentItem().getItemMeta().getDisplayName()));
+        if (result != null) p.sendMessage(result);
         entrypoint.openInventory(p, "main");
     }
 
