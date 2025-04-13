@@ -58,7 +58,13 @@ public class RailCartListener implements Listener {
                 e.setCancelled(true);
                 return;
             }
-            if (entrypoint.getTargetLocality() == null) {
+            if (entrypoint.getStationMenu().isMailMode()) {
+                if (entrypoint.getTargetKingdom() == null) {
+                    p.sendMessage(Component.text("You must set the kingdom before you send mail!", NamedTextColor.RED));
+                    e.setCancelled(true);
+                    return;
+                }
+            } else if (entrypoint.getTargetLocality() == null) {
                 p.sendMessage(Component.text("You must set the address before you use the railway!", NamedTextColor.RED));
                 e.setCancelled(true);
                 return;
