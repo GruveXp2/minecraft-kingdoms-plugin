@@ -38,7 +38,8 @@ public class PathCommand implements CommandExecutor {
         String oper = args[1];
         switch (oper) {
             case "info" -> {
-                return Component.text("Path ", Path.LABEL_COLOR).append(path.name()).append(Component.text(" has the following data:\n"))
+                return Component.newline()
+                        .append(Component.text("Path ", Path.LABEL_COLOR)).append(path.name()).append(Component.text(" has the following data:\n"))
                         .append(Component.text("Starts at ")).append(path.getStartPos().name()).appendNewline()
                         .append(Component.text("Turns: ")).append(path.turns()).appendNewline()
                         .append(Component.text("Branches: ")).appendNewline().append(path.branches());

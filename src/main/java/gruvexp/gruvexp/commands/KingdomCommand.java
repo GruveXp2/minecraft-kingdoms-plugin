@@ -38,12 +38,13 @@ public class KingdomCommand implements CommandExecutor {
         switch (oper) {
             case "info" -> {
                 Component postOffice = kingdom.getPostOfficeDistrict() != null ? kingdom.getPostOfficeDistrict().name() : Component.text("none");
-                return Component.text("Kingdom ", Kingdom.LABEL_COLOR).append(kingdom.name()).append(Component.text(":\n"))
+                return Component.newline()
+                        .append(Component.text("Kingdom ", Kingdom.LABEL_COLOR)).append(kingdom.name()).append(Component.text(":\n", NamedTextColor.WHITE)
                         .append(Component.text("Ruler: ")).append(kingdom.king()).appendNewline()
-                        .append(Component.text("Post office: ")).append(postOffice).appendNewline()
-                        .append(Component.text(kingdom.getDistrictIDs().size())).append(Component.text(" districts", District.LABEL_COLOR)).append(Component.text(": "))
+                        .append(Component.text("Post office: ", District.LABEL_COLOR)).append(postOffice).appendNewline()
+                        .append(Component.text(kingdom.getDistrictIDs().size(), District.VALUE_COLOR)).append(Component.text(" districts", District.LABEL_COLOR)).append(Component.text(": "))
                         .append(Component.text(String.join(", ", kingdom.getDistrictIDs()), District.VALUE_COLOR)).appendNewline()
-                        .append(Component.text(kingdom.getCitizenNames().size())).append(Component.text(" citizens"));
+                        .append(Component.text(kingdom.getCitizenNames().size())).append(Component.text(" citizens")));
             }
             case "set" -> {
                 if (args.length < 4) return Component.text("You must specify what to set and a value: set [king | color] <value>", NamedTextColor.GOLD);

@@ -38,7 +38,7 @@ public final class KingdomsManager {
         if (selectedKingdom.get(p) == null) {
             UUID playerID = p.getUniqueId();
             for (Kingdom kingdom : getKingdoms()) {
-                if (kingdom.getKingID() == playerID) {
+                if (kingdom.getKingID().equals(playerID)) {
                     setSelectedKingdom(p, kingdom);
                     break;
                 }

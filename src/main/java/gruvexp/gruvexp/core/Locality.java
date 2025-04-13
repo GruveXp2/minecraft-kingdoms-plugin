@@ -19,8 +19,8 @@ import java.util.Set;
 
 public class Locality {
 
-    public static final TextColor LABEL_COLOR = TextColor.color(0xfff080);
-    public static final TextColor VALUE_COLOR = TextColor.color(0xfff8bf);
+    public static final TextColor LABEL_COLOR = TextColor.color(0xffdd33);
+    public static final TextColor VALUE_COLOR = TextColor.color(0xfff080);
 
     public final String id;
     private District district;

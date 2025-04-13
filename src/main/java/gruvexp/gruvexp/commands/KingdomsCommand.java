@@ -33,7 +33,7 @@ public class KingdomsCommand implements CommandExecutor {
         String oper = args[0];
         switch (oper) {
             case "info" -> {
-                TextComponent message = Component.text("This is the kingdom server. The central meeting place is the Big Thing, to get to it run /bigthing\n")
+                TextComponent message = Component.text("\nThis is the kingdom server. The central meeting place is the Big Thing, to get to it run /bigthing\n")
                         .append(Component.text("Here is a list of all the current ")).append(Component.text("kingdoms", Kingdom.LABEL_COLOR))
                         .append(Component.text(":\n"));
                 Collection<Kingdom> kingdoms = KingdomsManager.getKingdoms();

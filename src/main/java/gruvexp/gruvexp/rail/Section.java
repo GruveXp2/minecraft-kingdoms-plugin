@@ -28,8 +28,8 @@ import java.util.*;
 
 public final class Section {
 
-    public static final TextColor LABEL_COLOR = TextColor.color(0xff80bf);
-    public static final TextColor VALUE_COLOR = TextColor.color(0xffbfdf);
+    public static final TextColor LABEL_COLOR = TextColor.color(0xff3399);
+    public static final TextColor VALUE_COLOR = TextColor.color(0xff80bf);
 
     public final String id;
     private District district;

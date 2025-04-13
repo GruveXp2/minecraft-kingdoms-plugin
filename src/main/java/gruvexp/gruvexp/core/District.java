@@ -17,8 +17,8 @@ import java.util.Set;
 
 public class District {
 
-    public static final TextColor LABEL_COLOR = TextColor.color(0xffbf80);
-    public static final TextColor VALUE_COLOR = TextColor.color(0xffdfbf);
+    public static final TextColor LABEL_COLOR = TextColor.color(0xff9933);
+    public static final TextColor VALUE_COLOR = TextColor.color(0xffbf80);
 
     public final String id;
     private Kingdom kingdom;
