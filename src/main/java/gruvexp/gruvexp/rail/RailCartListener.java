@@ -116,6 +116,6 @@ public class RailCartListener implements Listener {
         Entrypoint entrypoint = locality.getEntrypoint();
         if (entrypoint == null) return Component.text("No entrypoint is attached to this locality. Run /locality <locality> add entrypoint to add one", NamedTextColor.YELLOW);
         entrypoint.openInventory(p, "main");
-        return Component.empty();
+        return null;
     }
 }
