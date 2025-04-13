@@ -48,9 +48,6 @@ public class Kingdom {
                 .append(Component.text(" to ")).append(king());
     }
 
-    @JsonProperty("color") @JsonInclude(JsonInclude.Include.NON_NULL)
-    public TextColor getColor() {return color;}
-
     public Component setColor(TextColor color) {
         this.color = color;
 
@@ -160,9 +157,17 @@ public class Kingdom {
     }
 
     @JsonProperty("king")
-    private String getKing() {
+    private String getKingJSON() {
         return kingID.toString();
     }
+
+    @JsonProperty("color") @JsonInclude(JsonInclude.Include.NON_NULL)
+    private void setColorJSON(String color) {
+        this.color = TextColor.fromHexString(color);
+    }
+
+    @JsonProperty("color") @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String getColorJSON() {return color.asHexString();}
 
     @JsonProperty("postOfficeDistrict") @JsonInclude(JsonInclude.Include.NON_NULL)
     private String getPostOfficeDistrictJSON() {
