@@ -34,7 +34,8 @@ public class KingdomsCommand implements CommandExecutor {
         switch (oper) {
             case "info" -> {
                 TextComponent message = Component.text("This is the kingdom server. The central meeting place is the Big Thing, to get to it run /bigthing\n")
-                        .append(Component.text("Here is a list of all the current kingdoms:\n"));
+                        .append(Component.text("Here is a list of all the current ")).append(Component.text("kingdoms", Kingdom.LABEL_COLOR))
+                        .append(Component.text(":\n"));
                 Collection<Kingdom> kingdoms = KingdomsManager.getKingdoms();
 
                 for (Kingdom kingdom : kingdoms) {
@@ -63,9 +64,9 @@ public class KingdomsCommand implements CommandExecutor {
                 return KingdomsManager.setSelectedLocality(p, locality);
             }
             case "add" -> {
-                if (args.length == 1) return Component.text("You must specify what to add (probably a kingdom)", NamedTextColor.RED);
+                if (args.length == 1) return Component.text("You must specify what to add (probably a kingdom)", NamedTextColor.GOLD);
                 if (args[1].equals("kingdom")) {
-                    if (args.length < 4) return Component.text("You must specify a kingdom name, a player that will be king, and the player's gender", NamedTextColor.RED);
+                    if (args.length < 4) return Component.text("You must specify a kingdom name, a player that will be king, and the player's gender", NamedTextColor.GOLD);
                     String kingdomID = args[2];
                     String playerName = args[3];
                     Player king = Bukkit.getPlayer(playerName);
@@ -99,9 +100,9 @@ public class KingdomsCommand implements CommandExecutor {
                 }
             }
             case "remove" -> {
-                if (args.length == 1) return Component.text("You must specify what to remove (probably a kingdom)", NamedTextColor.RED);
+                if (args.length == 1) return Component.text("You must specify what to remove (probably a kingdom)", NamedTextColor.GOLD);
                 if (args[1].equals("kingdom")) {
-                    if (args.length == 2) return Component.text("You must specify what kingdom to remove", NamedTextColor.RED);
+                    if (args.length == 2) return Component.text("You must specify what kingdom to remove", NamedTextColor.GOLD);
                     String kingdomID = args[2];
                     if (args.length == 3) return Component.text("You must type the password to do this action", NamedTextColor.RED);
                     String password = args[3];

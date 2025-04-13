@@ -38,18 +38,18 @@ public class RailCommand implements CommandExecutor {
         Kingdom kingdom = KingdomsManager.getSelectedKingdom(p);
         District district = KingdomsManager.getSelectedDistrict(p);
         if (district == null) return Component.text("You must specify the scope of this command (what district you wanna work with)" +
-                "\nrun /kingdoms select <kingdom> <district>", NamedTextColor.RED);
+                "\nrun /kingdoms select <kingdom> <district>", NamedTextColor.GOLD);
 
         String sectionID = args[0];
         Section section = district.getSection(sectionID);
         if (section == null) return Component.text(kingdom.id + ":" + district.id + " has no section named \"" + sectionID + "\"!", NamedTextColor.RED);
-        if (args.length == 1) return Component.text("You must specify an operation [info | set | add | remove]", NamedTextColor.RED);
+        if (args.length == 1) return Component.text("You must specify an operation [info | set | add | remove]", NamedTextColor.GOLD);
 
         String oper = args[1];
         switch (oper) {
             case "info" -> {
                 Component borderInfo = section.hasBorder() ? Component.text("Border: ").append(section.getBorder().address()).appendNewline() : Component.empty();
-                return Component.text("Rail section ").append(section.name()).append(Component.text(" has the following data:\n"))
+                return Component.text("Rail section ", Section.LABEL_COLOR).append(section.name()).append(Component.text(" has the following data:\n"))
                         .append(Component.text("Entry: ")).append(section.getEntry().name()).appendNewline()
                         .append(Component.text("Exit: ")).append(section.getExit().name()).appendNewline()
                         .append(Component.text("Speed: ")).append(section.speed()).appendNewline()
@@ -58,20 +58,20 @@ public class RailCommand implements CommandExecutor {
 
             }
             case "set" -> {
-                if (args.length == 2) return Component.text("You must specify what to set: [entry | exit | speed | route | multi_route | border] <value(s)>", NamedTextColor.RED);
+                if (args.length == 2) return Component.text("You must specify what to set: [entry | exit | speed | route | multi_route | border] <value(s)>", NamedTextColor.GOLD);
                 String property = args[2];
                 switch (property) {
                     case "entry" -> {
-                        if (args.length < 6) return Component.text("You must specify the coordinates: set entry <x y z>", NamedTextColor.RED);
+                        if (args.length < 6) return Component.text("You must specify the coordinates: set entry <x y z>", NamedTextColor.GOLD);
                         return section.setEntry(new Coord(args[3], args[4], args[5]));
                     }
                     case "exit" -> {
-                        if (args.length < 6) return Component.text("You must specify the coordinates: set exit <x y z>", NamedTextColor.RED);
+                        if (args.length < 6) return Component.text("You must specify the coordinates: set exit <x y z>", NamedTextColor.GOLD);
                         return section.setExit(new Coord(args[3], args[4], args[5]));
                     }
                     case "next_section" -> { // tabcompletion som bare viser sections som har samme entry som @s exit! Hvis det ikke er noen sections, står det "found no sections to link with". Det står alltid "terminal"
                         // <rail section> set next_section <section>
-                        if (args.length == 3) return Component.text("You must specify the section to link with (or if its the last stop (end)): set next_section [<section> | end]", NamedTextColor.RED);
+                        if (args.length == 3) return Component.text("You must specify the section to link with (or if its the last stop (end)): set next_section [<section> | end]", NamedTextColor.GOLD);
                         String nextSectionID = args[3];
                         if (nextSectionID.contains("end") || Objects.equals(nextSectionID, "stop") || Objects.equals(nextSectionID, "exit")) {
                             return section.setNextSection(null);
@@ -87,7 +87,7 @@ public class RailCommand implements CommandExecutor {
                     }
                     case "route" -> { // adder data til den spesifiserte retninga
                         // /rail <rail section> set route forward east_west section adr adr adr
-                        if (args.length < 7) return Component.text("Not enough args specified! Usage: set route [forward | right | left] <rail shape> <target section> <list of adresses>", NamedTextColor.RED);
+                        if (args.length < 7) return Component.text("Not enough args specified! Usage: set route [forward | right | left] <rail shape> <target section> <list of adresses>", NamedTextColor.GOLD);
 
                         String direction = args[3]; // right
                         if (!KingdomsManager.ROUTES.contains(direction)) return Component.text("\"" + direction + "\" is not a valid direction!", NamedTextColor.RED);
@@ -110,7 +110,7 @@ public class RailCommand implements CommandExecutor {
                         return section.setRoute(direction, railShape, targetSection, addresses);
                     }
                     case "border" -> { // /rail <section> set border <kdom> <distr>, og tabcompletionen foreslår border | border <currentkingdom>
-                        if (args.length == 3) return Component.text("You must specify what border district to set: border <kingdom> <district>");
+                        if (args.length == 3) return Component.text("You must specify what border district to set: border <kingdom> <district>", NamedTextColor.GOLD);
                         String targetKingdomID = args[3];
                         Kingdom targetKingdom = KingdomsManager.getKingdom(targetKingdomID);
                         if (targetKingdom == null) return Component.text("Kingdom \"" + targetKingdomID + "\" doesnt exist!", NamedTextColor.RED);
@@ -122,7 +122,7 @@ public class RailCommand implements CommandExecutor {
                         return section.setBorder(targetDistrict);
                     }
                     case "speed" -> { // /rail set <section> speed <speed>
-                        if (args.length == 3) return Component.text("You must specify what speed to set: speed [normal | fast | express]");
+                        if (args.length == 3) return Component.text("You must specify what speed to set: speed [normal | fast | express]", NamedTextColor.GOLD);
 
                         String speedName = args[3];
                         int speed = switch (speedName) {
@@ -140,12 +140,12 @@ public class RailCommand implements CommandExecutor {
                 }
             }
             case "remove" -> { // rail remove <section> route forward
-                if (args.length == 2) return Component.text("You must specify what to remove [route | border]", NamedTextColor.RED);
+                if (args.length == 2) return Component.text("You must specify what to remove [route | border]", NamedTextColor.GOLD);
 
                 String property = args[2];
                 switch (property) {
                     case "route" -> {
-                        if (args.length == 3) return Component.text("You must specify what route to remove: route [<route direction> | all]", NamedTextColor.RED);
+                        if (args.length == 3) return Component.text("You must specify what route to remove: route [<route direction> | all]", NamedTextColor.GOLD);
 
                         String routeDirection = args[3];
                         if (routeDirection.equals("all")) return section.removeAllRoutes();
@@ -162,7 +162,7 @@ public class RailCommand implements CommandExecutor {
                 }
             }
             case "calculate_length" -> { // /rail <section> calculate_length n
-                if (args.length == 2) return Component.text("You must specify which direction one drives on the rail, from the entry point: [n | s | e | w]", NamedTextColor.RED);
+                if (args.length == 2) return Component.text("You must specify which direction one drives on the rail, from the entry point: [n | s | e | w]", NamedTextColor.GOLD);
                 String direction = args[4];
                 if (!KingdomsManager.DIRECTIONS.contains(direction)) return Component.text("\"" + direction + "\" is not a valid direction!", NamedTextColor.RED);
 

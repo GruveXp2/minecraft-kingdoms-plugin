@@ -4,6 +4,7 @@ import gruvexp.gruvexp.core.District;
 import gruvexp.gruvexp.core.Kingdom;
 import gruvexp.gruvexp.core.KingdomsManager;
 import gruvexp.gruvexp.core.Locality;
+import gruvexp.gruvexp.path.Path;
 import gruvexp.gruvexp.rail.Coord;
 import gruvexp.gruvexp.rail.Section;
 import net.kyori.adventure.text.Component;
@@ -31,30 +32,30 @@ public class LocalityCommand implements CommandExecutor {
     private Component processCommand(Player p, String[] args, Command command) {
         District district = KingdomsManager.getSelectedDistrict(p);
         if (district == null) return Component.text("You must specify the scope of this command (what district you wanna work with)" +
-                    "\nrun /kingdoms select <kingdom> <district>", NamedTextColor.RED);
+                    "\nrun /kingdoms select <kingdom> <district>", NamedTextColor.GOLD);
 
         String localityID = args[0];
         Locality locality = district.getLocality(localityID);
         if (locality == null) return district.address().append(Component.text(" has no locality named \"" + localityID + "\"!", NamedTextColor.RED));
-        if (args.length == 1) return Component.text("You must specify an operation [info | set | add | remove]");
+        if (args.length == 1) return Component.text("You must specify an operation [info | set | add | remove]", NamedTextColor.GOLD);
 
         String oper = args[1];
         switch (oper) {
             case "info" -> {
-                return Component.text("Locality of ").append(locality.name())
+                return Component.text("Locality ", Locality.LABEL_COLOR).append(locality.name())
                         .append(Component.text(" in ")).append(district.address()).append(Component.text(":\n"))
                         .append(Component.text("Icon: ")).append(Component.text(locality.getIcon().toString())).appendNewline()
                         .append(Component.text(locality.getHouseIDs().size())).append(Component.text(" houses:\n"))
                         .append(Component.text(locality.getHouseIDs().stream()
                                 .map(String::valueOf).collect(Collectors.joining(", ")))).appendNewline()
-                        .append(Component.text(locality.getPathIDs().size())).append(Component.text(" path sections"));
+                        .append(Component.text(locality.getPathIDs().size())).append(Component.text(" path sections", Path.LABEL_COLOR));
             }
             case "set" -> {
-                if (args.length == 2) return Component.text("You must specify what to set: [icon | entrypoint] <value(s)>", NamedTextColor.RED);
+                if (args.length == 2) return Component.text("You must specify what to set: [icon | entrypoint] <value(s)>", NamedTextColor.GOLD);
                 String property = args[2];
                 switch (property) {
                     case "icon" -> {
-                        if (args.length == 3) return Component.text("You must specify what item to set to: set icon <item>", NamedTextColor.RED);
+                        if (args.length == 3) return Component.text("You must specify what item to set to: set icon <item>", NamedTextColor.GOLD);
                         String iconString = args[3];
                         Material icon = Material.getMaterial(iconString);
                         if (icon == null)
@@ -63,7 +64,7 @@ public class LocalityCommand implements CommandExecutor {
                     }
                     case "entrypoint" -> {
                         if (args.length < 5) return Component.text("You must specify what section the rail station enters, and what direction the railcart will go when entering:" +
-                                "\n set entrypoint <rail section> <direction>", NamedTextColor.RED);
+                                "\n set entrypoint <rail section> <direction>", NamedTextColor.GOLD);
                         String sectionID = args[3];
                         Section section = district.getSection(sectionID);
                         String directionStr = args[4];
@@ -76,11 +77,11 @@ public class LocalityCommand implements CommandExecutor {
                 return Component.text("Invalid property argument! Syntaxs: set icon <item>", NamedTextColor.RED);
             }
             case "add" -> {
-                if (args.length == 2) return Component.text("You must specify what to add: [house | path_section]", NamedTextColor.RED);
+                if (args.length == 2) return Component.text("You must specify what to add: [house | path_section]", NamedTextColor.GOLD);
                 String feature = args[2];
                 switch (feature) {
                     case "house" -> {
-                        if (args.length == 3) return Component.text("You must specify the house number: add house <house number>");
+                        if (args.length == 3) return Component.text("You must specify the house number: add house <house number>", NamedTextColor.GOLD);
                         int houseNumber;
                         try {
                             houseNumber = Integer.parseInt(args[3]);
@@ -90,7 +91,7 @@ public class LocalityCommand implements CommandExecutor {
                         return locality.addHouse(houseNumber);
                     }
                     case "path_section" -> {
-                        if (args.length < 6) return Component.text("You must specify the start pos of the new path section: add path_section <path id> <start: pos>");
+                        if (args.length < 6) return Component.text("You must specify the start pos of the new path section: add path_section <path id> <start: pos>", NamedTextColor.GOLD);
                         String pathID = args[3];
                         Coord start;
                         try {
@@ -106,11 +107,11 @@ public class LocalityCommand implements CommandExecutor {
                 }
             }
             case "remove" -> {
-                if (args.length == 2) return Component.text("You must specify what to remove: [house | path_section]", NamedTextColor.RED);
+                if (args.length == 2) return Component.text("You must specify what to remove: [house | path_section]", NamedTextColor.GOLD);
                 String feature = args[2];
                 switch (feature) {
                     case "house" -> {
-                        if (args.length == 3) return Component.text("You must specify which house to remove: house <house number>");
+                        if (args.length == 3) return Component.text("You must specify which house to remove: house <house number>", NamedTextColor.GOLD);
                         int houseNumber;
                         try {
                             houseNumber = Integer.parseInt(args[3]);
@@ -120,7 +121,7 @@ public class LocalityCommand implements CommandExecutor {
                         return locality.removeHouse(houseNumber);
                     }
                     case "path_section" -> {
-                        if (args.length == 3) return Component.text("You must specify which path section to remove: path_section <id>");
+                        if (args.length == 3) return Component.text("You must specify which path section to remove: path_section <id>", NamedTextColor.GOLD);
                         String pathID = args[3];
                         return locality.removePath(pathID);
                     }

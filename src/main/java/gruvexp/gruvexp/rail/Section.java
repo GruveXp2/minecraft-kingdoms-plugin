@@ -10,6 +10,7 @@ import gruvexp.gruvexp.core.Kingdom;
 import gruvexp.gruvexp.core.KingdomsManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -26,6 +27,9 @@ import org.joml.Vector3f;
 import java.util.*;
 
 public final class Section {
+
+    public static final TextColor LABEL_COLOR = TextColor.color(0xff80bf);
+    public static final TextColor VALUE_COLOR = TextColor.color(0xffbfdf);
 
     public final String id;
     private District district;
@@ -295,7 +299,7 @@ public final class Section {
     }
 
     public @NotNull Component name() {
-        return Component.text(id, NamedTextColor.LIGHT_PURPLE);
+        return Component.text(id, VALUE_COLOR);
     }
 
     public Component speed() {
@@ -330,7 +334,7 @@ public final class Section {
                         .append(Component.text(" - for addresses: ").append(Component.text(addresses, NamedTextColor.GOLD))).appendNewline();
             }
         } else if (hasNextSection()) {
-            routeInfo = Component.text("Route: enters section ").append(nextSection.name());
+            routeInfo = Component.text("Route: enters ").append(Component.text("section ", LABEL_COLOR)).append(nextSection.name());
         } else {
             routeInfo = Component.text("This section doesnt lead to other sections (final stop)");
         }

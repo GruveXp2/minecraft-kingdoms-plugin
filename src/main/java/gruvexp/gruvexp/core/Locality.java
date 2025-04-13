@@ -10,6 +10,7 @@ import gruvexp.gruvexp.rail.Entrypoint;
 import gruvexp.gruvexp.rail.Section;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Material;
 
 import java.util.Collection;
@@ -17,6 +18,9 @@ import java.util.HashMap;
 import java.util.Set;
 
 public class Locality {
+
+    public static final TextColor LABEL_COLOR = TextColor.color(0xfff080);
+    public static final TextColor VALUE_COLOR = TextColor.color(0xfff8bf);
 
     public final String id;
     private District district;
@@ -55,7 +59,7 @@ public class Locality {
         this.icon = icon;
 
         KingdomsManager.save = true;
-        return Component.text("Successfully set icon of locality ").append(name())
+        return Component.text("Successfully set icon of ").append(Component.text("locality ", LABEL_COLOR)).append(name())
                 .append(Component.text(" to " + icon.toString()));
     }
 
@@ -67,8 +71,8 @@ public class Locality {
         entrypoint = new Entrypoint(this, section, direction);
 
         KingdomsManager.save = true;
-        return Component.text("Successfully set entrypoint in ", NamedTextColor.GREEN).append(name())
-                .append(Component.text(" entering rail section ")).append(section.name())
+        return Component.text("Successfully set entrypoint in ").append(name())
+                .append(Component.text(" entering ")).append(Component.text("rail section ", Section.LABEL_COLOR)).append(section.name())
                 .append(Component.text(" in direction ")).append(Component.text(direction));
     }
 
@@ -77,7 +81,7 @@ public class Locality {
         paths.put(pathID, new Path(pathID, this, startPos));
 
         KingdomsManager.save = true;
-        return Component.text("Successfully added new path section called ", NamedTextColor.GREEN).append(Component.text(pathID, NamedTextColor.YELLOW))
+        return Component.text("Successfully added ").append(Component.text("new path section ", Path.LABEL_COLOR)).append(Component.text(pathID, Path.VALUE_COLOR))
                 .append(Component.text(" that starts at ")).append(startPos.name());
     }
 
@@ -99,7 +103,8 @@ public class Locality {
         paths.remove(pathID);
 
         KingdomsManager.save = true;
-        return Component.text("Successfully removed path section: ").append(Component.text(pathID));
+        return Component.text("Successfully removed ").append(Component.text("path section", Path.LABEL_COLOR)).append(Component.text(": "))
+                .append(Component.text(pathID, Path.VALUE_COLOR));
     }
 
     public Component addHouse(int houseNumber) {
@@ -134,13 +139,13 @@ public class Locality {
     }
 
     public Component name() {
-        return Component.text(id, NamedTextColor.GOLD);
+        return Component.text(id, VALUE_COLOR);
     }
     public String tag() {
         return district.tag() + ":" + id;
     }
     public Component address() {
-        return district.address().append(Component.text(":")).append(Component.text(id));
+        return district.address().append(Component.text(":")).append(Component.text(id, VALUE_COLOR));
     }
 
     private boolean resolved = false;

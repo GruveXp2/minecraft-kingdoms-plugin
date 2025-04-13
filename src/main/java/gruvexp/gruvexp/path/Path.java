@@ -9,11 +9,15 @@ import gruvexp.gruvexp.core.Locality;
 import gruvexp.gruvexp.rail.Coord;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Path {
+
+    public static final TextColor LABEL_COLOR = TextColor.color(0xeaff80);
+    public static final TextColor VALUE_COLOR = TextColor.color(0xf4ffbf);
 
     public static final HashSet<String> DIRECTIONS = new HashSet<>(Arrays.asList("n", "s", "e", "w", "ne", "nw", "se", "sw"));
 
@@ -102,7 +106,8 @@ public class Path {
 
         KingdomsManager.save = true;
         return Component.text("Successfully added branch at ").append(nameIndex(index).appendNewline())
-                .append(Component.text("entering path section ")).append(targetPath.nameIndex(enterIndex)).appendNewline()
+                .append(Component.text("entering "))
+                .append(Component.text("path section ", LABEL_COLOR)).append(targetPath.nameIndex(enterIndex)).appendNewline()
                 .append(Component.text("with addresses ")).append(Component.text(String.join(", ", addresses), NamedTextColor.GOLD));
     }
 
@@ -118,7 +123,7 @@ public class Path {
         this.turns = turns;
 
         KingdomsManager.save = true;
-        return Component.text("Successfully set turn data for path section ").append(name());
+        return Component.text("Successfully set turn data for ").append(Component.text("path section ", LABEL_COLOR)).append(name());
     }
 
     public PathBranch getBranch(int index) {
@@ -143,11 +148,11 @@ public class Path {
     }
 
     public Component name() {
-        return Component.text(id, NamedTextColor.YELLOW);
+        return Component.text(id, VALUE_COLOR);
     }
 
     public Component nameIndex(int index) {
-        return name().append(Component.text("", NamedTextColor.WHITE)).append(Component.text(index, NamedTextColor.BLUE));
+        return name().append(Component.text(":", NamedTextColor.WHITE)).append(Component.text(index, NamedTextColor.BLUE));
     }
 
     public Component turns() {
