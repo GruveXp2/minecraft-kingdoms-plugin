@@ -21,6 +21,8 @@ import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
+import java.util.UUID;
+
 public class StationMenu extends Menu {
 
     final Entrypoint entrypoint; // refrence til entrypoint
@@ -146,20 +148,13 @@ public class StationMenu extends Menu {
         inventory.setItem(5, null);
         inventory.setItem(7, makeItem(Material.CHEST, "Edit contents", "edit the contents", "of the minecart"));
         inventory.setItem(8, makeItem(Material.CHEST_MINECART, "Mode", ChatColor.GOLD + "message"));
-        try {
-            District targetDistrict = entrypoint.getTargetKingdom().getPostOfficeDistrict();
-            entrypoint.setTargetDistrict(targetDistrict);
-            entrypoint.setTargetLocality(targetDistrict.getLocality("post_office"));
-        } catch (IllegalArgumentException ignored) {
-            entrypoint.resetAddress();
-            inventory.setItem(1, makeItem(Material.PAPER, "Select kingdom", "kingdom"));
-        }
-        Minecart prevCart = null;
-        try {
-            prevCart = (Minecart) Bukkit.getEntity(entrypoint.getCartUUID());
-        } catch (IllegalArgumentException ignored) {
+        Kingdom targetKingdom = entrypoint.getTargetKingdom();
+        if (targetKingdom != null) entrypoint.setTargetKingdom(entrypoint.getTargetKingdom());
 
-        }
+        Minecart prevCart = null;
+        UUID cartUUID = entrypoint.getCartUUID();
+        if (cartUUID != null) prevCart = (Minecart) Bukkit.getEntity(cartUUID);
+
         if (prevCart == null || prevCart instanceof RideableMinecart ) {
             spawnCart(EntityType.CHEST_MINECART);
         }
