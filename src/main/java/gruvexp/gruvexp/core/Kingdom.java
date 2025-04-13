@@ -14,10 +14,13 @@ import java.util.*;
 
 public class Kingdom {
 
+    public static final TextColor LABEL_COLOR = TextColor.color(0xff9f80);
+    public static final TextColor VALUE_COLOR = TextColor.color(0xffcfbf);
+
     public final String id;
 
     private UUID kingID;
-    private TextColor color;
+    private TextColor color = VALUE_COLOR;
     private final boolean isMale;
 
     private District postOfficeDistrict;
@@ -63,7 +66,8 @@ public class Kingdom {
 
     public Component setPostOfficeDistrict(District district) {
         postOfficeDistrict = district;
-        return  Component.text("Successfully set post office district of ").append(name())
+        return  Component.text("Successfully set ").append(Component.text("post office district", District.LABEL_COLOR))
+                .append(Component.text("of ")).append(name())
                 .append(Component.text(" to ")).append(district.name());
     }
 
@@ -73,8 +77,8 @@ public class Kingdom {
         districts.put(districtID, new District(districtID, this, icon));
 
         KingdomsManager.save = true;
-        return Component.text("Successfully added district ")
-                .append(Component.text(districtID, NamedTextColor.GOLD))
+        return Component.text("Successfully added ").append(Component.text("new district ", District.LABEL_COLOR))
+                .append(Component.text(districtID, District.VALUE_COLOR))
                 .append(Component.text(" to ", NamedTextColor.GREEN))
                 .append(name())
                 .append(Component.text(" with icon "))
@@ -100,7 +104,7 @@ public class Kingdom {
         districts.remove(districtID);
 
         KingdomsManager.save = true;
-        return Component.text("Successfully removed district: ").append(Component.text(districtID));
+        return Component.text("Successfully removed ").append(Component.text("district ", District.LABEL_COLOR)).append(Component.text(districtID));
     }
 
     public Component addCitizen(String name, Villager.Type variant, Villager.Profession profession) {
@@ -134,7 +138,7 @@ public class Kingdom {
     }
 
     public Component name() {
-        return Component.text(Character.toUpperCase(id.charAt(0)) + id.substring(1), NamedTextColor.GOLD);
+        return Component.text(Character.toUpperCase(id.charAt(0)) + id.substring(1), color);
     }
 
     public Component king() {

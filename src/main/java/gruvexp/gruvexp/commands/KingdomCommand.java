@@ -38,15 +38,15 @@ public class KingdomCommand implements CommandExecutor {
         switch (oper) {
             case "info" -> {
                 Component postOffice = kingdom.getPostOfficeDistrict() != null ? kingdom.getPostOfficeDistrict().name() : Component.text("none");
-                return Component.text("Kingdom of ").append(kingdom.name()).append(Component.text(":\n"))
+                return Component.text("Kingdom ", Kingdom.LABEL_COLOR).append(kingdom.name()).append(Component.text(":\n"))
                         .append(Component.text("Ruler: ")).append(kingdom.king()).appendNewline()
-                        .append(Component.text("Post office: ")).append(postOffice)
-                        .append(Component.text(kingdom.getDistrictIDs().size())).append(Component.text(" districts:\n"))
-                        .append(Component.text(String.join(", ", kingdom.getDistrictIDs()))).appendNewline()
+                        .append(Component.text("Post office: ")).append(postOffice).appendNewline()
+                        .append(Component.text(kingdom.getDistrictIDs().size())).append(Component.text(" districts", District.LABEL_COLOR)).append(Component.text(": "))
+                        .append(Component.text(String.join(", ", kingdom.getDistrictIDs()), District.VALUE_COLOR)).appendNewline()
                         .append(Component.text(kingdom.getCitizenNames().size())).append(Component.text(" citizens"));
             }
             case "set" -> {
-                if (args.length < 4) return Component.text("You must specify what to set and a value: set [king | color] <value>", NamedTextColor.RED);
+                if (args.length < 4) return Component.text("You must specify what to set and a value: set [king | color] <value>", NamedTextColor.GOLD);
                 String property = args[2];
                 switch (property) {
                     case "king" -> {
@@ -73,18 +73,18 @@ public class KingdomCommand implements CommandExecutor {
                 }
             }
             case "add" -> {
-                if (args.length == 2) return Component.text("You must specify what to add: [citizen | district]", NamedTextColor.RED);
+                if (args.length == 2) return Component.text("You must specify what to add: [citizen | district]", NamedTextColor.GOLD);
                 String feature = args[2];
                 switch (feature) {
                     case "citizen" -> {
-                        if (args.length < 6) return Component.text("You must specify the details of the new citizen: add citizen <name> <variant> <profession>");
+                        if (args.length < 6) return Component.text("You must specify the details of the new citizen: add citizen <name> <variant> <profession>", NamedTextColor.GOLD);
                         String name = args[3];
                         Villager.Type variant = Registry.VILLAGER_TYPE.get(new NamespacedKey("minecraft", args[4]));
                         Villager.Profession profession = Registry.VILLAGER_PROFESSION.get(new NamespacedKey("minecraft", args[5]));
                         return kingdom.addCitizen(name, variant, profession);
                     }
                     case "district" -> {
-                        if (args.length < 5) return Component.text("You must specify the details of the new district: add district <id> <item icon>");
+                        if (args.length < 5) return Component.text("You must specify the details of the new district: add district <id> <item icon>", NamedTextColor.GOLD);
                         String districtID = args[3];
                         Material icon = Material.getMaterial(args[4]);
                         if (icon == null) return Component.text("Item called \"" + args[4] + "\" doesnt exits", NamedTextColor.RED);
@@ -96,16 +96,16 @@ public class KingdomCommand implements CommandExecutor {
                 }
             }
             case "remove" -> {
-                if (args.length == 2) return Component.text("You must specify what to remove: [citizen | district]", NamedTextColor.RED);
+                if (args.length == 2) return Component.text("You must specify what to remove: [citizen | district]", NamedTextColor.GOLD);
                 String feature = args[2];
                 switch (feature) {
                     case "citizen" -> {
-                        if (args.length == 3) return Component.text("You must specify which citizen to remove: citizen <name>");
+                        if (args.length == 3) return Component.text("You must specify which citizen to remove: citizen <name>", NamedTextColor.GOLD);
                         String name = args[3];
                         return kingdom.removeCitizen(name);
                     }
                     case "district" -> {
-                        if (args.length == 3) return Component.text("Yuo must specify which district to remove: district <id>");
+                        if (args.length == 3) return Component.text("Yuo must specify which district to remove: district <id>", NamedTextColor.GOLD);
                         String districtID = args[3];
                         return kingdom.removeDistrict(districtID);
                     }

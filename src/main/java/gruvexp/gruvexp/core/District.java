@@ -8,6 +8,7 @@ import gruvexp.gruvexp.rail.Coord;
 import gruvexp.gruvexp.rail.Section;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Material;
 
 import java.util.Collection;
@@ -15,6 +16,9 @@ import java.util.HashMap;
 import java.util.Set;
 
 public class District {
+
+    public static final TextColor LABEL_COLOR = TextColor.color(0xffbf80);
+    public static final TextColor VALUE_COLOR = TextColor.color(0xffdfbf);
 
     public final String id;
     private Kingdom kingdom;
@@ -50,7 +54,7 @@ public class District {
         this.icon = icon;
 
         KingdomsManager.save = true;
-        return Component.text("Successfully set icon of district ").append(name())
+        return Component.text("Successfully set icon of ").append(Component.text("district ", District.LABEL_COLOR)).append(name())
                 .append(Component.text(" to " + icon.toString()));
     }
 
@@ -60,9 +64,9 @@ public class District {
         localities.put(localityID, new Locality(localityID, this, material));
 
         KingdomsManager.save = true;
-        return Component.text("Successfully added locality ")
-                .append(Component.text(localityID, NamedTextColor.GOLD))
-                .append(Component.text(" to ", NamedTextColor.GREEN))
+        return Component.text("Successfully added ").append(Component.text("new locality ", Locality.LABEL_COLOR))
+                .append(Component.text(localityID, Locality.VALUE_COLOR))
+                .append(Component.text(" to "))
                 .append(name())
                 .append(Component.text(" with icon "))
                 .append(Component.text(icon.name().toLowerCase()).color(NamedTextColor.BLUE));
@@ -86,7 +90,8 @@ public class District {
         localities.remove(localityID);
 
         KingdomsManager.save = true;
-        return Component.text("Successfully removed locality: ").append(Component.text(localityID));
+        return Component.text("Successfully removed ").append(Component.text("locality", Locality.LABEL_COLOR)).append(Component.text(": "))
+                .append(Component.text(localityID, Locality.VALUE_COLOR));
     }
 
     public Component addSection(String sectionID, Coord entry) {
@@ -94,7 +99,7 @@ public class District {
         sections.put(sectionID, new Section(sectionID, this, entry));
 
         KingdomsManager.save = true;
-        return Component.text("Successfully added new rail section called ", NamedTextColor.GREEN).append(Component.text(sectionID, NamedTextColor.LIGHT_PURPLE))
+        return Component.text("Successfully added ").append(Component.text("new rail section ", Section.LABEL_COLOR)).append(Component.text(sectionID, Section.VALUE_COLOR))
                 .append(Component.text(" that starts at ")).append(entry.name());
     }
 
@@ -115,11 +120,12 @@ public class District {
         sections.remove(sectionID);
 
         KingdomsManager.save = true;
-        return Component.text("Successfully removed rail section: ").append(Component.text(sectionID));
+        return Component.text("Successfully removed ").append(Component.text("rail section", Section.LABEL_COLOR)).append(Component.text(": "))
+                .append(Component.text(sectionID, Section.VALUE_COLOR));
     }
 
     public Component name() {
-        return Component.text(id, NamedTextColor.GOLD);
+        return Component.text(id, VALUE_COLOR);
     }
 
     public String tag() {
@@ -127,7 +133,7 @@ public class District {
     }
 
     public Component address() {
-        return kingdom.name().append(Component.text(":")).append(Component.text(id));
+        return kingdom.name().append(Component.text(":")).append(Component.text(id, VALUE_COLOR));
     }
 
     private boolean resolved = false;

@@ -3,6 +3,7 @@ package gruvexp.gruvexp.commands;
 import gruvexp.gruvexp.core.District;
 import gruvexp.gruvexp.core.Kingdom;
 import gruvexp.gruvexp.core.KingdomsManager;
+import gruvexp.gruvexp.core.Locality;
 import gruvexp.gruvexp.rail.Coord;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -31,16 +32,16 @@ public class DistrictCommand implements CommandExecutor {
         String districtID = args[0];
         District district = kingdom.getDistrict(districtID);
         if (district == null) return Component.text(kingdom.id + " has no district named \"" + districtID + "\"!", NamedTextColor.RED);
-        if (args.length == 1) return Component.text("You must specify an operation [info | set | add | remove]");
+        if (args.length == 1) return Component.text("You must specify an operation [info | set | add | remove]", NamedTextColor.GOLD);
 
         String oper = args[1];
         switch (oper) {
             case "info" -> {
-                return Component.text("District of ").append(district.name())
+                return Component.text("District ", District.LABEL_COLOR).append(district.name())
                         .append(Component.text(" in ")).append(kingdom.name()).append(Component.text(":\n"))
                         .append(Component.text("Icon: ")).append(Component.text(district.getIcon().toString())).appendNewline()
-                        .append(Component.text(district.getLocalityIDs().size())).append(Component.text(" localities:\n"))
-                        .append(Component.text(String.join(", ", district.getLocalityIDs()))).appendNewline()
+                        .append(Component.text(district.getLocalityIDs().size())).append(Component.text(" localities", Locality.LABEL_COLOR)).append(Component.text(": "))
+                        .append(Component.text(String.join(", ", district.getLocalityIDs()), Locality.VALUE_COLOR)).appendNewline()
                         .append(Component.text(district.getSectionIDs().size())).append(Component.text(" rail sections"));
             }
             case "set" -> {
@@ -56,11 +57,11 @@ public class DistrictCommand implements CommandExecutor {
                 return Component.text("Invalid property argument! Syntaxs: set icon <item>", NamedTextColor.RED);
             }
             case "add" -> {
-                if (args.length == 2) return Component.text("You must specify what to add: [locality | rail_section]", NamedTextColor.RED);
+                if (args.length == 2) return Component.text("You must specify what to add: [locality | rail_section]", NamedTextColor.GOLD);
                 String feature = args[2];
                 switch (feature) {
                     case "locality" -> {
-                        if (args.length < 5) return Component.text("You must specify the details of the new locality: add locality <id> <item icon>");
+                        if (args.length < 5) return Component.text("You must specify the details of the new locality: add locality <id> <item icon>", NamedTextColor.GOLD);
                         String localityID = args[3];
                         String iconID = args[4];
                         Material icon = Material.getMaterial(iconID);
@@ -68,7 +69,7 @@ public class DistrictCommand implements CommandExecutor {
                         return district.addLocality(localityID, icon);
                     }
                     case "rail_section" -> {
-                        if (args.length < 6) return Component.text("You must specify the entry pos of the new rail section: add rail_cestion <id> <entry: pos>");
+                        if (args.length < 6) return Component.text("You must specify the entry pos of the new rail section: add rail_cestion <id> <entry: pos>", NamedTextColor.GOLD);
                         String sectionID = args[3];
                         Coord entry;
                         try {
@@ -84,16 +85,16 @@ public class DistrictCommand implements CommandExecutor {
                 }
             }
             case "remove" -> {
-                if (args.length == 2) return Component.text("You must specify what to remove: [locality | rail_section]", NamedTextColor.RED);
+                if (args.length == 2) return Component.text("You must specify what to remove: [locality | rail_section]", NamedTextColor.GOLD);
                 String feature = args[2];
                 switch (feature) {
                     case "locality" -> {
-                        if (args.length == 3) return Component.text("You must specify which locality to remove: locality <id>");
+                        if (args.length == 3) return Component.text("You must specify which locality to remove: locality <id>", NamedTextColor.GOLD);
                         String localityID = args[3];
                         return district.removeLocality(localityID);
                     }
                     case "rail_section" -> {
-                        if (args.length == 3) return Component.text("You must specify which rail section to remove: rail_section <id>");
+                        if (args.length == 3) return Component.text("You must specify which rail section to remove: rail_section <id>", NamedTextColor.GOLD);
                         String name = args[3];
                         return district.removeSection(name);
                     }

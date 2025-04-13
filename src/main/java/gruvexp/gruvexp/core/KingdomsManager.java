@@ -56,19 +56,22 @@ public final class KingdomsManager {
         selectedKingdom.put(p, kingdom);
         selectedDistrict.remove(p);
         selectedLocality.remove(p);
-        return Component.text("Successfully selected kingdom ").append(kingdom.name());
+        return Component.text("Successfully selected ")
+                .append(Component.text("kingdom ", Kingdom.LABEL_COLOR)).append(kingdom.name());
     }
     public static Component setSelectedDistrict(Player p, District district) {
         selectedKingdom.put(p, district.getKingdom());
         selectedDistrict.put(p, district);
         selectedLocality.remove(p);
-        return Component.text("Successfully selected district ").append(district.address());
+        return Component.text("Successfully selected ")
+                .append(Component.text("district ", District.LABEL_COLOR)).append(district.address());
     }
     public static Component setSelectedLocality(Player p, Locality locality) {
         selectedKingdom.put(p, locality.getDistrict().getKingdom());
         selectedDistrict.put(p, locality.getDistrict());
         selectedLocality.put(p, locality);
-        return Component.text("Successfully selected locality ").append(locality.address());
+        return Component.text("Successfully selected ")
+                .append(Component.text("locality ", Locality.LABEL_COLOR)).append(locality.address());
     }
 
     public static void init() {
@@ -108,9 +111,8 @@ public final class KingdomsManager {
         kingdoms.put(ID, new Kingdom(ID, king.getUniqueId(), isMale));
 
         KingdomsManager.save = true;
-        return Component.text("Kingdom ")
-                .append(Component.text(ID, NamedTextColor.GOLD))
-                .append(Component.text(" successfully added", NamedTextColor.GREEN))
+        return Component.text("Successfully added ").append(Component.text("new kingdom ", Kingdom.LABEL_COLOR))
+                .append(Component.text(ID, Kingdom.VALUE_COLOR))
                 .append(Component.text(" with "))
                 .append(king.name().color(NamedTextColor.YELLOW))
                 .append(Component.text(" as " + (isMale ? "king" : "queen")));
@@ -134,11 +136,12 @@ public final class KingdomsManager {
             return Component.text("Kingdom \"" + kingdomID + "\" doesnt exist!", NamedTextColor.RED);
         }
         if (!Objects.equals(password, "kjør_kano_det_forurenser_ikke")) return Component.text("Wrong password", NamedTextColor.RED);
+        kingdoms.remove(kingdomID);
 
         KingdomsManager.save = true;
-        return Component.text("Successfully removed kingdom ")
-                .append(Component.text(kingdomID, NamedTextColor.GOLD))
-                .append(Component.text(". TO UNDO THIS ACTION, BACKUP THE JSON FILE BEFORE THE SERVER CLOSES"));
+        return Component.text("Successfully removed ").append(Component.text("kingdom ", Kingdom.LABEL_COLOR))
+                .append(Component.text(kingdomID, Kingdom.VALUE_COLOR))
+                .append(Component.text(". TO UNDO THIS ACTION, BACKUP THE JSON FILE BEFORE THE SERVER CLOSES", NamedTextColor.RED));
     }
 
     public static void loadData() {
