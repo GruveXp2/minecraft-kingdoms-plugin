@@ -45,7 +45,7 @@ public class LocalityCommand implements CommandExecutor {
                 return Component.newline()
                         .append(Component.text("Locality ", Locality.LABEL_COLOR)).append(locality.name())
                         .append(Component.text(" in ")).append(district.address()).append(Component.text(":\n"))
-                        .append(Component.text("Icon: ")).append(Component.text(locality.getIcon().toString(), NamedTextColor.GREEN)).appendNewline()
+                        .append(Component.text("Icon: ")).append(Component.text(locality.getIcon().toString().toLowerCase(), NamedTextColor.GREEN)).appendNewline()
                         .append(Component.text(locality.getHouseIDs().size())).append(Component.text(" houses: "))
                         .append(Component.text(locality.getHouseIDs().stream()
                                 .map(String::valueOf).collect(Collectors.joining(", ")))).appendNewline()

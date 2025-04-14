@@ -41,7 +41,7 @@ public class DistrictCommand implements CommandExecutor {
                 return Component.newline()
                         .append(Component.text("District ", District.LABEL_COLOR)).append(district.name())
                         .append(Component.text(" in ")).append(kingdom.name()).append(Component.text(":\n"))
-                        .append(Component.text("Icon: ")).append(Component.text(district.getIcon().toString(), NamedTextColor.GREEN)).appendNewline()
+                        .append(Component.text("Icon: ")).append(Component.text(district.getIcon().toString().toLowerCase(), NamedTextColor.GREEN)).appendNewline()
                         .append(Component.text(district.getLocalityIDs().size())).append(Component.text(" localities", Locality.LABEL_COLOR)).append(Component.text(": "))
                         .append(Component.text(String.join(", ", district.getLocalityIDs()), Locality.VALUE_COLOR)).appendNewline()
                         .append(Component.text(district.getSectionIDs().size(), Section.VALUE_COLOR)).append(Component.text(" rail sections", Section.LABEL_COLOR));
