@@ -55,7 +55,7 @@ public class District {
 
         KingdomsManager.save = true;
         return Component.text("Successfully set icon of ").append(Component.text("district ", District.LABEL_COLOR)).append(name())
-                .append(Component.text(" to " + icon.toString()));
+                .append(Component.text(" to ")).append(Component.text(icon.toString().toLowerCase(), NamedTextColor.GREEN));
     }
 
     public Component addLocality(String localityID, Material material) {
