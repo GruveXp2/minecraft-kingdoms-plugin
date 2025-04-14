@@ -50,7 +50,7 @@ public class RailCommand implements CommandExecutor {
             case "info" -> {
                 Component borderInfo = section.hasBorder() ? Component.text("Border: ").append(section.getBorder().address()).appendNewline() : Component.empty();
                 Component exitValue = section.getExit() != null ? section.getExit().name() : Component.text("not set", NamedTextColor.YELLOW);
-                Component lengthValue = section.getLength() > 0 ? Component.text(section.getLength(), NamedTextColor.AQUA) : Component.text("not calculated", NamedTextColor.YELLOW);
+                Component lengthValue = section.getLength() > 0 ? Component.text(section.getLength() + "m", NamedTextColor.AQUA) : Component.text("not calculated", NamedTextColor.YELLOW);
                 return Component.newline()
                         .append(Component.text("Rail section ", Section.LABEL_COLOR)).append(section.name()).append(Component.text(" has the following data:\n"))
                         .append(Component.text("Entry: ")).append(section.getEntry().name()).appendNewline()
