@@ -63,6 +63,7 @@ public class Locality {
                 .append(Component.text(" to " + icon.toString()));
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public Entrypoint getEntrypoint() {
         return entrypoint;
     }
