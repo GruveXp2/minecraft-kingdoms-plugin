@@ -135,13 +135,13 @@ public class Kingdom {
     }
 
     public Component name() {
-        return Component.text(Character.toUpperCase(id.charAt(0)) + id.substring(1), color);
+        return Component.text(Character.toUpperCase(id.charAt(0)) + id.substring(1), VALUE_COLOR);
     }
 
     public Component king() {
         String playerName = Bukkit.getOfflinePlayer(kingID).getName();
         if (playerName == null) playerName = "failed to load name of ruler";
-        return Component.text(isMale ? "King " : "Queen ").append(Component.text(playerName, NamedTextColor.LIGHT_PURPLE));
+        return Component.text(isMale ? "King " : "Queen ").append(Component.text(playerName, color));
     }
 
     private boolean resolved = false;
