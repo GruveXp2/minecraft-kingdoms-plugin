@@ -90,7 +90,7 @@ public class RailTabCompletion implements TabCompleter {
                 }
             }
             case "calculate_length" -> {
-                if (args.length == 4) return KingdomsManager.DIRECTIONS.stream().toList();
+                if (args.length == 3) return KingdomsManager.DIRECTIONS.stream().toList();
             }
         }
         return List.of();
