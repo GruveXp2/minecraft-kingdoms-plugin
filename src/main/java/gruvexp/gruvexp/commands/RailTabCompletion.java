@@ -49,7 +49,10 @@ public class RailTabCompletion implements TabCompleter {
                         if (section.hasBorder()) {
                             district = section.getBorder();
                         }
-                        if (args.length == 4) return district.getSectionIDs().stream().filter(s -> s.contains(args[3])).toList();
+                        if (section.getExit() == null) return List.of(ChatColor.RED + "You must set exit point first before connecting with other sections");
+                        if (args.length == 4) return district.getSections().stream()
+                                .filter(s -> s.getEntry().equals(section.getExit()))
+                                .map(s -> s.id).filter(s -> s.contains(args[3])).toList();
                     }
                     case "route" -> {
                         if (args.length == 4) return KingdomsManager.ROUTES.stream().filter(s -> s.contains(args[3])).toList();
@@ -57,7 +60,9 @@ public class RailTabCompletion implements TabCompleter {
                         if (section.hasBorder()) {
                             district = section.getBorder();
                         }
-                        if (args.length == 6) return district.getSectionIDs().stream().filter(s -> s.contains(args[5])).toList();
+                        if (args.length == 6) return district.getSections().stream()
+                                .filter(s -> s.getEntry().equals(section.getExit()))
+                                .map(s -> s.id).filter(s -> s.contains(args[5])).toList();
 
                         ArrayList<String> out = new ArrayList<>();
                         out.addAll(district.getLocalityIDs());
