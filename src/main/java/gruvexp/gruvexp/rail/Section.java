@@ -335,7 +335,7 @@ public final class Section {
                 RailRoute route = entry.getKey();
                 routeInfo = routeInfo.append(Component.text(route.direction(), NamedTextColor.BLUE))
                         .append(Component.text(" -> "))
-                        .append(route.targetSection().name()).append(Component.text(", rail state: "))
+                        .append(route.targetSection().name()).append(Component.text(", shape: "))
                         .append(Component.text(route.railShape().name().toLowerCase(), NamedTextColor.GREEN)).appendNewline()
                         .append(Component.text(" - for addresses: ").append(Component.text(addresses, NamedTextColor.GOLD))).appendNewline();
             }
