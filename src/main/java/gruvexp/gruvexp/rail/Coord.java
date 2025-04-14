@@ -60,7 +60,7 @@ public class Coord {
 
     public Component name() {
         return Component.text(toString(), NamedTextColor.AQUA)
-                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/tp " + x + " " + y + " " + z));
+                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/java tp " + x + " " + y + " " + z));
     }
 
     public Location toLocation(World world) {

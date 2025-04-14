@@ -51,8 +51,6 @@ public final class Main extends JavaPlugin {
         getCommand("home").setExecutor(new HomeCommand());
         getCommand("house").setExecutor(new HouseCommand());
         getCommand("house").setTabCompleter(new HouseTabCompletion());
-        getCommand("test").setExecutor(new TestCommand());
-        getCommand("test").setTabCompleter(new TestTabCompletion());
         getCommand("digitalclock").setExecutor(new ClockCommand());
         getCommand("bigthing").setExecutor(new BigThingCommand());
         getCommand("shrink").setExecutor(new ShrinkCommand());
@@ -60,6 +58,9 @@ public final class Main extends JavaPlugin {
         getCommand("loadcitizens").setExecutor(new LoadCitizensCommand());
         getCommand("nyttår").setExecutor(new NyttårCommand());
         getCommand("nyttår").setTabCompleter(new NyttårTabCompletion());
+        getCommand("test").setExecutor(new TestCommand());
+        getCommand("test").setTabCompleter(new TestTabCompletion());
+        getCommand("java").setExecutor(new JavaCommand());
         getServer().getPluginManager().registerEvents(new BlockListener(), this);
         plugin = this;
         WORLD = Bukkit.getWorld(FilePath.SERVER_NAME);

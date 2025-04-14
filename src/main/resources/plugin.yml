@@ -25,9 +25,6 @@ commands:
   villager:
     description: Edit villager nbt for storing path stuff
     usage: /villager <UUID> [set | get | add | remove] <adresses>
-  test:
-    description: Where you test stuff
-    usage: It varies over time
   home:
     description: Teleports to your home
     usage: /home    /home set
@@ -57,3 +54,9 @@ commands:
   nyttår:
     description: Brukt for å lage et fancy skilt for å feire 2025
     usage: /nyttår
+  test:
+    description: Where you test stuff
+    usage: It varies over time
+  java:
+    description: Only used internally for plugins, like when clicking on text or signs
+    usage: Should not be used directly by players
