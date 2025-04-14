@@ -60,7 +60,7 @@ public class Locality {
 
         KingdomsManager.save = true;
         return Component.text("Successfully set icon of ").append(Component.text("locality ", LABEL_COLOR)).append(name())
-                .append(Component.text(" to " + icon.toString()));
+                .append(Component.text(" to ")).append(Component.text(icon.toString().toLowerCase(), NamedTextColor.GREEN));
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
