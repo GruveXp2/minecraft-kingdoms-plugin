@@ -136,7 +136,7 @@ public class RailCommand implements CommandExecutor {
                             default -> -1;
                         };
                         if (speed == -1) return Component.text("Speed \"" + speedName + "\" is invalid, must be of [normal | fast | express]", NamedTextColor.RED);
-                        return section.setSpeed(1);
+                        return section.setSpeed(speed);
                     }
                     default -> {
                         return Component.text("\"" + property + "\" is not a property of rail section!", NamedTextColor.RED);
