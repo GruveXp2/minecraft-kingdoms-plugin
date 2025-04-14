@@ -52,7 +52,7 @@ public class RailTabCompletion implements TabCompleter {
                         if (args.length == 4) return district.getSectionIDs().stream().toList();
                     }
                     case "route" -> {
-                        if (args.length == 4) return KingdomsManager.DIRECTIONS.stream().toList();
+                        if (args.length == 4) return KingdomsManager.ROUTES.stream().toList();
                         if (args.length == 5) return KingdomsManager.RAIL_SHAPES.stream().toList();
                         if (section.hasBorder()) {
                             district = section.getBorder();
