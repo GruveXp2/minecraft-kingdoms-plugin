@@ -107,9 +107,11 @@ public final class Section {
 
         KingdomsManager.save = true;
         return Component.text("Successfully added route:\n")
-                .append(Component.text(String.join(", ", addresses), NamedTextColor.GOLD))
+                .append(Component.text(direction, NamedTextColor.BLUE))
                 .append(Component.text(" -> "))
-                .append(route.name())
+                .append(route.targetSection().name()).append(Component.text(", rail state: "))
+                .append(Component.text(route.railShape().name().toLowerCase(), NamedTextColor.GREEN)).appendNewline()
+                .append(Component.text(" - for addresses ").append(Component.text(String.join(", ", addresses), NamedTextColor.GOLD))).appendNewline()
                 .append(nextSectionWarning);
     }
 
