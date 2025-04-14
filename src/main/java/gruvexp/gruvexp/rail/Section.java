@@ -83,7 +83,7 @@ public final class Section {
 
         KingdomsManager.save = true;
         return Component.text("Successfully set exit of ").append(name())
-                .append(Component.text(" to ")).append(entry.name());
+                .append(Component.text(" to ")).append(exit.name());
     }
 
     public RailRoute getEndpointRoute(String address) {
