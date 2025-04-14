@@ -8,6 +8,7 @@ import gruvexp.gruvexp.core.KingdomsManager;
 import gruvexp.gruvexp.core.Locality;
 import gruvexp.gruvexp.rail.Coord;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 
@@ -148,7 +149,8 @@ public class Path {
     }
 
     public Component name() {
-        return Component.text(id, VALUE_COLOR);
+        return Component.text(id, VALUE_COLOR)
+                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/path " + id + " info"));
     }
 
     public Component nameIndex(int index) {

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
@@ -135,7 +136,8 @@ public class Kingdom {
     }
 
     public Component name() {
-        return Component.text(Character.toUpperCase(id.charAt(0)) + id.substring(1), VALUE_COLOR);
+        return Component.text(Character.toUpperCase(id.charAt(0)) + id.substring(1), VALUE_COLOR)
+                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/kingdom " + id + " info"));
     }
 
     public Component king() {

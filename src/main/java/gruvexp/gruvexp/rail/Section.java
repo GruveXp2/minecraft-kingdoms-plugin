@@ -9,6 +9,7 @@ import gruvexp.gruvexp.core.District;
 import gruvexp.gruvexp.core.Kingdom;
 import gruvexp.gruvexp.core.KingdomsManager;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Location;
@@ -303,7 +304,8 @@ public final class Section {
     }
 
     public @NotNull Component name() {
-        return Component.text(id, VALUE_COLOR);
+        return Component.text(id, VALUE_COLOR)
+                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/rail " + id + " info"));
     }
 
     public Component speed() {
