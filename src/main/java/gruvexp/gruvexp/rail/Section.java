@@ -61,6 +61,7 @@ public final class Section {
         return district;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public Coord getEntry() {return entry;}
 
     public Component setEntry(Coord entry) {
@@ -72,6 +73,7 @@ public final class Section {
                 .append(Component.text(" to ")).append(entry.name());
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public Coord getExit() {return exit;}
 
     public Component setExit(Coord exit) {
