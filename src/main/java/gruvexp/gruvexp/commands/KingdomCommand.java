@@ -87,8 +87,9 @@ public class KingdomCommand implements CommandExecutor {
                     case "district" -> {
                         if (args.length < 5) return Component.text("You must specify the details of the new district: add district <id> <item icon>", NamedTextColor.GOLD);
                         String districtID = args[3];
-                        Material icon = Material.getMaterial(args[4]);
-                        if (icon == null) return Component.text("Item called \"" + args[4] + "\" doesnt exits", NamedTextColor.RED);
+                        String itemID = args[4];
+                        Material icon = Material.getMaterial(itemID.toUpperCase());
+                        if (icon == null) return Component.text("Item called \"" + itemID + "\" doesnt exist", NamedTextColor.RED);
                         return kingdom.addDistrict(districtID, icon);
                     }
                     default -> {
