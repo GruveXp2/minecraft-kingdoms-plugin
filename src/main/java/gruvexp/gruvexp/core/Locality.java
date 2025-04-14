@@ -9,6 +9,7 @@ import gruvexp.gruvexp.rail.Coord;
 import gruvexp.gruvexp.rail.Entrypoint;
 import gruvexp.gruvexp.rail.Section;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Material;
@@ -140,7 +141,8 @@ public class Locality {
     }
 
     public Component name() {
-        return Component.text(id, VALUE_COLOR);
+        return Component.text(id, VALUE_COLOR)
+                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/locality " + id + " info"));
     }
     public String tag() {
         return district.tag() + ":" + id;

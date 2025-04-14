@@ -9,6 +9,7 @@ import gruvexp.gruvexp.Utils;
 import gruvexp.gruvexp.path.WalkPath;
 import gruvexp.gruvexp.rail.Coord;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
 import org.bukkit.entity.EntityType;
@@ -138,7 +139,8 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
     // Lagrer ikke navn(inkl etternavn), det lagres som key i kingdom hashmappet <== total bs
 
     public Component name() {
-        return Component.text(name, NamedTextColor.GREEN);
+        return Component.text(name, NamedTextColor.GREEN)
+                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/citizen " + name + " info"));
     }
 
     public Component workAddress() {

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import gruvexp.gruvexp.path.Path;
 import gruvexp.gruvexp.rail.Coord;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 import java.util.HashSet;
@@ -107,7 +108,8 @@ public class House {
     }
 
     public Component name() {
-        return locality.name().appendSpace().append(Component.text(nr, NamedTextColor.BLUE));
+        return locality.name().appendSpace().append(Component.text(nr, NamedTextColor.BLUE))
+                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/house " + nr + " info"));
     }
 
     public String nationalAddress() {

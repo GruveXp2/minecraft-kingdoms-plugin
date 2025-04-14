@@ -55,7 +55,7 @@ public class Coord {
 
     @Override
     public String toString() {
-        return String.format("[ %s %s %s ]", x, y, z);
+        return String.format("%s %s %s", x, y, z);
     }
 
     public Component name() {
