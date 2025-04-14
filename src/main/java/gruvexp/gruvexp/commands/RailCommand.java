@@ -165,7 +165,7 @@ public class RailCommand implements CommandExecutor {
             }
             case "calculate_length" -> { // /rail <section> calculate_length n
                 if (args.length == 2) return Component.text("You must specify which direction one drives on the rail, from the entry point: [n | s | e | w]", NamedTextColor.GOLD);
-                String direction = args[4];
+                String direction = args[2];
                 if (!KingdomsManager.DIRECTIONS.contains(direction)) return Component.text("\"" + direction + "\" is not a valid direction!", NamedTextColor.RED);
 
                 return section.calculateLength(direction, p);
