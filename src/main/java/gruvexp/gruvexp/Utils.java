@@ -43,12 +43,9 @@ public class Utils {
 
     public static Coord getPlayerBlockCoords(Player p) {
         Location loc = p.getLocation();
-        int posX = (int) loc.getX();
-        if (posX < 0) {posX -= 1;}
-        int posY = (int) loc.getY();
-        if (posY < 0) {posY -= 1;}
-        int posZ = (int) loc.getZ();
-        if (posZ < 0) {posZ -= 1;}
+        int posX = loc.getBlockX();
+        int posY = loc.getBlockY();
+        int posZ = loc.getBlockZ();
         return new Coord(posX, posY, posZ);
     }
 
