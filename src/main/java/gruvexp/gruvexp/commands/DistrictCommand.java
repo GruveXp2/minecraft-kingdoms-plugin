@@ -47,13 +47,13 @@ public class DistrictCommand implements CommandExecutor {
                         .append(Component.text(district.getSectionIDs().size(), Section.VALUE_COLOR)).append(Component.text(" rail sections", Section.LABEL_COLOR));
             }
             case "set" -> {
-                if (args.length < 4) return Component.text("You must specify what to set and a value: set [king | color] <value>", NamedTextColor.RED);
+                if (args.length < 4) return Component.text("You must specify what to set and a value: set [king | color] <value>", NamedTextColor.GOLD);
                 String property = args[2];
                 if (property.equals("icon")) {
-                    String iconString = args[3];
-                    Material icon = Material.getMaterial(iconString);
+                    String itemID = args[3];
+                    Material icon = Material.getMaterial(itemID.toUpperCase());
                     if (icon == null)
-                        return Component.text("Item called \"" + iconString + "\" doesnt exits", NamedTextColor.RED);
+                        return Component.text("Item called \"" + itemID + "\" doesnt exist", NamedTextColor.RED);
                     return district.setIcon(icon);
                 }
                 return Component.text("Invalid property argument! Syntaxs: set icon <item>", NamedTextColor.RED);
@@ -65,9 +65,9 @@ public class DistrictCommand implements CommandExecutor {
                     case "locality" -> {
                         if (args.length < 5) return Component.text("You must specify the details of the new locality: add locality <id> <item icon>", NamedTextColor.GOLD);
                         String localityID = args[3];
-                        String iconID = args[4];
-                        Material icon = Material.getMaterial(iconID);
-                        if (icon == null) return Component.text("Item called \"" + iconID + "\" doesnt exits", NamedTextColor.RED);
+                        String itemID = args[4];
+                        Material icon = Material.getMaterial(itemID.toUpperCase());
+                        if (icon == null) return Component.text("Item called \"" + itemID + "\" doesnt exits", NamedTextColor.RED);
                         return district.addLocality(localityID, icon);
                     }
                     case "rail_section" -> {
