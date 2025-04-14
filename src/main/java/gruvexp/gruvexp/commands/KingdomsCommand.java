@@ -71,8 +71,8 @@ public class KingdomsCommand implements CommandExecutor {
                     String playerName = args[3];
                     Player king = Bukkit.getPlayer(playerName);
                     if (king == null) return Component.text("Player '" + playerName + "' either doesnt exist or isnt logged on the server", NamedTextColor.RED);
-                    String gender = args[3].toLowerCase();
-                    if (args.length == 5) gender += "-" + args[4];
+                    String gender = args[4].toLowerCase();
+                    if (args.length == 6) gender += "-" + args[5];
                     boolean isMale;
                     switch (gender) {
                         case "m", "king", "male", "boi", "boy", "man", "xy", "xxy", "xyy" -> isMale = true;
