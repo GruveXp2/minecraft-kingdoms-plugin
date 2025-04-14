@@ -71,15 +71,15 @@ public class DistrictCommand implements CommandExecutor {
                         return district.addLocality(localityID, icon);
                     }
                     case "rail_section" -> {
-                        if (args.length < 6) return Component.text("You must specify the entry pos of the new rail section: add rail_cestion <id> <entry: pos>", NamedTextColor.GOLD);
-                        String sectionID = args[3];
+                        if (args.length < 7) return Component.text("You must specify the entry pos of the new rail section: add rail_cestion <id> <entry: pos>", NamedTextColor.GOLD);
+                        String newSectionID = args[3];
                         Coord entry;
                         try {
-                            entry = new Coord(args[5], args[6], args[7]);
+                            entry = new Coord(args[4], args[5], args[6]);
                         } catch (IllegalArgumentException e) {
                             return Component.text("Coordinates must be only numbers!", NamedTextColor.RED);
                         }
-                        return district.addSection(sectionID, entry);
+                        return district.addSection(newSectionID, entry);
                     }
                     default -> {
                         return Component.text("Invalid argument. Syntaks: add [locality | rail_section] <properties>", NamedTextColor.RED);
