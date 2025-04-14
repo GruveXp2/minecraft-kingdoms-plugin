@@ -58,7 +58,7 @@ public class LocalityCommand implements CommandExecutor {
                     case "icon" -> {
                         if (args.length == 3) return Component.text("You must specify what item to set to: set icon <item>", NamedTextColor.GOLD);
                         String itemID = args[3];
-                        Material icon = Material.getMaterial(itemID);
+                        Material icon = Material.getMaterial(itemID.toUpperCase());
                         if (icon == null)
                             return Component.text("Item called \"" + itemID + "\" doesnt exist", NamedTextColor.RED);
                         return locality.setIcon(icon);
