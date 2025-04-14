@@ -1,5 +1,6 @@
 package gruvexp.gruvexp.commands;
 
+import gruvexp.gruvexp.Utils;
 import gruvexp.gruvexp.core.District;
 import gruvexp.gruvexp.core.Kingdom;
 import gruvexp.gruvexp.core.KingdomsManager;
@@ -43,6 +44,7 @@ public class DistrictTabCompletion implements TabCompleter {
                     }
                     case "rail_section" -> {
                         if (args.length == 4) return List.of("<name>");
+                        if (args.length == 5) return List.of(Utils.getPlayerBlockCoords(p).toString());
                     }
                     default -> {
                         return List.of(ChatColor.RED + "unknown property: " + feature);
