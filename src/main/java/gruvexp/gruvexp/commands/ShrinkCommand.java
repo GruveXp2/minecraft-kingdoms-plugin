@@ -41,9 +41,9 @@ public class ShrinkCommand implements CommandExecutor {
             } catch (NumberFormatException e) {
                 p.sendMessage(ChatColor.RED + "Size must be a number");
             }
-            Coord coordFrom = new Coord(Math.min(coord1.getX(), coord2.getX()), Math.min(coord1.getY(), coord2.getY()), Math.min(coord1.getZ(), coord2.getZ()));
-            Coord dimensions = new Coord(Math.abs(coord1.getX() - coord2.getX()), Math.abs(coord1.getY() - coord2.getY()), Math.abs(coord1.getZ() - coord2.getZ()));
-            if (dimensions.getX() * dimensions.getY() * dimensions.getZ() > 16384) {
+            Coord coordFrom = new Coord(Math.min(coord1.x(), coord2.x()), Math.min(coord1.y(), coord2.y()), Math.min(coord1.z(), coord2.z()));
+            Coord dimensions = new Coord(Math.abs(coord1.x() - coord2.x()), Math.abs(coord1.y() - coord2.y()), Math.abs(coord1.z() - coord2.z()));
+            if (dimensions.x() * dimensions.y() * dimensions.z() > 16384) {
                 p.sendMessage(ChatColor.RED + "Too many blocks to clone! (the server cant handle that many)");
                 return true;
             }
@@ -52,12 +52,12 @@ public class ShrinkCommand implements CommandExecutor {
                 tag = args[10];
             }
             World world = p.getWorld();
-            for (int x = 0; x < dimensions.getX() + 1; x++) {
-                for (int y = 0; y < dimensions.getY() + 1; y++) {
-                    for (int z = 0; z < dimensions.getZ() + 1; z++) {
-                        Block block = world.getBlockAt(coordFrom.getX() + x, coordFrom.getY() + y, coordFrom.getZ() + z);
+            for (int x = 0; x < dimensions.x() + 1; x++) {
+                for (int y = 0; y < dimensions.y() + 1; y++) {
+                    for (int z = 0; z < dimensions.z() + 1; z++) {
+                        Block block = world.getBlockAt(coordFrom.x() + x, coordFrom.y() + y, coordFrom.z() + z);
                         if (block.getType() != Material.AIR) {
-                            BlockDisplay display = (BlockDisplay) world.spawnEntity(new Location(world, coordTo.getX() + x * size, coordTo.getY() + y * size, coordTo.getZ() + z * size), EntityType.BLOCK_DISPLAY);
+                            BlockDisplay display = (BlockDisplay) world.spawnEntity(new Location(world, coordTo.x() + x * size, coordTo.y() + y * size, coordTo.z() + z * size), EntityType.BLOCK_DISPLAY);
                             BlockData blockData = block.getBlockData();
                             display.setBlock(blockData);
                             display.setTransformation(new Transformation(new Vector3f(0, 0, 0), new AxisAngle4f(0, 0, 0, 1), new Vector3f(size, size, size), new AxisAngle4f(0, 0, 0, 1)));

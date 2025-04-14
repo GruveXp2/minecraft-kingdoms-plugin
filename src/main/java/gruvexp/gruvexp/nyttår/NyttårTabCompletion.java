@@ -26,13 +26,13 @@ public class NyttårTabCompletion implements TabCompleter {
                 Coord coord = Utils.getTargetBlock(p, 10);
                 switch (args.length) {
                     case 2 -> {
-                        return List.of(coord.getX() + " " + coord.getY() + " " +coord.getZ());
+                        return List.of(coord.x() + " " + coord.y() + " " +coord.z());
                     }
                     case 3 -> {
-                        return List.of(coord.getY() + " " +coord.getZ());
+                        return List.of(coord.y() + " " +coord.z());
                     }
                     case 4 -> {
-                        return List.of(String.valueOf(coord.getZ()));
+                        return List.of(String.valueOf(coord.z()));
                     }
                 }
             }

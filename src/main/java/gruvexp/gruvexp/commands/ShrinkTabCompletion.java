@@ -21,13 +21,13 @@ public class ShrinkTabCompletion implements TabCompleter {
         Coord coord = Utils.getTargetBlock(p, 10);
         switch (args.length) {
             case 1, 4, 7 -> {
-                return List.of(coord.getX() + " " + coord.getY() + " " +coord.getZ());
+                return List.of(coord.x() + " " + coord.y() + " " +coord.z());
             }
             case 2, 5, 8 -> {
-                return List.of(coord.getY() + " " +coord.getZ());
+                return List.of(coord.y() + " " +coord.z());
             }
             case 3, 6, 9 -> {
-                return List.of(String.valueOf(coord.getZ()));
+                return List.of(String.valueOf(coord.z()));
             }
         }
         return new ArrayList<>(0);
