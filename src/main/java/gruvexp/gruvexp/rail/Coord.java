@@ -4,16 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-public class Coord {
-
-    protected int x;
-    protected int y;
-    protected int z;
-
+public record Coord(int x, int y, int z) {
 
     public Coord(@JsonProperty("x") int x, @JsonProperty("y") int y, @JsonProperty("z") int z) {
         this.x = x;
@@ -22,35 +16,19 @@ public class Coord {
     }
 
     public Coord(String x, String y, String z) {
-        try {
-            this.x = Integer.parseInt(x);
-            this.y = Integer.parseInt(y);
-            this.z = Integer.parseInt(z);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(ChatColor.RED + x + " " + y + " " + z + " is not a valid position!");
-        }
+        this(
+                Integer.parseInt(x),
+                Integer.parseInt(y),
+                Integer.parseInt(z)
+        );
     }
 
     public Coord(double x, double y, double z) {
-        try {
-            this.x = (int) x;
-            this.y = (int) y;
-            this.z = (int) z;
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(ChatColor.RED + "" + x + " " + y + " " + z + " is not a valid position!");
-        }
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public int getZ() {
-        return z;
+        this(
+                (int) x,
+                (int) y,
+                (int) z
+        );
     }
 
     @Override
