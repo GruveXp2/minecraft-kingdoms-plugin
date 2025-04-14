@@ -27,7 +27,7 @@ public class LocalityTabCompletion implements TabCompleter {
         Locality locality = district.getLocality(args[0]);
         if (locality == null) return List.of(ChatColor.RED + "Unknown locality: " + args[0]);
 
-        if (args.length == 2) return List.of("info", "set icon", "add", "remove");
+        if (args.length == 2) return List.of("info", "set", "add", "remove");
         String oper = args[1];
         switch (oper) {
             case "set" -> {
