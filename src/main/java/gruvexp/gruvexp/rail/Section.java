@@ -145,7 +145,7 @@ public final class Section {
 
         KingdomsManager.save = true;
         if (section == null) return Component.text("Successfully set ").append(name()).append(Component.text(" as an endpoint"));
-        return Component.text("Successfully set next section (the one to link to) of ").append(name())
+        return Component.text("Successfully set ").append(Component.text("next section", Section.LABEL_COLOR)).append(Component.text(" (the one to link to) of ")).append(name())
                 .append(Component.text(" to ")).append(section.name());
     }
 
