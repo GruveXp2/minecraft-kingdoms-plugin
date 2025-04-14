@@ -156,6 +156,11 @@ public class Kingdom {
         getCitizens().forEach(citizen -> citizen.resolveReferences(this));
     }
 
+    @JsonProperty("isMale")
+    private boolean getGenderJSON() {
+        return isMale;
+    }
+
     @JsonProperty("king")
     private String getKingJSON() {
         return kingID.toString();
