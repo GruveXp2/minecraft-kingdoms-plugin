@@ -26,7 +26,7 @@ public class RailTabCompletion implements TabCompleter {
         District district = KingdomsManager.getSelectedDistrict(p);
         if (district == null) return List.of(ChatColor.RED + "You must select a district to work with!", "run /kingdoms select <kingdom> <district>");
 
-        if (args.length == 1) return district.getSectionIDs().stream().toList();
+        if (args.length == 1) return district.getSectionIDs().stream().filter(s -> s.contains(args[0])).toList();
         Section section = district.getSection(args[0]);
         if (section == null) return List.of(ChatColor.RED + "Unknown rail section: " + args[0]);
 
@@ -49,15 +49,15 @@ public class RailTabCompletion implements TabCompleter {
                         if (section.hasBorder()) {
                             district = section.getBorder();
                         }
-                        if (args.length == 4) return district.getSectionIDs().stream().toList();
+                        if (args.length == 4) return district.getSectionIDs().stream().filter(s -> s.contains(args[3])).toList();
                     }
                     case "route" -> {
-                        if (args.length == 4) return KingdomsManager.ROUTES.stream().toList();
-                        if (args.length == 5) return KingdomsManager.RAIL_SHAPES.stream().toList();
+                        if (args.length == 4) return KingdomsManager.ROUTES.stream().filter(s -> s.contains(args[3])).toList();
+                        if (args.length == 5) return KingdomsManager.RAIL_SHAPES.stream().filter(s -> s.contains(args[4])).toList();
                         if (section.hasBorder()) {
                             district = section.getBorder();
                         }
-                        if (args.length == 6) return district.getSectionIDs().stream().toList();
+                        if (args.length == 6) return district.getSectionIDs().stream().filter(s -> s.contains(args[5])).toList();
 
                         ArrayList<String> out = new ArrayList<>();
                         out.addAll(district.getLocalityIDs());
@@ -66,12 +66,12 @@ public class RailTabCompletion implements TabCompleter {
                         return out;
                     }
                     case "border" -> {
-                        if (args.length == 4) return KingdomsManager.getKingdomIDs().stream().toList();
+                        if (args.length == 4) return KingdomsManager.getKingdomIDs().stream().filter(s -> s.contains(args[3])).toList();
                         String kingdomID = args[3];
                         Kingdom kingdom = KingdomsManager.getKingdom(kingdomID);
                         if (kingdom == null) return List.of(ChatColor.RED + "Kingdom \"" + kingdomID + "\" doesnt exist!");
 
-                        if (args.length == 5) return kingdom.getDistrictIDs().stream().toList();
+                        if (args.length == 5) return kingdom.getDistrictIDs().stream().filter(s -> s.contains(args[4])).toList();
                     }
                     default -> {
                         return List.of(ChatColor.RED + "\"" + property + "\" is not a settable property!");
