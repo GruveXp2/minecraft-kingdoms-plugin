@@ -76,7 +76,6 @@ public final class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         ClockManager.deleteNumbers();
-        getLogger().info("Saving data...");
         KingdomsManager.saveData();
         getLogger().info("Disabling Kingdoms plugin...");
     }

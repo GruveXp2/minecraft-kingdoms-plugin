@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import gruvexp.gruvexp.FilePath;
+import gruvexp.gruvexp.Main;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -160,9 +161,10 @@ public final class KingdomsManager {
     }
 
     public static void saveData() {
-        if (kingdoms == null) {
+        if (kingdoms == null || !save) {
             return;
         }
+        Main.getPlugin().getLogger().info("Saving data...");
         ObjectMapper mapper = new ObjectMapper();
         try {
             String json = mapper.writeValueAsString(kingdoms.values());
