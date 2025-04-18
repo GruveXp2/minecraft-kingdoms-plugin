@@ -6,6 +6,7 @@ import gruvexp.gruvexp.core.KingdomsManager;
 import gruvexp.gruvexp.core.Locality;
 import gruvexp.gruvexp.path.Path;
 import gruvexp.gruvexp.rail.Coord;
+import gruvexp.gruvexp.rail.Entrypoint;
 import gruvexp.gruvexp.rail.Section;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -42,10 +43,13 @@ public class LocalityCommand implements CommandExecutor {
         String oper = args[1];
         switch (oper) {
             case "info" -> {
+                Entrypoint entrypoint = locality.getEntrypoint();
+                Component entrypointInfo = entrypoint != null ? entrypoint.info() : Component.text("none", NamedTextColor.YELLOW);
                 return Component.newline()
                         .append(Component.text("Locality ", Locality.LABEL_COLOR)).append(locality.name())
                         .append(Component.text(" in ")).append(district.address()).append(Component.text(":\n"))
                         .append(Component.text("Icon: ")).append(Component.text(locality.getIcon().toString().toLowerCase(), NamedTextColor.GREEN)).appendNewline()
+                        .append(Component.text("Entrypoint: ")).append(entrypointInfo).appendNewline()
                         .append(Component.text(locality.getHouseIDs().size())).append(Component.text(" houses: "))
                         .append(Component.text(locality.getHouseIDs().stream()
                                 .map(String::valueOf).collect(Collectors.joining(", ")))).appendNewline()
