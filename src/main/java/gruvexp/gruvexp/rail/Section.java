@@ -69,7 +69,7 @@ public final class Section {
         if (this.entry == entry) return Component.text("Nothing happened, that was already set as the entry", NamedTextColor.YELLOW);
         this.entry = entry;
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
         return Component.text("Successfully set entry of ").append(name())
                 .append(Component.text(" to ")).append(entry.name());
     }
@@ -81,7 +81,7 @@ public final class Section {
         if (this.exit == exit) return Component.text("Nothing happened, that was already set as the ecit", NamedTextColor.YELLOW);
         this.exit = exit;
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
         return Component.text("Successfully set exit of ").append(name())
                 .append(Component.text(" to ")).append(exit.name());
     }
@@ -106,7 +106,7 @@ public final class Section {
                 Component.text("\nWarning: this will switch to routing mode, and will overwrite the current set next section", NamedTextColor.YELLOW) : Component.empty();
         this.nextSection = null;
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
         return Component.text("Successfully added route:\n")
                 .append(Component.text(direction, NamedTextColor.BLUE))
                 .append(Component.text(" -> "))
@@ -119,14 +119,14 @@ public final class Section {
     public Component removeRoute(String direction) {
         routingTable.entrySet().removeIf(entry -> direction.equals(entry.getValue().direction()));
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
         return Component.text("Successfully removed route for direction ").append(Component.text(direction, NamedTextColor.GREEN));
     }
 
     public Component removeAllRoutes() {
         if (routingTable.isEmpty()) return Component.text("Nothing happened, there was no routes to remove", NamedTextColor.YELLOW);
         routingTable.clear();
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
         return Component.text("Successfully removed all routes (this will switch to having a specific next section to go to, or being the last stop)");
     }
 
@@ -143,7 +143,7 @@ public final class Section {
         if (nextSection == section) return Component.text("Nothing happened, that section was already selected as the next rail section", NamedTextColor.YELLOW);
         nextSection = section;
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
         if (section == null) return Component.text("Successfully set ").append(name()).append(Component.text(" as an endpoint"));
         return Component.text("Successfully set ").append(Component.text("next section", Section.LABEL_COLOR)).append(Component.text(" (the one to link to) of ")).append(name())
                 .append(Component.text(" to ")).append(section.name());
@@ -162,7 +162,7 @@ public final class Section {
         if (border == targetDistrict) return Component.text("Nothing happened, that was already the border", NamedTextColor.YELLOW);
         border = targetDistrict;
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
         return Component.text("Successfully set border of ").append(name())
                 .append(Component.text(" to ")).append(targetDistrict.address());
     }
@@ -171,7 +171,7 @@ public final class Section {
         if (border == null) return Component.text("Nothing happened, this section didnt have a border in the first place", NamedTextColor.YELLOW);
         border = null;
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
         return Component.text("Successfullt removed border of ").append(name());
     }
 
@@ -189,7 +189,7 @@ public final class Section {
             default -> throw new IllegalArgumentException("Invalid speed: " + speed);
         };
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
         return Component.text("Successfully set speed of ").append(name())
                 .append(Component.text(" to ")).append(speedName);
     }
@@ -205,7 +205,7 @@ public final class Section {
     public void setLength(int length) {
         if (length == this.length) return;
         this.length = length;
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
     }
     // ikke ferdig
     /*public void show() { // viser blockdisplays og tekst om seksjonen

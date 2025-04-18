@@ -97,7 +97,7 @@ public class Path {
     public Component setStartPos(Coord startPos) {
         this.startPos = startPos;
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
         return Component.text("Successfully set start pos of ").append(name())
                 .append(Component.text(" to ")).append(startPos.name());
     }
@@ -105,7 +105,7 @@ public class Path {
     public Component addBranch(int index, Path targetPath, int enterIndex, HashSet<String> addresses) {
         branches.put(index, new PathBranch(targetPath, enterIndex, addresses));
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
         return Component.text("Successfully added branch at ").append(nameIndex(index).appendNewline())
                 .append(Component.text("entering "))
                 .append(Component.text("path section ", LABEL_COLOR)).append(targetPath.nameIndex(enterIndex)).appendNewline()
@@ -123,7 +123,7 @@ public class Path {
     public Component setTurns(HashMap<Integer, Character> turns) {
         this.turns = turns;
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
         return Component.text("Successfully set turn data for ").append(Component.text("path section ", LABEL_COLOR)).append(name());
     }
 
@@ -144,7 +144,7 @@ public class Path {
 
         branches.remove(index);
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
         return Component.text("Successfully removed branch at ").append(nameIndex(index));
     }
 

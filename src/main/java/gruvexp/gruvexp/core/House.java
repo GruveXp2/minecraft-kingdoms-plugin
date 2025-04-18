@@ -55,7 +55,7 @@ public class House {
 
         residents.add(citizen);
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
         return Component.text("Successfully added resident ").append(citizen.name())
                 .append(Component.text(" to ")).append(name());
     }
@@ -65,7 +65,7 @@ public class House {
 
         residents.remove(citizen);
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
         return Component.text("Successfully removed resident ").append(citizen.name())
                 .append(Component.text(" from ")).append(name());
     }
@@ -77,7 +77,7 @@ public class House {
     public Component setDoorPos(Coord doorPos) {
         this.doorPos = doorPos;
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
         return Component.text("Successfully set door pos of ").append(name())
                 .append(Component.text(" to ")).append(doorPos.name());
     }
@@ -89,7 +89,7 @@ public class House {
     public Component setBedPos(Coord bedPos) {
         this.bedPos = bedPos;
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
         return Component.text("Successfully set bed pos of ").append(name())
                 .append(Component.text(" to ")).append(bedPos.name());
     }
@@ -102,7 +102,7 @@ public class House {
     public Component setExitPath(Path exitPath) {
         this.exitPath = exitPath;
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
         return Component.text("Successfully set exith path section of ").append(name())
                 .append(Component.text(" to ")).append(exitPath.name());
     }

@@ -27,13 +27,15 @@ public final class KingdomsManager {
     public static final ImmutableSet<String> DIRECTIONS = ImmutableSet.of("n", "s", "e", "w");
     private static HashMap<String, Kingdom> kingdoms;
     public static final HashSet<String> BLOCKS = new HashSet<>();
-    public static boolean save = false;
+    private static boolean save = false;
 
     private static final HashSet<Citizen> citizenPostInit = new HashSet<>();
 
     private static final HashMap<Player, Kingdom> selectedKingdom = new HashMap<>();
     private static final HashMap<Player, District> selectedDistrict = new HashMap<>();
     private static final HashMap<Player, Locality> selectedLocality = new HashMap<>();
+
+    private static final HashMap<Class<?>, Integer> edits = new HashMap<>();
 
     public static Kingdom getSelectedKingdom(Player p) {
         if (selectedKingdom.get(p) == null) {
@@ -111,7 +113,7 @@ public final class KingdomsManager {
 
         kingdoms.put(ID, new Kingdom(ID, king.getUniqueId(), isMale));
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(KingdomsManager.class);
         return Component.text("Successfully added ").append(Component.text("new kingdom ", Kingdom.LABEL_COLOR))
                 .append(Component.text(ID, Kingdom.VALUE_COLOR))
                 .append(Component.text(" with "))
@@ -139,10 +141,15 @@ public final class KingdomsManager {
         if (!Objects.equals(password, "kjør_kano_det_forurenser_ikke")) return Component.text("Wrong password", NamedTextColor.RED);
         kingdoms.remove(kingdomID);
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(KingdomsManager.class);
         return Component.text("Successfully removed ").append(Component.text("kingdom ", Kingdom.LABEL_COLOR))
                 .append(Component.text(kingdomID, Kingdom.VALUE_COLOR))
                 .append(Component.text(". TO UNDO THIS ACTION, BACKUP THE JSON FILE BEFORE THE SERVER CLOSES", NamedTextColor.RED));
+    }
+
+    public static void registerEdit(Object object) {
+        edits.merge(object.getClass(), 1, Integer::sum);
+        save = true;
     }
 
     public static void loadData() {
@@ -164,7 +171,11 @@ public final class KingdomsManager {
         if (kingdoms == null || !save) {
             return;
         }
-        Main.getPlugin().getLogger().info("Saving data...");
+        Main.getPlugin().getLogger().info("Saving changes...");
+        for (var entry : edits.entrySet()) {
+            Main.getPlugin().getLogger().info(" - " + entry.getKey().getSimpleName() + ": " + entry.getValue() + " edits");
+        }
+
         ObjectMapper mapper = new ObjectMapper();
         try {
             String json = mapper.writeValueAsString(kingdoms.values());

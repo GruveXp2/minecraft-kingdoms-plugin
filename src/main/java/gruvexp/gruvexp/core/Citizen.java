@@ -90,7 +90,7 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
     public Component setProfession(Villager.Profession profession) {
         this.profession = profession;
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
         return Component.text("Successfully updated profession of ").append(name())
                 .append(Component.text(" to ")).append(Component.text(profession.toString()));
     }
@@ -111,7 +111,7 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
         if (house == null) return Component.text("This villager is now homeless");
 
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
         return Component.text("Successfully set home of ").append(name())
                 .append(Component.text(" to ")).append(house.name())
                 .append(Component.text(" in ")).append(house.getLocality().getDistrict().name());
@@ -120,7 +120,7 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
     public Component setBio(String bio) {
         this.bio = bio;
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
         return Component.text("Successfully updated bio of ").append(name());
     }
 
