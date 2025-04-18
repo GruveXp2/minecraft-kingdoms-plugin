@@ -108,7 +108,6 @@ public class CalculateLength extends BukkitRunnable {
         if (loc.equals(exit)) {
             section.setLength(counter);
             p.sendMessage("100% - Rail length: " + ChatColor.AQUA + counter + "m");
-            KingdomsManager.save = true;
             cart.remove();
             cancel();
         }

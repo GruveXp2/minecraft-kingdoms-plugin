@@ -54,7 +54,7 @@ public class District {
     public Component setIcon(Material icon) {
         this.icon = icon;
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
         return Component.text("Successfully set icon of ").append(Component.text("district ", District.LABEL_COLOR)).append(name())
                 .append(Component.text(" to ")).append(Component.text(icon.toString().toLowerCase(), NamedTextColor.GREEN));
     }
@@ -64,7 +64,7 @@ public class District {
 
         localities.put(localityID, new Locality(localityID, this, material));
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
         return Component.text("Successfully added ").append(Component.text("new locality ", Locality.LABEL_COLOR))
                 .append(Component.text(localityID, Locality.VALUE_COLOR))
                 .append(Component.text(" to "))
@@ -90,7 +90,7 @@ public class District {
         if (!localities.containsKey(localityID)) return Component.text("No locality with id \"" + localityID + "\" exists", NamedTextColor.RED);
         localities.remove(localityID);
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
         return Component.text("Successfully removed ").append(Component.text("locality", Locality.LABEL_COLOR)).append(Component.text(": "))
                 .append(Component.text(localityID, Locality.VALUE_COLOR));
     }
@@ -99,7 +99,7 @@ public class District {
         if (sections.containsKey(sectionID)) return Component.text("Section \"" + sectionID + "\" already exists!", NamedTextColor.RED);
         sections.put(sectionID, new Section(sectionID, this, entry));
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
         return Component.text("Successfully added ").append(Component.text("new rail section ", Section.LABEL_COLOR)).append(Component.text(sectionID, Section.VALUE_COLOR))
                 .append(Component.text(" that starts at ")).append(entry.name());
     }
@@ -120,7 +120,7 @@ public class District {
         if (!sections.containsKey(sectionID)) return Component.text("No section with id \"" + sectionID + "\" exists", NamedTextColor.RED);
         sections.remove(sectionID);
 
-        KingdomsManager.save = true;
+        KingdomsManager.registerEdit(this);
         return Component.text("Successfully removed ").append(Component.text("rail section", Section.LABEL_COLOR)).append(Component.text(": "))
                 .append(Component.text(sectionID, Section.VALUE_COLOR));
     }
