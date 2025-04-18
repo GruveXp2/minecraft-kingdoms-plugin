@@ -52,9 +52,15 @@ public final class Section {
 
     @JsonCreator
     private Section(@JsonProperty("id") String id,
-                    @JsonProperty("entry") Coord entry) {
+                    @JsonProperty("entry") Coord entry,
+                    @JsonProperty("exit") Coord exit,
+                    @JsonProperty("speed") int speed,
+                    @JsonProperty("length") int length) {
         this.id = id;
         this.entry = entry;
+        this.exit = exit;
+        this.speed = speed;
+        this.length = length;
     }
 
     @JsonIgnore
@@ -194,6 +200,7 @@ public final class Section {
                 .append(Component.text(" to ")).append(speedName);
     }
 
+    @JsonIgnore
     public int getLength() {return length;}
 
     public Component calculateLength(String direction, Player p) {
@@ -385,19 +392,10 @@ public final class Section {
         resolved = true;
     }
 
-    @JsonProperty("exit")
-    public void setExitJSON(Coord exit) {
-        this.exit = exit;
-    }
-
-    @JsonProperty("speed")
-    public void setSpeedJSON(int speed) {
-        this.speed = speed;
-    }
-
-    @JsonProperty("length")
-    private void setLengthJSON(int length) {
-        this.length = length;
+    @JsonProperty("length") @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Integer getLengthJSON() {
+        if (length == 0) return null;
+        return length;
     }
 
     @JsonProperty("nextSection") @JsonInclude(JsonInclude.Include.NON_NULL)
