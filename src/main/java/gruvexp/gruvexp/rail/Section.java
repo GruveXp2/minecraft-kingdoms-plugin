@@ -202,6 +202,7 @@ public final class Section {
         return Component.text("Starting to calculate rail length of ").append(name()).append(Component.text(" ..."));
     }
 
+    @JsonIgnore
     public void setLength(int length) {
         if (length == this.length) return;
         this.length = length;
@@ -384,13 +385,28 @@ public final class Section {
         resolved = true;
     }
 
+    @JsonProperty("exit")
+    public void setExitJSON(Coord exit) {
+        this.exit = exit;
+    }
+
+    @JsonProperty("speed")
+    public void setSpeedJSON(int speed) {
+        this.speed = speed;
+    }
+
+    @JsonProperty("length")
+    private void setLengthJSON(int length) {
+        this.length = length;
+    }
+
     @JsonProperty("nextSection") @JsonInclude(JsonInclude.Include.NON_NULL)
     private String getNextSectionJSON() {
         if (nextSection == null) return null;
         return nextSection.id;
     }
 
-    @JsonProperty("nextSection") @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("nextSection")
     private void setNextSectionJSON(String nextSection) {
         if (Objects.equals(nextSection, "end")) return;
         nextSectionDeferred = nextSection;
@@ -402,7 +418,7 @@ public final class Section {
         return border.tag();
     }
 
-    @JsonProperty("border") @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("border")
     private void setBorderJSON(String border) {
         borderDeferred = border;
     }
