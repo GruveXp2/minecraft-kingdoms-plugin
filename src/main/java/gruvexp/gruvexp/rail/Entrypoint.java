@@ -170,6 +170,11 @@ public class Entrypoint {
         }
     }
 
+    public Component info() {
+        return Component.text("Station enters ").append(Component.text("section ", Section.LABEL_COLOR)).append(section.name())
+                .append(Component.text(" in direction ").append(Component.text(direction, NamedTextColor.GREEN)));
+    }
+
     private boolean resolved = false;
     private String sectionDeferred;
 
