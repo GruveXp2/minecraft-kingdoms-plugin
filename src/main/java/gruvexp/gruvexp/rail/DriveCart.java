@@ -53,6 +53,8 @@ public class DriveCart extends BukkitRunnable {
         updateVelocity();
         cart.addScoreboardTag("running");
         this.passenger = passenger;
+
+        if (length == 0) terminate("Sector " + currentSection.id + " length is not calculated!");
     }
 
     public DriveCart(Villager villager, Entrypoint entrypoint, Locality targetLocality) { //brukes av path systemet
