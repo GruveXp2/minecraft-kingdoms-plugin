@@ -32,7 +32,7 @@ public class DriveCart extends BukkitRunnable {
     final Locality targetLocality;
     String targetHouseNr;
     final Entity passenger;
-    final int[] dPos = new int[3]; // ΔPos om man kjører treigt blir Δpos huska.
+    final int[] Δpos = new int[3]; // ΔPos om man kjører treigt blir Δpos huska.
     float speed; // 0.5 = vanlig, 1 = motorvei, 1.5 = motorvei ekspress
     float speedOffset = 0; // svinger
     float moves = 0; // hvor mange moves som skal gjøres på veien
@@ -210,7 +210,7 @@ public class DriveCart extends BukkitRunnable {
         if (material == Material.AIR) {
             Material material2 = new Location(loc.getWorld(), loc.getX(), loc.getY() - 1, loc.getZ()).getBlock().getType();
             if (material2 == Material.RAIL || material2 == Material.POWERED_RAIL) {
-                dPos[1] = -1;
+                Δpos[1] = -1;
             }
         } else {
             if (material != Material.RAIL && material != Material.POWERED_RAIL) {
@@ -219,7 +219,7 @@ public class DriveCart extends BukkitRunnable {
             }
             Rail data = (Rail) loc.getBlock().getBlockData();
             for (int i = 0; i < 3; i++) { //reset
-                dPos[i] = 0;
+                Δpos[i] = 0;
             }
             Rail.Shape shape = data.getShape();
             switch (direction) {
@@ -233,8 +233,8 @@ public class DriveCart extends BukkitRunnable {
                             direction = 'w';
                             speedOffset += 0.5F;
                         }
-                        case ASCENDING_NORTH -> dPos[1] = 1; // hvis det er bakke så telporteres den opp/ned i tilegg
-                        case ASCENDING_SOUTH -> dPos[1] = -1;
+                        case ASCENDING_NORTH -> Δpos[1] = 1; // hvis det er bakke så telporteres den opp/ned i tilegg
+                        case ASCENDING_SOUTH -> Δpos[1] = -1;
                     }
                 }
                 case 's' -> {
@@ -247,8 +247,8 @@ public class DriveCart extends BukkitRunnable {
                             direction = 'w';
                             speedOffset += 0.5F;
                         }
-                        case ASCENDING_NORTH -> dPos[1] = -1;
-                        case ASCENDING_SOUTH -> dPos[1] = 1;
+                        case ASCENDING_NORTH -> Δpos[1] = -1;
+                        case ASCENDING_SOUTH -> Δpos[1] = 1;
                     }
                 }
                 case 'e' -> {
@@ -261,8 +261,8 @@ public class DriveCart extends BukkitRunnable {
                             direction = 's';
                             speedOffset += 0.5F;
                         }
-                        case ASCENDING_EAST -> dPos[1] = 1;
-                        case ASCENDING_WEST -> dPos[1] = -1;
+                        case ASCENDING_EAST -> Δpos[1] = 1;
+                        case ASCENDING_WEST -> Δpos[1] = -1;
                     }
                 }
                 case 'w' -> {
@@ -275,19 +275,19 @@ public class DriveCart extends BukkitRunnable {
                             direction = 's';
                             speedOffset += 0.5F;
                         }
-                        case ASCENDING_EAST -> dPos[1] = -1;
-                        case ASCENDING_WEST -> dPos[1] = 1;
+                        case ASCENDING_EAST -> Δpos[1] = -1;
+                        case ASCENDING_WEST -> Δpos[1] = 1;
                     } // ellers er direction den samme
                 }
             }
             switch (direction) { // endrer loc i den retninga som er "direction"
-                case 'n' -> dPos[2] = -1;
-                case 's' -> dPos[2] = 1;
-                case 'e' -> dPos[0] = 1;
-                case 'w' -> dPos[0] = -1;
+                case 'n' -> Δpos[2] = -1;
+                case 's' -> Δpos[2] = 1;
+                case 'e' -> Δpos[0] = 1;
+                case 'w' -> Δpos[0] = -1;
             }
         }
-        loc.add(dPos[0], dPos[1], dPos[2]);
+        loc.add(Δpos[0], Δpos[1], Δpos[2]);
         if (counter % 16 == 0 && loc.distanceSquared(cart.getLocation()) > 9 && (gruveXp == null || gruveXp.getInventory().getItemInMainHand().getType() != Material.COMMAND_BLOCK)) {
             syncPosition();
         }
@@ -298,7 +298,7 @@ public class DriveCart extends BukkitRunnable {
         if (counter == length) { // når minecarten har kjørt til enden av seksjonen
             nextSection();
         }
-        if (speedOffset >= 1) { // minecarten kjører litt fortere i svinger. kiŋdoms
+        if (speedOffset >= 1) { // minecarten kjører litt fortere i svinger. kingdoms
             speedOffset--;
             move();
         }
