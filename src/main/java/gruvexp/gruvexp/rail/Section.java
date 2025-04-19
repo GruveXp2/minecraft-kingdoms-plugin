@@ -188,16 +188,10 @@ public final class Section {
     public Component setSpeed(int speed) {
         if (this.speed == speed) return Component.text("Nothing happened, speed already had that value", NamedTextColor.YELLOW);
         this.speed = speed;
-        Component speedName = switch (speed) {
-            case 1 -> Component.text("Normal", NamedTextColor.WHITE);
-            case 2 -> Component.text("Fast", NamedTextColor.YELLOW);
-            case 3 -> Component.text("Express", NamedTextColor.BLUE);
-            default -> throw new IllegalArgumentException("Invalid speed: " + speed);
-        };
 
         KingdomsManager.registerEdit(this);
         return Component.text("Successfully set speed of ").append(name())
-                .append(Component.text(" to ")).append(speedName);
+                .append(Component.text(" to ")).append(speed());
     }
 
     @JsonIgnore
@@ -318,9 +312,10 @@ public final class Section {
 
     public Component speed() {
         return switch (speed) {
-            case 1 -> Component.text("Normal", NamedTextColor.WHITE);
-            case 2 -> Component.text("Fast", NamedTextColor.YELLOW);
-            case 3 -> Component.text("Express", NamedTextColor.BLUE);
+            case 1 -> Component.text("40 km/h", NamedTextColor.WHITE);
+            case 2 -> Component.text("70 km/h", NamedTextColor.YELLOW);
+            case 3 -> Component.text("110 km/h", NamedTextColor.BLUE);
+            case 4 -> Component.text("140 km/h", NamedTextColor.BLUE);
             default -> throw new IllegalStateException("Unexpected speed value: " + speed);
         };
     }

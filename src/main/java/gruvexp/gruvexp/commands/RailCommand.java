@@ -130,12 +130,13 @@ public class RailCommand implements CommandExecutor {
 
                         String speedName = args[3];
                         int speed = switch (speedName) {
-                            case "normal" -> 1;
-                            case "fast" -> 2;
-                            case "express" -> 3;
+                            case "40", "40km/h" -> 1;
+                            case "70", "70km/h" -> 2;
+                            case "110", "110km/h" -> 3;
+                            case "140", "140km/h" -> 4;
                             default -> -1;
                         };
-                        if (speed == -1) return Component.text("Speed \"" + speedName + "\" is invalid, must be of [normal | fast | express]", NamedTextColor.RED);
+                        if (speed == -1) return Component.text("Speed \"" + speedName + "\" is invalid, must be 40, 70, 110, or 140 km/h", NamedTextColor.RED);
                         return section.setSpeed(speed);
                     }
                     default -> {
