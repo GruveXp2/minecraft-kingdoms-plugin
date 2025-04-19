@@ -184,7 +184,7 @@ public class DriveCart extends BukkitRunnable {
         if (currentSection.hasBorder()) currentDistrict = currentSection.getBorder();
 
         // resetter stuff og oppdaterer data til å matche den nye seksjonen
-        if (length > 7 && loc.distance(cart.getLocation()) > 2) {
+        if (length > 7 && loc.distanceSquared(cart.getLocation()) > 4) {
             if (gruveXp.getInventory().getItemInMainHand().getType() != Material.COMMAND_BLOCK) { // DEBUG, remov if statementet i fremtida
                 syncPosition();
             }
@@ -286,7 +286,7 @@ public class DriveCart extends BukkitRunnable {
             }
         }
         loc.add(dPos[0], dPos[1], dPos[2]);
-        if (counter % 16 == 0 && loc.distance(cart.getLocation()) > 3 && (gruveXp == null || gruveXp.getInventory().getItemInMainHand().getType() != Material.COMMAND_BLOCK)) {
+        if (counter % 16 == 0 && loc.distanceSquared(cart.getLocation()) > 9 && (gruveXp == null || gruveXp.getInventory().getItemInMainHand().getType() != Material.COMMAND_BLOCK)) {
             syncPosition();
         }
         // DEBUG
