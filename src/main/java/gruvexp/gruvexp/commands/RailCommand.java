@@ -56,7 +56,7 @@ public class RailCommand implements CommandExecutor {
                         .append(Component.text("Entry: ")).append(section.getEntry().name()).appendNewline()
                         .append(Component.text("Exit  : ")).append(exitValue).appendNewline()
                         .append(Component.text("Length: ")).append(lengthValue).appendNewline()
-                        .append(Component.text("Speed: ")).append(section.speed()).appendNewline()
+                        .append(section.speeds()).appendNewline()
                         .append(borderInfo)
                         .append(section.routes());
 
@@ -125,8 +125,8 @@ public class RailCommand implements CommandExecutor {
 
                         return section.setBorder(targetDistrict);
                     }
-                    case "speed" -> { // /rail set <section> speed <speed>
-                        if (args.length == 3) return Component.text("You must specify what speed to set: speed [normal | fast | express]", NamedTextColor.GOLD);
+                    case "speed" -> { // /rail set <section> speed <speed> <pos?>
+                        if (args.length == 3) return Component.text("You must specify what speed to set: speed [40 | 70 | 110 | 140]", NamedTextColor.GOLD);
 
                         String speedName = args[3];
                         int speed = switch (speedName) {
@@ -137,7 +137,10 @@ public class RailCommand implements CommandExecutor {
                             default -> -1;
                         };
                         if (speed == -1) return Component.text("Speed \"" + speedName + "\" is invalid, must be 40, 70, 110, or 140 km/h", NamedTextColor.RED);
-                        return section.setSpeed(speed);
+
+                        Coord coord = args.length >= 7 ? new Coord(args[4], args[5], args[6]) : section.getEntry();
+
+                        return section.setSpeedPos(p, coord, speed);
                     }
                     default -> {
                         return Component.text("\"" + property + "\" is not a property of rail section!", NamedTextColor.RED);
@@ -166,15 +169,15 @@ public class RailCommand implements CommandExecutor {
                     }
                 }
             }
-            case "calculate_length" -> { // /rail <section> calculate_length n
-                if (args.length == 2) return Component.text("You must specify which direction one drives on the rail, from the entry point: [n | s | e | w]", NamedTextColor.GOLD);
+            case "calculate" -> { // /rail <section> calculate_length n
+                if (args.length == 2) return Component.text("You must specify which direction to scan from, from the entry point: [n | s | e | w]", NamedTextColor.GOLD);
                 String direction = args[2];
                 if (!KingdomsManager.DIRECTIONS.contains(direction)) return Component.text("\"" + direction + "\" is not a valid direction!", NamedTextColor.RED);
 
                 return section.calculateLength(direction, p);
             }
             default -> {
-                return Component.text("Invalid operation! Must be [info | set | remove | tp | help]", NamedTextColor.RED);
+                return Component.text("Invalid operation! Must be [info | view | set | remove | calculate | help]", NamedTextColor.RED);
             }
         }
     }

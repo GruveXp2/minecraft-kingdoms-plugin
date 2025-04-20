@@ -21,7 +21,7 @@ import java.util.Objects;
 
 public class DriveCart extends BukkitRunnable {
 
-    int length;
+    int sectionLength;
     int totalDistance = 0;
     int counter = 0;
     char direction; // hvilken retning carten kjører. når man kommer til svinger vil den nye retninga avhengig av den forrige retninga
@@ -33,7 +33,8 @@ public class DriveCart extends BukkitRunnable {
     String targetHouseNr;
     final Entity passenger;
     final int[] Δpos = new int[3]; // ΔPos om man kjører treigt blir Δpos huska.
-    float speed; // 0.5 = vanlig, 1 = motorvei, 1.5 = motorvei ekspress
+    float speed; // m/t
+    int nextSpeedChange;
     float speedOffset = 0; // svinger
     float moves = 0; // hvor mange moves som skal gjøres på veien
 
@@ -47,14 +48,16 @@ public class DriveCart extends BukkitRunnable {
         this.direction = direction;
         currentSection = startSection;
         this.currentDistrict = startSection.getDistrict();
-        length = currentSection.getLength();
-        speed = currentSection.getSpeed() / 2f;
+        sectionLength = currentSection.getLength();
+        if (currentSection.getSpeed(0) == null) terminate("Sector " + currentSection.id + " starting speed is not set!");
+        speed = currentSection.getSpeed(0) / 2f;
+        nextSpeedChange = currentSection.getNextSpeedIndex(1);
         cart.setMaxSpeed(speed);
         updateVelocity();
         cart.addScoreboardTag("running");
         this.passenger = passenger;
 
-        if (length == 0) terminate("Sector " + currentSection.id + " length is not calculated!");
+        if (sectionLength == 0) terminate("Sector " + currentSection.id + " length is not calculated!");
     }
 
     public DriveCart(Villager villager, Entrypoint entrypoint, Locality targetLocality) { //brukes av path systemet
@@ -128,7 +131,7 @@ public class DriveCart extends BukkitRunnable {
     }
 
     void trail() {
-        if (counter == length) {
+        if (counter == sectionLength) {
             summonMarker(loc, Material.RED_CONCRETE);
         } else {
             summonMarker(loc, Material.LIME_CONCRETE);
@@ -136,7 +139,6 @@ public class DriveCart extends BukkitRunnable {
     }
 
     void nextSection() {
-
         Section nextSection;
         if (currentSection.hasRoutes()) {
             RailRoute route;
@@ -186,19 +188,19 @@ public class DriveCart extends BukkitRunnable {
         if (currentSection.hasBorder()) currentDistrict = currentSection.getBorder();
 
         // resetter stuff og oppdaterer data til å matche den nye seksjonen
-        if (length > 7 && loc.distanceSquared(cart.getLocation()) > 4) {
+        if (sectionLength > 7 && loc.distanceSquared(cart.getLocation()) > 4) {
             if (gruveXp.getInventory().getItemInMainHand().getType() != Material.COMMAND_BLOCK) { // DEBUG, remov if statementet i fremtida
                 syncPosition();
             }
         }
         counter = 0;
         currentSection = nextSection;
-        length = currentSection.getLength();
-        if (length == 0) {
+        sectionLength = currentSection.getLength();
+        if (sectionLength == 0) {
             terminate("Sector " + currentSection.id + " length is not calculated!");
             return;
         }
-        speed = currentSection.getSpeed() / 2f;
+        speed = currentSection.getSpeed(0) / 2f;
         cart.setMaxSpeed(speed);
         updateVelocity();
     }
@@ -295,8 +297,12 @@ public class DriveCart extends BukkitRunnable {
         if (gruveXp != null && gruveXp.getInventory().getItemInOffHand().getType() == Material.REPEATING_COMMAND_BLOCK) {
             trail();
         }
-        if (counter == length) { // når minecarten har kjørt til enden av seksjonen
+        if (counter == sectionLength) { // når minecarten har kjørt til enden av seksjonen
             nextSection();
+        }
+        if (counter == nextSpeedChange) {
+            speed = currentSection.getSpeed(counter);
+            nextSpeedChange = currentSection.getNextSpeedIndex(counter + 1);
         }
         if (speedOffset >= 1) { // minecarten kjører litt fortere i svinger. kingdoms
             speedOffset--;
