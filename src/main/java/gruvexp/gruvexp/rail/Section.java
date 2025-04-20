@@ -38,7 +38,7 @@ public final class Section {
     private Coord entry;
     private Coord exit;
     private int length; // hvor mange blokker man må kjøre før man kommer til et kryss
-    private int speed = 1; // 1: normal, 2: fast, 3: express
+    private final NavigableMap<Integer, Integer> speedChanges = new TreeMap<>();
 
     private Section nextSection; // når man kommer på slutten, så går man inn i denne seksjonen (overstyrer ruter)
     private District border; // man sjekker både kdom og distr når man går over grensa
@@ -54,12 +54,10 @@ public final class Section {
     private Section(@JsonProperty("id") String id,
                     @JsonProperty("entry") Coord entry,
                     @JsonProperty("exit") Coord exit,
-                    @JsonProperty("speed") int speed,
                     @JsonProperty("length") int length) {
         this.id = id;
         this.entry = entry;
         this.exit = exit;
-        this.speed = speed;
         this.length = length;
     }
 
@@ -181,17 +179,14 @@ public final class Section {
         return Component.text("Successfullt removed border of ").append(name());
     }
 
-    public int getSpeed() {
-        return speed;
+    public Integer getSpeed(int index) {
+        return speedChanges.get(index);
     }
 
-    public Component setSpeed(int speed) {
-        if (this.speed == speed) return Component.text("Nothing happened, speed already had that value", NamedTextColor.YELLOW);
-        this.speed = speed;
-
-        KingdomsManager.registerEdit(this);
-        return Component.text("Successfully set speed of ").append(name())
-                .append(Component.text(" to ")).append(speed());
+    public int getNextSpeedIndex(int index) { // neste speed eller den man er på nå
+        if (speedChanges.isEmpty()) return Integer.MAX_VALUE;
+        Integer next = speedChanges.higherKey(index - 1);
+        return next != null ? next : Integer.MAX_VALUE;
     }
 
     @JsonIgnore
@@ -204,7 +199,7 @@ public final class Section {
     }
 
     @JsonIgnore
-    public void setLength(int length) {
+    void setLength(int length) {
         if (length == this.length) return;
         this.length = length;
         KingdomsManager.registerEdit(this);
@@ -310,14 +305,22 @@ public final class Section {
                 .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/rail " + id + " info"));
     }
 
-    public Component speed() {
-        return switch (speed) {
+    public Component speed(int speedValue) {
+        return switch (speedValue) {
             case 1 -> Component.text("40 km/h", NamedTextColor.WHITE);
             case 2 -> Component.text("70 km/h", NamedTextColor.YELLOW);
             case 3 -> Component.text("110 km/h", NamedTextColor.BLUE);
             case 4 -> Component.text("140 km/h", NamedTextColor.BLUE);
-            default -> throw new IllegalStateException("Unexpected speed value: " + speed);
+            default -> throw new IllegalStateException("Unexpected speed value: " + speedValue);
         };
+    }
+
+    public Component speeds() {
+        Component out = Component.text("Speeds: ");
+        for (var entry : speedChanges.entrySet()) {
+            out = out.append(Component.text(entry.getKey())).append(Component.text("->")).append(speed(entry.getValue())).appendSpace();
+        }
+        return out;
     }
 
     public Component routes() {
@@ -348,6 +351,30 @@ public final class Section {
             routeInfo = Component.text("This section doesnt lead to other sections (final stop)");
         }
         return routeInfo;
+    }
+
+    private HashMap<Location, Integer> speedPositions;
+
+    public Component setSpeedPos(Player p, Coord coord, int speed) {
+        if (speedPositions == null) speedPositions = new HashMap<>();
+
+        Location loc = new Location(p.getWorld(), coord.x() + 0.5, coord.y(), coord.z() + 0.5);
+        if (speedPositions.get(loc) == speed) return Component.text("Nothing happened, speed change already had that value at the given position", NamedTextColor.YELLOW);
+        speedPositions.put(loc, speed);
+
+        return Component.text("Successfully set speed changing to ").append(speed(speed))
+                .append(Component.text(" at ")).append(coord.name())
+                .append(Component.text(" for ")).append(name()).appendNewline()
+                .append(Component.text("Remember to run /rail calculate when youre done setting speed changes to save the results", NamedTextColor.YELLOW));
+    }
+
+    HashMap<Location, Integer> getSpeedPositions() {
+        return speedPositions;
+    }
+
+    void setSpeed(int index, int speed) {
+        speedChanges.put(index, speed);
+        KingdomsManager.registerEdit(this);
     }
 
     private boolean resolved = false;
@@ -391,6 +418,17 @@ public final class Section {
     private Integer getLengthJSON() {
         if (length == 0) return null;
         return length;
+    }
+
+    @JsonProperty("speeds") @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Map<Integer, Integer> getSpeedJSON() {
+        if (speedChanges.isEmpty()) return null;
+        return speedChanges;
+    }
+
+    @JsonProperty("speeds")
+    private void setSpeedJSON(Map<Integer, Integer> speedChanges) {
+        this.speedChanges.putAll(speedChanges);
     }
 
     @JsonProperty("nextSection") @JsonInclude(JsonInclude.Include.NON_NULL)
