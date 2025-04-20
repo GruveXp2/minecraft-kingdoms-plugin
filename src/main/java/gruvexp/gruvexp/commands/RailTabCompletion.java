@@ -30,7 +30,7 @@ public class RailTabCompletion implements TabCompleter {
         Section section = district.getSection(args[0]);
         if (section == null) return List.of(ChatColor.RED + "Unknown rail section: " + args[0]);
 
-        if (args.length == 2) return List.of("info", "view", "set", "calculate_length", "remove");
+        if (args.length == 2) return List.of("info", "view", "set", "calculate", "remove");
 
         String oper = args[1];
         switch (oper) {
@@ -44,6 +44,10 @@ public class RailTabCompletion implements TabCompleter {
                     }
                     case "speed" -> {
                         if (args.length == 4) return List.of("normal", "fast", "express");
+                        if (args.length == 5) {
+                            Coord coord = Utils.getPlayerBlockCoords(p);
+                            return List.of(coord.toString());
+                        }
                     }
                     case "next_section" -> {
                         if (section.hasBorder()) {
@@ -94,7 +98,7 @@ public class RailTabCompletion implements TabCompleter {
                     }
                 }
             }
-            case "calculate_length" -> {
+            case "calculate" -> {
                 if (args.length == 3) return KingdomsManager.DIRECTIONS.stream().toList();
             }
         }

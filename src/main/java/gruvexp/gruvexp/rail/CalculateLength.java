@@ -1,15 +1,14 @@
 package gruvexp.gruvexp.rail;
 
-import gruvexp.gruvexp.core.District;
-import gruvexp.gruvexp.core.KingdomsManager;
-import gruvexp.gruvexp.rail.Section;
-import gruvexp.gruvexp.rail.Coord;
+import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.block.data.Rail;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.CommandMinecart;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.HashMap;
 
 public class CalculateLength extends BukkitRunnable {
 
@@ -20,29 +19,36 @@ public class CalculateLength extends BukkitRunnable {
     final Location loc;
     final Location exit;
     final Player p;
-    final int start_distance;
+    final int startDistance;
+    HashMap<Location, Integer> speedPositions;
     boolean doubleRun = false; // system som gjør at hver tick flytter han seg 2 hakk
     public CalculateLength(Section section, char direction, Player p) {
         this.section = section;
         this.direction = direction;
         this.p = p;
-        Coord coord = section.getEntry();
+        this.speedPositions = section.getSpeedPositions();
+        Coord entry = section.getEntry();
         World world = p.getWorld();
-        loc = new Location(world, coord.x() + 0.5, coord.y(), coord.z() + 0.5);
+        loc = new Location(world, entry.x() + 0.5, entry.y(), entry.z() + 0.5);
         cart = (CommandMinecart) world.spawnEntity(loc, EntityType.COMMAND_BLOCK_MINECART);
-        Coord exit_coord = section.getExit();
-        exit = new Location(world, exit_coord.x() + 0.5, exit_coord.y(), exit_coord.z() + 0.5);
-        start_distance = (int) Math.sqrt(Math.pow(coord.x() - exit_coord.x(), 2) + Math.pow(coord.y() - exit_coord.y(), 2) + Math.pow(coord.z() - exit_coord.z(), 2));
+        Coord exit = section.getExit();
+        this.exit = new Location(world, exit.x() + 0.5, exit.y(), exit.z() + 0.5);
+        startDistance = (int) Math.sqrt(Math.pow(entry.x() - exit.x(), 2) + Math.pow(entry.y() - exit.y(), 2) + Math.pow(entry.z() - exit.z(), 2));
         p.sendMessage("Calculating...");
     }
 
 
     @Override
     public void run() {
+        if (speedPositions.containsKey(loc)) {
+            int speed = speedPositions.get(loc);
+            section.setSpeed(counter, speed);
+            p.sendMessage(Component.text("Speed change at " + counter + ": ").append(section.speed(speed)));
+        }
         counter++;
         if (counter % 50 == 0) {
-            int new_distance = (int) Math.sqrt(Math.pow(loc.getX() - exit.getX(), 2) + Math.pow(loc.getY() - exit.getY(), 2) + Math.pow(loc.getZ() - exit.getZ(), 2));
-            int percent = (new_distance * 100) / start_distance;
+            int newDistance = (int) Math.sqrt(Math.pow(loc.getX() - exit.getX(), 2) + Math.pow(loc.getY() - exit.getY(), 2) + Math.pow(loc.getZ() - exit.getZ(), 2));
+            int percent = (newDistance * 100) / startDistance;
             p.sendMessage((100 - percent) + "%");
         }
         Material material = loc.getBlock().getType();
