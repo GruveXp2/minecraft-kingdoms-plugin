@@ -66,8 +66,11 @@ public final class Section {
         return district;
     }
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public Coord getEntry() {return entry;}
+    @NotNull
+    public Coord getEntry() {
+        if (entry == null) throw new IllegalStateException("Missing entry in section " + id);
+        return entry;
+    }
 
     public Component setEntry(Coord entry) {
         if (this.entry == entry) return Component.text("Nothing happened, that was already set as the entry", NamedTextColor.YELLOW);
