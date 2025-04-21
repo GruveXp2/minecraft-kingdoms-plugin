@@ -317,7 +317,7 @@ public final class Section {
             case 1 -> Component.text("40", NamedTextColor.WHITE);
             case 2 -> Component.text("70", NamedTextColor.YELLOW);
             case 3 -> Component.text("110", NamedTextColor.BLUE);
-            case 4 -> Component.text("140", NamedTextColor.BLUE);
+            case 4 -> Component.text("140", TextColor.color(0x8f57ff));
             default -> throw new IllegalStateException("Unexpected speed value: " + speedValue);
         };
     }
