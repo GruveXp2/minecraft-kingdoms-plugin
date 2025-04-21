@@ -379,9 +379,21 @@ public final class Section {
         return speedPositions;
     }
 
+    public Set<Integer> getSpeedIndexes() {
+        return speedChanges.keySet();
+    }
+
     void setSpeed(int index, int speed) {
         speedChanges.put(index, speed);
         KingdomsManager.registerEdit(this);
+    }
+
+    public Component removeSpeed(int index) {
+        if (!speedChanges.containsKey(index)) return Component.text("Nothing happened, no speed change was registered at that location", NamedTextColor.YELLOW);
+        speedChanges.remove(index);
+
+        KingdomsManager.registerEdit(this);
+        return Component.text("Successfully removed speed change at index " + index);
     }
 
     private boolean resolved = false;

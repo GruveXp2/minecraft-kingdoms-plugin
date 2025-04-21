@@ -90,13 +90,17 @@ public class RailTabCompletion implements TabCompleter {
                 }
             }
             case "remove" -> {
-                if (args.length == 3) return List.of("route", "border");
+                if (args.length == 3) return List.of("route", "border", "speed");
                 String property = args[2];
                 if (property.equals("route")) {
                     if (args.length == 4) {
                         List<String> out = new ArrayList<>(KingdomsManager.DIRECTIONS);
                         out.add("all");
                         return out;
+                    }
+                } else if (property.equals("speed")) {
+                    if (args.length == 4) {
+                        return section.getSpeedIndexes().stream().map(String::valueOf).toList();
                     }
                 }
             }
