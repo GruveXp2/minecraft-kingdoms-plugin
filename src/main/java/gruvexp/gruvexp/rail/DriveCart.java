@@ -195,13 +195,12 @@ public class DriveCart extends BukkitRunnable {
         }
         counter = 0;
         currentSection = nextSection;
+        nextSpeedChange = currentSection.getNextSpeedIndex(counter);
         sectionLength = currentSection.getLength();
         if (sectionLength == 0) {
             terminate("Sector " + currentSection.id + " length is not calculated!");
             return;
         }
-        speed = currentSection.getSpeed(0) / 2f;
-        cart.setMaxSpeed(speed);
         updateVelocity();
     }
 
@@ -301,7 +300,9 @@ public class DriveCart extends BukkitRunnable {
             nextSection();
         }
         if (counter == nextSpeedChange) {
-            speed = currentSection.getSpeed(counter);
+            speed = currentSection.getSpeed(counter) / 2f;
+            cart.setMaxSpeed(speed);
+            Bukkit.broadcast(Component.text("Changing speed to ").append(Section.speed((int)(speed*2))));
             nextSpeedChange = currentSection.getNextSpeedIndex(counter + 1);
         }
         if (speedOffset >= 1) { // minecarten kjører litt fortere i svinger. kingdoms
