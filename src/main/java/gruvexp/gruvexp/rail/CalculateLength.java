@@ -40,7 +40,7 @@ public class CalculateLength extends BukkitRunnable {
 
     @Override
     public void run() {
-        if (speedPositions.containsKey(loc)) {
+        if (speedPositions != null && speedPositions.containsKey(loc)) {
             int speed = speedPositions.get(loc);
             section.setSpeed(counter, speed);
             p.sendMessage(Component.text("Speed change at " + counter + ": ").append(section.speed(speed)));
