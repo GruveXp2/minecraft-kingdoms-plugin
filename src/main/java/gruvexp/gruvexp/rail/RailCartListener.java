@@ -32,8 +32,8 @@ public class RailCartListener implements Listener {
             Set<String> tags = frame.getScoreboardTags();
             if (tags.size() != 1) return;
 
-            p.sendMessage(handlePlayerItemFrameRightClick(p, frame));
-
+            Component result = handlePlayerItemFrameRightClick(p, frame);
+            if (result != null) p.sendMessage(result);
         } else if (e.getRightClicked() instanceof Minecart cart) {
             Set<String> tags = cart.getScoreboardTags();
             if (tags.contains("running")) {return;}
