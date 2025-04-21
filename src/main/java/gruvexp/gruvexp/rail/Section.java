@@ -366,7 +366,7 @@ public final class Section {
         if (speedPositions == null) speedPositions = new HashMap<>();
 
         Location loc = new Location(p.getWorld(), coord.x() + 0.5, coord.y(), coord.z() + 0.5);
-        if (speedPositions.get(loc) == speed) return Component.text("Nothing happened, speed change already had that value at the given position", NamedTextColor.YELLOW);
+        if (speedPositions.get(loc) != null && speedPositions.get(loc) == speed) return Component.text("Nothing happened, speed change already had that value at the given position", NamedTextColor.YELLOW);
         speedPositions.put(loc, speed);
 
         return Component.text("Successfully set speed changing to ").append(speed(speed))
