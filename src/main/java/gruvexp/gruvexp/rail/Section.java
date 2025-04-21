@@ -308,12 +308,16 @@ public final class Section {
                 .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/rail " + id + " info"));
     }
 
-    public Component speed(int speedValue) {
+    public static Component speed(int speedValue) {
+        return speedShort(speedValue).append(Component.text(" km/h"));
+    }
+
+    public static Component speedShort(int speedValue) {
         return switch (speedValue) {
-            case 1 -> Component.text("40 km/h", NamedTextColor.WHITE);
-            case 2 -> Component.text("70 km/h", NamedTextColor.YELLOW);
-            case 3 -> Component.text("110 km/h", NamedTextColor.BLUE);
-            case 4 -> Component.text("140 km/h", NamedTextColor.BLUE);
+            case 1 -> Component.text("40", NamedTextColor.WHITE);
+            case 2 -> Component.text("70", NamedTextColor.YELLOW);
+            case 3 -> Component.text("110", NamedTextColor.BLUE);
+            case 4 -> Component.text("140", NamedTextColor.BLUE);
             default -> throw new IllegalStateException("Unexpected speed value: " + speedValue);
         };
     }
@@ -321,7 +325,7 @@ public final class Section {
     public Component speeds() {
         Component out = Component.text("Speeds: ");
         for (var entry : speedChanges.entrySet()) {
-            out = out.append(Component.text(entry.getKey())).append(Component.text("->")).append(speed(entry.getValue())).appendSpace();
+            out = out.append(Component.text(entry.getKey())).append(Component.text("->")).append(speedShort(entry.getValue())).appendSpace();
         }
         return out;
     }
