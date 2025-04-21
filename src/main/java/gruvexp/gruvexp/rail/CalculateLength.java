@@ -43,7 +43,7 @@ public class CalculateLength extends BukkitRunnable {
         if (speedPositions != null && speedPositions.containsKey(loc)) {
             int speed = speedPositions.get(loc);
             section.setSpeed(counter, speed);
-            p.sendMessage(Component.text("Speed change at " + counter + ": ").append(section.speed(speed)));
+            p.sendMessage(Component.text("Speed change at " + counter + ": ").append(Section.speed(speed)));
         }
         counter++;
         if (counter % 50 == 0) {
