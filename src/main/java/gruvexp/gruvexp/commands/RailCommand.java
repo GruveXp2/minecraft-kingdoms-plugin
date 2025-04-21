@@ -148,7 +148,7 @@ public class RailCommand implements CommandExecutor {
                 }
             }
             case "remove" -> { // rail remove <section> route forward
-                if (args.length == 2) return Component.text("You must specify what to remove [route | border]", NamedTextColor.GOLD);
+                if (args.length == 2) return Component.text("You must specify what to remove [route | border | speed]", NamedTextColor.GOLD);
 
                 String property = args[2];
                 switch (property) {
@@ -163,6 +163,16 @@ public class RailCommand implements CommandExecutor {
                     }
                     case "border" -> {
                         return section.removeBorder();
+                    }
+                    case "speed" -> {
+                        if (args.length == 3) return Component.text("You must specify which index to remove a speed: remove speed <index>", NamedTextColor.GOLD);
+                        String speedIndex = args[3];
+                        try {
+                            int i = Integer.parseInt(speedIndex);
+                            return section.removeSpeed(i);
+                        } catch (NumberFormatException e) {
+                            return Component.text("Index must be a number, not \"" + speedIndex + "\"!", NamedTextColor.RED);
+                        }
                     }
                     default -> {
                         return Component.text("\"" + property + "\" is not a removable property of rail section!", NamedTextColor.RED);
