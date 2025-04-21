@@ -56,6 +56,8 @@ public final class KingdomsManager {
         return selectedLocality.get(p);
     }
     public static Component setSelectedKingdom(Player p, Kingdom kingdom) {
+        if (selectedKingdom.get(p) == kingdom && selectedDistrict.get(p) == null && selectedLocality.get(p) == null)
+            return Component.text("Nothing happened, you already have this kingdom selected", NamedTextColor.YELLOW);
         selectedKingdom.put(p, kingdom);
         selectedDistrict.remove(p);
         selectedLocality.remove(p);
@@ -63,6 +65,8 @@ public final class KingdomsManager {
                 .append(Component.text("kingdom ", Kingdom.LABEL_COLOR)).append(kingdom.name());
     }
     public static Component setSelectedDistrict(Player p, District district) {
+        if (selectedDistrict.get(p) == district && selectedLocality.get(p) == null)
+            return Component.text("Nothing happened, you already have this district selected", NamedTextColor.YELLOW);
         selectedKingdom.put(p, district.getKingdom());
         selectedDistrict.put(p, district);
         selectedLocality.remove(p);
@@ -70,6 +74,8 @@ public final class KingdomsManager {
                 .append(Component.text("district ", District.LABEL_COLOR)).append(district.address());
     }
     public static Component setSelectedLocality(Player p, Locality locality) {
+        if (selectedLocality.get(p) == locality)
+            return Component.text("Nothing happened, you already have this locality selected", NamedTextColor.YELLOW);
         selectedKingdom.put(p, locality.getDistrict().getKingdom());
         selectedDistrict.put(p, locality.getDistrict());
         selectedLocality.put(p, locality);
