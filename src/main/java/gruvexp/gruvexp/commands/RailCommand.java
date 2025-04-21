@@ -96,17 +96,17 @@ public class RailCommand implements CommandExecutor {
                         String direction = args[3]; // right
                         if (!KingdomsManager.ROUTES.contains(direction)) return Component.text("\"" + direction + "\" is not a valid direction!", NamedTextColor.RED);
 
-                        String railShapeStr = args[4];
-                        if (!KingdomsManager.RAIL_SHAPES.contains(railShapeStr)) return Component.text("\"" + railShapeStr + "\" is not a valid rail shape!", NamedTextColor.RED);
-                        Rail.Shape railShape = Rail.Shape.valueOf(railShapeStr.toUpperCase()); // north_west
-
-                        String targetSectionID = args[5];
+                        String targetSectionID = args[4];
                         if (section.hasBorder()) district = section.getBorder();
                         Section targetSection = district.getSection(targetSectionID);
                         if (targetSection == null) {
                             String searchDistrict = section.hasBorder() ? "the border district" : "this district";
                             return Component.text("Section \"" + targetSectionID + "\" not found in " + searchDistrict + ". If the section actually exists, you have to set a border for this section, so the server knows which district to look for the specified section", NamedTextColor.YELLOW);
                         }
+
+                        String railShapeStr = args[5];
+                        if (!KingdomsManager.RAIL_SHAPES.contains(railShapeStr)) return Component.text("\"" + railShapeStr + "\" is not a valid rail shape!", NamedTextColor.RED);
+                        Rail.Shape railShape = Rail.Shape.valueOf(railShapeStr.toUpperCase()); // north_west
 
                         HashSet<String> addresses = new HashSet<>(args.length - 6);
                         addresses.addAll(Arrays.asList(args).subList(6, args.length));
