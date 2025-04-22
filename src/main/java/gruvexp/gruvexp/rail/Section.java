@@ -379,6 +379,7 @@ public final class Section {
         return speedPositions;
     }
 
+    @JsonIgnore
     public Set<Integer> getSpeedIndexes() {
         return speedChanges.keySet();
     }
