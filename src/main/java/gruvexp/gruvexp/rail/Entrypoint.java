@@ -48,6 +48,7 @@ public class Entrypoint {
         this.section = section;
         this.direction = direction;
         stationMenu = new StationMenu(this);
+        selectKingdomMenu = new SelectKingdomMenu(this);
     }
 
     @JsonCreator
