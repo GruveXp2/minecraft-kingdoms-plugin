@@ -21,6 +21,8 @@ import java.util.Objects;
 
 public class DriveCart extends BukkitRunnable {
 
+    public static float TURN_OFFSET = (float) (1 - Math.sqrt(2) / 2);
+
     int sectionLength;
     int totalDistance = 0;
     int counter = 0;
@@ -228,11 +230,11 @@ public class DriveCart extends BukkitRunnable {
                     switch (shape) {
                         case SOUTH_EAST -> {
                             direction = 'e';
-                            speedOffset += 0.5F;
+                            speedOffset += TURN_OFFSET;
                         } // 2 måter å svinge, ellers går den bare rett fram
                         case SOUTH_WEST -> {
                             direction = 'w';
-                            speedOffset += 0.5F;
+                            speedOffset += TURN_OFFSET;
                         }
                         case ASCENDING_NORTH -> Δpos[1] = 1; // hvis det er bakke så telporteres den opp/ned i tilegg
                         case ASCENDING_SOUTH -> Δpos[1] = -1;
@@ -242,11 +244,11 @@ public class DriveCart extends BukkitRunnable {
                     switch (shape) {
                         case NORTH_EAST -> {
                             direction = 'e';
-                            speedOffset += 0.5F;
+                            speedOffset += TURN_OFFSET;
                         }
                         case NORTH_WEST -> {
                             direction = 'w';
-                            speedOffset += 0.5F;
+                            speedOffset += TURN_OFFSET;
                         }
                         case ASCENDING_NORTH -> Δpos[1] = -1;
                         case ASCENDING_SOUTH -> Δpos[1] = 1;
@@ -256,11 +258,11 @@ public class DriveCart extends BukkitRunnable {
                     switch (shape) {
                         case NORTH_WEST -> {
                             direction = 'n';
-                            speedOffset += 0.5F;
+                            speedOffset += TURN_OFFSET;
                         }
                         case SOUTH_WEST -> {
                             direction = 's';
-                            speedOffset += 0.5F;
+                            speedOffset += TURN_OFFSET;
                         }
                         case ASCENDING_EAST -> Δpos[1] = 1;
                         case ASCENDING_WEST -> Δpos[1] = -1;
@@ -270,11 +272,11 @@ public class DriveCart extends BukkitRunnable {
                     switch (shape) {
                         case NORTH_EAST -> {
                             direction = 'n';
-                            speedOffset += 0.5F;
+                            speedOffset += TURN_OFFSET;
                         }
                         case SOUTH_EAST -> {
                             direction = 's';
-                            speedOffset += 0.5F;
+                            speedOffset += TURN_OFFSET;
                         }
                         case ASCENDING_EAST -> Δpos[1] = -1;
                         case ASCENDING_WEST -> Δpos[1] = 1;
