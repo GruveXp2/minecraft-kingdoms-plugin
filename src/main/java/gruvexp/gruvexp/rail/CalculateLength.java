@@ -54,7 +54,7 @@ public class CalculateLength extends BukkitRunnable {
         Material material = loc.getBlock().getType();
         if (material == Material.AIR) {
             Material material2 = new Location(loc.getWorld(), loc.getX(), loc.getY() - 1, loc.getZ()).getBlock().getType();
-            if (material2 == Material.RAIL || material2 == Material.POWERED_RAIL) {
+            if (material2 == Material.RAIL || material2 == Material.POWERED_RAIL || material2 == Material.ACTIVATOR_RAIL || material2 == Material.DETECTOR_RAIL) {
                 loc.add(0, -1, 0);
             } else {
                 p.sendMessage(ChatColor.RED + "Cart derailed, length calculation cancelled");
@@ -62,7 +62,7 @@ public class CalculateLength extends BukkitRunnable {
                 return;
             }
         } else {
-            if (material != Material.RAIL && material != Material.POWERED_RAIL) {
+            if (material != Material.RAIL && material != Material.POWERED_RAIL && material != Material.ACTIVATOR_RAIL && material != Material.DETECTOR_RAIL) {
                 p.sendMessage(ChatColor.RED + "Cart derailed, length calculation cancelled");
                 cancel();
                 return;
