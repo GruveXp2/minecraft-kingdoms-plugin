@@ -82,7 +82,7 @@ public class DriveCart extends BukkitRunnable {
 
     public void terminate() {
         if (!cart.getPassengers().isEmpty() && cart.getPassengers().getFirst() instanceof Player p) {
-            p.sendMessage(Component.text("Destination reached: " + ((Math.ceil(totalDistance / 100f))/10f) + " km", NamedTextColor.GRAY));
+            p.sendMessage(Component.text("Destination reached: " + ((Math.ceil(totalDistance / 100f))/10f) + " km"));
             CartManager.removeCart(cart.getUniqueId());
         } else if (!cart.getPassengers().isEmpty() && cart.getPassengers().getFirst() instanceof Villager villager) {
             Path path = targetLocality.getPath("station_exit"); // hardcode: alle adresses som villidgers kan komme til med rail systemet må ha en path som kalles "station_exit" som villidgersene kan gå på når de er framme.
@@ -304,7 +304,7 @@ public class DriveCart extends BukkitRunnable {
         if (counter == nextSpeedChange) {
             speed = currentSection.getSpeed(counter) / 2f;
             cart.setMaxSpeed(speed);
-            Bukkit.broadcast(Component.text("Changing speed to ").append(Section.speed((int)(speed*2))));
+            passenger.sendMessage(Component.text("Speed limit: ", NamedTextColor.GRAY).append(Section.speed((int) (speed * 2))));
             nextSpeedChange = currentSection.getNextSpeedIndex(counter + 1);
         }
         if (speedOffset >= 1) { // minecarten kjører litt fortere i svinger. kingdoms
