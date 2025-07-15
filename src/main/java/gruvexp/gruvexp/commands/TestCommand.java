@@ -1,9 +1,5 @@
 package gruvexp.gruvexp.commands;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.PacketContainer;
 import gruvexp.gruvexp.Main;
 import gruvexp.gruvexp.core.KingdomsManager;
 import gruvexp.gruvexp.rail.CartManager;
@@ -19,7 +15,6 @@ import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
 public class TestCommand implements CommandExecutor {
@@ -56,24 +51,6 @@ public class TestCommand implements CommandExecutor {
             }
             case "wp" -> KingdomsManager.getKingdom("pyralix").getCitizen("bob_core").goToWork();
             case "1" -> p.getLocation().setPitch(40);
-            case "2" -> {
-                PacketContainer rotationPacket = new PacketContainer(PacketType.Play.Server.ENTITY_LOOK);
-                rotationPacket.getIntegers().write(0, p.getEntityId());
-                rotationPacket.getBytes().write(0, (byte) 40);
-                ProtocolManager manager = ProtocolLibrary.getProtocolManager();
-                manager.broadcastServerPacket(rotationPacket);
-            }
-            case "3" -> {
-                PacketContainer rotationPacket = new PacketContainer(PacketType.Play.Server.ENTITY_LOOK);
-                rotationPacket.getIntegers().write(0, p.getEntityId());
-                rotationPacket.getBytes().write(0, (byte) 40);
-                ProtocolManager manager = ProtocolLibrary.getProtocolManager();
-                try {
-                    manager.sendServerPacket(p, rotationPacket);
-                } catch (InvocationTargetException e) {
-                    throw new RuntimeException(e);
-                }
-            }
             case "4" -> Main.spamPackets = !Main.spamPackets;
             case "cart" -> {
                 String oper = args[1];
@@ -113,17 +90,6 @@ public class TestCommand implements CommandExecutor {
                         Test.rotate3(p, cart);
                     }
                     case "rotate4" -> Test.rotate4(p);
-                    case "packetMount1" -> {
-                        String id = args[2];
-                        Minecart cart = (Minecart) Bukkit.getEntity(UUID.fromString(id));
-                        Test.packetMount1(p, cart);
-                    }
-                    case "packetMount2" -> {
-                        String id = args[2];
-                        Minecart cart = (Minecart) Bukkit.getEntity(UUID.fromString(id));
-                        Test.packetMount2(p, cart);
-                    }
-                    case "packetRotate" -> Test.packetRotate(p);
                 }
             }
             default -> p.sendMessage(ChatColor.RED + "Feil arg, skriv inn [villager | rail]");

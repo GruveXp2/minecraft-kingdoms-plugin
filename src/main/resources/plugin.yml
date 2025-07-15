@@ -5,7 +5,6 @@ api-version: 1.21
 authors: [ GruveXp ]
 description: Made by CommandMaster GruveXp 4 the Kingdoms server
 website: https://www.youtube.com/channel/UCZsak04_6H192H5NVDrJ4Ww
-depend: [ProtocolLib]
 commands:
   kingdoms:
     description: This command shows info about the server, can change settings, add or remove kingdoms
