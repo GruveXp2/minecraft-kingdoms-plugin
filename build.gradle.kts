@@ -31,7 +31,6 @@ dependencies {
     api("org.jetbrains:annotations:24.1.0")
     api(libs.com.fasterxml.jackson.core.jackson.databind)
     compileOnly("io.papermc.paper:paper-api:1.21.+")
-    compileOnly(libs.com.comphenix.protocol.protocollib)
 }
 
 val buildNumberFile = file("build-number.txt")
