@@ -131,7 +131,7 @@ public class Year2025 {
 
     public static void animateNumber(int ticks) {
         numberStart1 = blockDisplays1.getFirst().getLocation();
-        numberStart1 = blockDisplays2.getFirst().getLocation();
+        numberStart2 = blockDisplays2.getFirst().getLocation();
         new SkiltAnimasjon(blockDisplays1, true, ticks).runTaskTimer(Main.getPlugin(), 0, 1);
         new SkiltAnimasjon(blockDisplays2, false, ticks).runTaskTimer(Main.getPlugin(), 0, 1);
     }
