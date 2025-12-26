@@ -19,7 +19,6 @@ public class ClockCommand implements CommandExecutor {
             p.sendMessage(ChatColor.RED + "you need 1 or more arguments");
             return true;
         }
-
         switch (args[0]) {
             case "show" -> {
                 int x, y, z;
@@ -58,8 +57,6 @@ public class ClockCommand implements CommandExecutor {
             }
             case null, default -> p.sendMessage(ChatColor.RED + args[0] + "is not a valid argument!");
         }
-
-
         return true;
     }
 }
