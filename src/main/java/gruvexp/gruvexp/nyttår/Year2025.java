@@ -192,16 +192,14 @@ public class Year2025 {
         processFile(inputSnøfnugg, snøfnugg);
         String inputNumber1 = Utils.loadTxt("number1");
         processFile(inputNumber1, number1);
-        double dist = 0;
         for (int i = 1; i < number1.size(); i++) {
-            dist += number1.get(i).distance(number1.get(i - 1));
+            double dist = number1.get(i).distance(number1.get(i - 1));
             number1Lengths.add(dist);
         }
         String inputNumber2 = Utils.loadTxt("number2");
         processFile(inputNumber2, number2);
-        dist = 0;
         for (int i = 1; i < number2.size(); i++) {
-            dist += number2.get(i).distance(number2.get(i - 1));
+            double dist = number2.get(i).distance(number2.get(i - 1));
             number2Lengths.add(dist);
         }
     }
