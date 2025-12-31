@@ -162,6 +162,9 @@ public class Year2025 {
             display.remove();
         }
         blockDisplays.clear();
+        blockDisplays1.clear();
+        blockDisplays2.clear();
+
         length.clear();
         radians.clear();
     }
