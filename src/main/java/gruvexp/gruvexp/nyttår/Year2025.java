@@ -204,11 +204,11 @@ public class Year2025 {
         }
     }
 
-    private static void processFile(String inputNumber1, List<Location> number1) {
-        String[] coords1 = inputNumber1.split("\n");
-        for (int i = 0; i < coords1.length - 1; i++) {
-            String[] loc = coords1[i].split(",");
-            number1.add(new Location(Main.WORLD, Double.parseDouble(loc[0]), Double.parseDouble(loc[1]), Double.parseDouble(loc[2])));
+    private static void processFile(String inputRaw, List<Location> number) {
+        String[] coords = inputRaw.split("\n");
+        for (String coord : coords) {
+            String[] loc = coord.split(",");
+            number.add(new Location(Main.WORLD, Double.parseDouble(loc[0]) * NUMBER_SCALE, Double.parseDouble(loc[1]) * NUMBER_SCALE, Double.parseDouble(loc[2]) * NUMBER_SCALE));
         }
     }
 
