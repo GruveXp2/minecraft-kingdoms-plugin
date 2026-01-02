@@ -36,6 +36,8 @@ public class Year2025 {
 
     public static BlockDisplay testDisplay;
 
+    public static final int NUMBER_SCALE = 2;
+
     public static void addSnøFnuggBlock(Location location) {
         snøfnugg.add(location);
     }
@@ -136,8 +138,9 @@ public class Year2025 {
         new SkiltAnimasjon(blockDisplays2, false, ticks).runTaskTimer(Main.getPlugin(), 0, 1);
     }
 
-    private static Location getLocation(boolean isNumber20, double progress, double placement) {
-        int totalLength = isNumber20 ? blockDisplays1.size() : blockDisplays2.size();
+    private static Location getLocation(boolean isNumber20, double progress, double placement, boolean test) {
+
+        int totalLength = (isNumber20 ? blockDisplays1.size() : blockDisplays2.size()) * NUMBER_SCALE;
         double length = totalLength * progress * placement;
         if (isNumber20) {
             return getLocation(length, number1Lengths, number1, numberStart1);
@@ -204,11 +207,12 @@ public class Year2025 {
         }
     }
 
-    private static void processFile(String inputRaw, List<Location> number) {
+    private static void processFile(String inputRaw, List<Location> number, boolean big) {
         String[] coords = inputRaw.split("\n");
+        double multiply = big ? NUMBER_SCALE : 1;
         for (String coord : coords) {
             String[] loc = coord.split(",");
-            number.add(new Location(Main.WORLD, Double.parseDouble(loc[0]) * NUMBER_SCALE, Double.parseDouble(loc[1]) * NUMBER_SCALE, Double.parseDouble(loc[2]) * NUMBER_SCALE));
+            number.add(new Location(Main.WORLD, Double.parseDouble(loc[0]) * multiply, Double.parseDouble(loc[1]) * multiply, Double.parseDouble(loc[2]) * multiply));
         }
     }
 
