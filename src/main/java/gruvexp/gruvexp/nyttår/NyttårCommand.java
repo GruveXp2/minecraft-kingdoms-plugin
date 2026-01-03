@@ -28,6 +28,8 @@ public class NyttårCommand implements CommandExecutor {
         String oper = args[0];
         Player david = Bukkit.getPlayer("GruveXp");
         switch (oper) {
+            case "reset_signpost" -> Year2025.resetSignpost();
+            case "fix_year" -> Year2025.transformInto2026();
             case "lag_tekst" -> {
                 assert david != null;
                 david.chat("/function forskerlinja:god_jul_forskerlinja");
