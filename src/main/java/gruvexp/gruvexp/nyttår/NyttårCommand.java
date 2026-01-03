@@ -79,6 +79,7 @@ public class NyttårCommand implements CommandExecutor {
                 Year2025.spawnCircle(centerLocation);
                 sender.sendMessage("Spawner sirkel");
             }
+            case "report" -> Year2025.report();
             case "run_snowflake" -> {
                 Year2025.snowFlake();
                 sender.sendMessage("Gjør om til snøfnugg");
