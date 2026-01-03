@@ -76,7 +76,8 @@ public class Year2025 {
         for (int i = 0; i < blocks; i++) {
             double angle = 2*Math.PI * i/blocks;
             BlockDisplay display = (BlockDisplay) Main.WORLD.spawnEntity(center.clone().add(0, radius * Math.sin(angle), radius * Math.cos(angle)), EntityType.BLOCK_DISPLAY);
-            display.setTeleportDuration(25);
+            display.setInterpolationDuration(0);
+            display.setTeleportDuration(3); // sett til 25
             if (i == 0) {
                 display.setBlock(Material.REDSTONE_BLOCK.createBlockData());
             } else if (i == 10) {
@@ -125,7 +126,7 @@ public class Year2025 {
 
         // Lag en ny transformasjon med den nye skaleringsfaktoren
         Transformation newTransform = new Transformation(
-                currentTransform.getTranslation(),   // Behold eksisterende posisjon
+                currentTransform.getTranslation(),  // Behold eksisterende posisjon
                 currentTransform.getLeftRotation(), // Behold eksisterende rotasjon
                 scale,                              // Angi ny skala
                 currentTransform.getRightRotation() // Behold eksisterende rotasjon
@@ -138,8 +139,10 @@ public class Year2025 {
     public static void animateNumber(int ticks) {
         numberStart1 = blockDisplays1.getFirst().getLocation();
         numberStart2 = blockDisplays2.getFirst().getLocation();
-        new SkiltAnimasjon(blockDisplays1, true, ticks).runTaskTimer(Main.getPlugin(), 0, 1);
-        new SkiltAnimasjon(blockDisplays2, false, ticks).runTaskTimer(Main.getPlugin(), 0, 1);
+
+        blockDisplays.forEach(display -> display.setTeleportDuration(2));
+        new SkiltAnimasjon(blockDisplays1, true, ticks).runTaskTimer(Main.getPlugin(), 0, 2);
+        new SkiltAnimasjon(blockDisplays2, false, ticks).runTaskTimer(Main.getPlugin(), 0, 2);
     }
 
     private static Location getLocation(boolean isNumber20, double progress, double placement, boolean test) {
@@ -147,21 +150,54 @@ public class Year2025 {
         int totalLength = (isNumber20 ? blockDisplays1.size() : blockDisplays2.size()) * NUMBER_SCALE;
         double length = totalLength * progress * placement;
         if (isNumber20) {
-            return getLocation(length, number1Lengths, number1, numberStart1);
+            return getLocation(length, number1Lengths, number1, numberStart1, test);
         } else {
-            return getLocation(length, number2Lengths, number2, numberStart2);
+            return getLocation(length, number2Lengths, number2, numberStart2, false);
         }
     }
 
     @NotNull
-    private static Location getLocation(double length, List<Double> numberLengths, List<Location> number, Location startLocation) {
-        int i = 0;
-        while (i < numberLengths.size() && length < numberLengths.get(i)) {
-            length -= numberLengths.get(i);
-            i++;
+    private static Location getLocation(double length, List<Double> numberLengths, List<Location> number, Location startLocation, boolean test) {
+
+        String out = String.format(Locale.US,
+                "getLocation(length=%.1f, numberLengths=%s, number=%s, startLocation=(%.1f, %.1f, %.1f))",
+                length,
+                numberLengths.stream().map(d -> String.format(Locale.US, "%.1f", d)).toList(),
+                number.stream().map(l -> String.format(Locale.US, "(%.1f, %.1f, %.1f)", l.getX(), l.getY(), l.getZ())).toList(),
+                startLocation.getX(), startLocation.getY(), startLocation.getZ()
+        );
+        if (test) Main.getPlugin().getLogger().info(out);
+
+        int step = 0;
+        while (step < numberLengths.size() - 1 && length >= numberLengths.get(step)) {
+            if (test) Main.getPlugin().getLogger().info(String.format(Locale.US, "length(%.1f) >= numberLengths.get(step)(%.1f)", length, numberLengths.get(step)));
+            length -= numberLengths.get(step);
+            step++;
         }
-        if (i == numberLengths.size()) i--;
-        return startLocation.clone().add(number.get(i)).add(number.get(i + 1).subtract(number.get(i)).multiply(length));
+        if (test) Main.getPlugin().getLogger().info(String.format(Locale.US, "length(%.1f) < numberLengths.get(step)(%.1f)", length, numberLengths.get(step)));
+
+        if (step == numberLengths.size()) step--;
+        if (test) Main.getPlugin().getLogger().info("====================");
+        if (test) Main.getPlugin().getLogger().info("step: " + step);
+        if (test) Main.getPlugin().getLogger().info("lengde igjen: " + length + (step==numberLengths.size() ? " (max)" : ""));
+
+        Location fra = startLocation.clone().add(number.get(step));
+        Location til = startLocation.clone().add(number.get(step + 1));
+        if (test) Main.getPlugin().getLogger().info(String.format(Locale.US, "fra: (%.1f %.1f %.1f)", fra.getX(), fra.getY(), fra.getZ()));
+        if (test) Main.getPlugin().getLogger().info(String.format(Locale.US, "til: (%.1f %.1f %.1f)", til.getX(), til.getY(), til.getZ()));
+
+        Location diff = number.get(step + 1).clone().subtract(number.get(step));
+        double diffI = number.get(step + 1).distance(number.get(step));
+        double t = length/diffI;
+        if (test) Main.getPlugin().getLogger().info(String.format(Locale.US, "t: %.2f (%.1f / %.1f)", t, length, diffI));
+        Location te = diff.clone().multiply(t);
+        if (test) Main.getPlugin().getLogger().info("legg til: " + String.format(Locale.US, "(%.1f %.1f %.1f)", te.getX(), te.getY(), te.getZ()));
+
+        Location result = startLocation.clone()
+                .add(number.get(step))
+                .add(diff.multiply(t));
+        if (test) Main.getPlugin().getLogger().info("resultat: " + String.format(Locale.US, "(%.1f %.1f %.1f)", result.getX(), result.getY(), result.getZ()));
+        return result;
     }
 
     public static void deleteCircle() {
