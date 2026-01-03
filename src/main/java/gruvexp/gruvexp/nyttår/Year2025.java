@@ -69,6 +69,14 @@ public class Year2025 {
         }
     }
 
+    public static void report() {
+        Bukkit.broadcast(Component.text("Displays: " + blockDisplays.size()));
+        Bukkit.broadcast(Component.text("Displays1: " + blockDisplays1.size()));
+        Bukkit.broadcast(Component.text("Displays2: " + blockDisplays2.size()));
+        Bukkit.broadcast(Component.text("number1: " + number1.size()));
+        Bukkit.broadcast(Component.text("number2: " + number2.size()));
+    }
+
     public static void spawnCircle(Location center) {
         animationCenter = center;
         int radius = 10;
@@ -80,8 +88,8 @@ public class Year2025 {
             display.setTeleportDuration(3); // sett til 25
             if (i == 0) {
                 display.setBlock(Material.REDSTONE_BLOCK.createBlockData());
-            } else if (i == 10) {
-                display.setBlock(Material.LAPIS_BLOCK.createBlockData());
+            } else if (i == blocks - 1) {
+                display.setBlock(Material.EMERALD_BLOCK.createBlockData());
             } else {
                 display.setBlock(Material.SNOW_BLOCK.createBlockData());
             }
@@ -149,6 +157,13 @@ public class Year2025 {
 
         int totalLength = (isNumber20 ? blockDisplays1.size() : blockDisplays2.size()) * NUMBER_SCALE;
         double length = totalLength * progress * placement;
+        if (test) Main.getPlugin().getLogger().info(
+                String.format(Locale.US,
+                        "length=%.1f, (tot=%d * prog=%.2f * placement=%.1f)",
+                        length, totalLength, progress, placement
+                )
+        );
+        //Main.getPlugin().getLogger().info("getLocation(b, d, d)");
         if (isNumber20) {
             return getLocation(length, number1Lengths, number1, numberStart1, test);
         } else {
@@ -232,15 +247,15 @@ public class Year2025 {
 
     public static void loadData() {
         String inputSnøfnugg = Utils.loadTxt("snøfnugg");
-        processFile(inputSnøfnugg, snøfnugg);
+        processFile(inputSnøfnugg, snøfnugg, false);
         String inputNumber1 = Utils.loadTxt("number1");
-        processFile(inputNumber1, number1);
+        processFile(inputNumber1, number1, true);
         for (int i = 1; i < number1.size(); i++) {
             double dist = number1.get(i).distance(number1.get(i - 1));
             number1Lengths.add(dist);
         }
         String inputNumber2 = Utils.loadTxt("number2");
-        processFile(inputNumber2, number2);
+        processFile(inputNumber2, number2, true);
         for (int i = 1; i < number2.size(); i++) {
             double dist = number2.get(i).distance(number2.get(i - 1));
             number2Lengths.add(dist);
@@ -385,7 +400,10 @@ public class Year2025 {
             double progress = (double) step / totalSteps;
             for (int i = 0; i < totalDisplays; i++) {
                 double placement = (double) i / totalDisplays;
-                displays.get(i).teleport(getLocation(isNumber20, progress, placement));
+                boolean test = i == totalDisplays - 1;
+
+                displays.get(i).teleport(getLocation(isNumber20, progress, placement, test));
+                //displays.get(i).teleport(getLocation(isNumber20, progress, placement));
             }
             if (step == totalSteps) cancel();
         }
