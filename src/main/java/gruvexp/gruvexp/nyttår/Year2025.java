@@ -2,9 +2,11 @@ package gruvexp.gruvexp.nyttår;
 
 import gruvexp.gruvexp.Main;
 import gruvexp.gruvexp.Utils;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -15,6 +17,7 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class Year2025 {
 
@@ -37,6 +40,52 @@ public class Year2025 {
     public static BlockDisplay testDisplay;
 
     public static final int NUMBER_SCALE = 2;
+
+    public static final Location FENCEPOST_LOCATION = new Location(Main.WORLD, -4819, 70, 211);
+
+    // TODO: man trykker på knappen og når man trykker så blir hvite concretblokka om til blockdisplay 2 stykker faktisk som smooth beveger seg mot 5 tallet for å gjør det om til 6 tall, da kommer det factorio win sfx og det vokser ut vegger rundt og sea lantern og farga glass beveger seg og nyttårsrakettan flyr opp
+
+    public static void resetSignpost() { // clone signpost from the hidden underneath and place it above
+
+        Block source = FENCEPOST_LOCATION.clone().add(0, -2, 0).getBlock();
+        Location targetLoc = FENCEPOST_LOCATION.clone().add(0, 1, 0);
+
+        targetLoc.getBlock().setType(Material.WHITE_CONCRETE); // a white concrete the sign will hang on. it will be used l8r to turn into the line making the 5 in 2025 to a 6
+        targetLoc.add(-1, 0, 0);
+
+        targetLoc.getBlock().setType(source.getType());
+        targetLoc.getBlock().setBlockData(source.getBlockData().clone());
+
+        if (source.getState() instanceof org.bukkit.block.Sign srcSign
+                && targetLoc.getBlock().getState() instanceof org.bukkit.block.Sign tgtSign) {
+
+            tgtSign.line(0, srcSign.line(0));
+            tgtSign.line(1, srcSign.line(1));
+            tgtSign.line(2, srcSign.line(2));
+            tgtSign.line(3, srcSign.line(3));
+
+            tgtSign.update();
+        }
+    }
+
+    public static void transformInto2026() {
+        Location spawnLoc = FENCEPOST_LOCATION.clone().add(0, 1, 0);
+        spawnLoc.getBlock().setType(Material.AIR);
+        for (int i = 0; i < 2; i++) {
+            BlockDisplay display = (BlockDisplay) Main.WORLD.spawnEntity(spawnLoc, EntityType.BLOCK_DISPLAY);
+            display.setBlock(Material.SNOW_BLOCK.createBlockData());
+            display.setTeleportDuration(20);
+            display.setInterpolationDuration(20);
+            display.addScoreboardTag("nyttor2025");
+            blockDisplays.add(display);
+
+            final int finalI = i;
+            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
+                display.teleport(numberStart2.clone().add(-2, finalI * 2, 22));
+                setBlockDisplaySize(display, 2);
+            }, 10L);
+        }
+    }
 
     public static void addSnøFnuggBlock(Location location) {
         snøfnugg.add(location);
