@@ -349,7 +349,6 @@ public class Year2025 {
 
         @Override
         public void run() {
-            Main.getPlugin().getLogger().info("Step: " + currentStep);
             currentStep++;
             double progress = (double) currentStep / totalSteps;
 
