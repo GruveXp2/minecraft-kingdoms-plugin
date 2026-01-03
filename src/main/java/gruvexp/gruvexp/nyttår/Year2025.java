@@ -112,6 +112,10 @@ public class Year2025 {
         new Vekkus(ticks).runTaskTimer(Main.getPlugin(), 0, 1);
     }
 
+    public static void setBlockDisplaySize(BlockDisplay display, float scale) {
+        setBlockDisplaySize(display, scale, scale, scale);
+    }
+
     public static void setBlockDisplaySize(BlockDisplay display, float scaleX, float scaleY, float scaleZ) {
         // Hent eksisterende transformasjon
         Transformation currentTransform = display.getTransformation();
@@ -295,7 +299,7 @@ public class Year2025 {
                 float size = (float) (1 + progress);
 
                 blockDisplays.get(i).teleport(animationCenter.clone().add(0, newDist * Math.sin(newAngle), newDist * Math.cos(newAngle)));
-                setBlockDisplaySize(blockDisplays.get(i), size, size, size);
+                setBlockDisplaySize(blockDisplays.get(i), size);
             }
 
             if (currentStep == totalSteps) {
