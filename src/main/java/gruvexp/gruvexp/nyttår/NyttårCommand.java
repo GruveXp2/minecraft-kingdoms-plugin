@@ -75,7 +75,7 @@ public class NyttårCommand implements CommandExecutor {
                     return true;
                 }
                 Coord koordinat = new Coord(args[1], args[2], args[3]);
-                Location centerLocation = koordinat.toLocation(Main.WORLD).add(0, 0, -0.5);
+                Location centerLocation = koordinat.toLocation(Main.WORLD).add(-0.5, 0, -0.5);
                 Year2025.spawnCircle(centerLocation);
                 sender.sendMessage("Spawner sirkel");
             }
