@@ -197,6 +197,17 @@ public class Year2025 {
         numberStart1 = blockDisplays1.getFirst().getLocation();
         numberStart2 = blockDisplays2.getFirst().getLocation();
 
+        setBlockDisplaySize(blockDisplays1.get(9), 0);
+        for (int i = 28; i < 34; i++) {
+            setBlockDisplaySize(blockDisplays1.get(i), 0);
+        }
+
+        setBlockDisplaySize(blockDisplays2.get(9), 0);
+        setBlockDisplaySize(blockDisplays2.get(28), 0);
+        for (int i = 46; i < 52; i++) {
+            setBlockDisplaySize(blockDisplays2.get(i), 0);
+        }
+
         blockDisplays.forEach(display -> display.setTeleportDuration(2));
         new SkiltAnimasjon(blockDisplays1, true, ticks).runTaskTimer(Main.getPlugin(), 0, 2);
         new SkiltAnimasjon(blockDisplays2, false, ticks).runTaskTimer(Main.getPlugin(), 0, 2);
