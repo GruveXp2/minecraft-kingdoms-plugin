@@ -40,7 +40,8 @@ public class Year2025 {
     private static final List<Double> number2Lengths = new ArrayList<>();
 
     private static final Set<Location> numberLoc = new HashSet<>();
-    private static final Set<BlockDisplay> outline = new HashSet<>();
+    private static final Set<BlockDisplay> outline = new HashSet<>(); // outline where the stairs etc will spawn
+    private static final Set<BlockDisplay> outlineCenter = new HashSet<>(); // the blocks that outline will spawn around
 
     public static BlockDisplay testDisplay;
 
@@ -83,6 +84,8 @@ public class Year2025 {
             display.setInterpolationDuration(20);
             display.addScoreboardTag("nyttor2025");
             blockDisplays.add(display);
+            outlineCenter.add(display);
+
 
             final int finalI = i;
             Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
@@ -93,7 +96,7 @@ public class Year2025 {
     }
 
     public static void spawnOutline() {
-        for (BlockDisplay display : blockDisplays) { // legger til alle locateions
+        for (BlockDisplay display : outlineCenter) { // legger til alle locateions
             numberLoc.add(display.getLocation().getBlock().getLocation());
         }
         for (Location loc : numberLoc) { // spawner inn trapper
@@ -271,21 +274,33 @@ public class Year2025 {
     public static void animateNumber(int ticks) {
         numberStart1 = blockDisplays1.getFirst().getLocation();
         numberStart2 = blockDisplays2.getFirst().getLocation();
+        outlineCenter.addAll(blockDisplays);
 
-        setBlockDisplaySize(blockDisplays1.get(9), 0);
+        hideDisplay(blockDisplays1.get(9));
         for (int i = 28; i < 34; i++) {
-            setBlockDisplaySize(blockDisplays1.get(i), 0);
+            hideDisplay(blockDisplays1.get(i));
+        }
+        for (int i = 34; i < blockDisplays1.size(); i++) {
+            outlineCenter.remove(blockDisplays1.get(i));
         }
 
-        setBlockDisplaySize(blockDisplays2.get(9), 0);
-        setBlockDisplaySize(blockDisplays2.get(28), 0);
+        hideDisplay(blockDisplays2.get(9));
+        hideDisplay(blockDisplays2.get(28));
         for (int i = 46; i < 52; i++) {
-            setBlockDisplaySize(blockDisplays2.get(i), 0);
+            hideDisplay(blockDisplays2.get(i));
+        }
+        for (int i = 52; i < blockDisplays2.size(); i++) {
+            outlineCenter.remove(blockDisplays2.get(i));
         }
 
         blockDisplays.forEach(display -> display.setTeleportDuration(2));
         new SkiltAnimasjon(blockDisplays1, true, ticks).runTaskTimer(Main.getPlugin(), 0, 2);
         new SkiltAnimasjon(blockDisplays2, false, ticks).runTaskTimer(Main.getPlugin(), 0, 2);
+    }
+
+    private static void hideDisplay(BlockDisplay display) {
+        setBlockDisplaySize(display, 0);
+        outlineCenter.remove(display);
     }
 
     private static Location getLocation(boolean isNumber20, double progress, double placement, boolean test) {
@@ -358,6 +373,7 @@ public class Year2025 {
         blockDisplays1.clear();
         blockDisplays2.clear();
         outline.clear();
+        outlineCenter.clear();
 
         length.clear();
         radians.clear();
