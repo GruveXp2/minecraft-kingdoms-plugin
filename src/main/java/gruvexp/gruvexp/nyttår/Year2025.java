@@ -110,13 +110,13 @@ public class Year2025 {
                     //place a stairblockk above right
                     spawnDisplay(above.clone().add(0, 0, -1), data);
                 }
-                if (!numberLoc.contains(above.clone().add(0, 0, -4))) {
+                if (!numberLoc.contains(above.add(0, 0, -4))) {
                     //place a stairblock above left
                     BlockData data2 = Material.WARPED_STAIRS.createBlockData(blockData -> { //QUARTZ_STAIRS
                         ((Stairs) blockData).setFacing(BlockFace.EAST);
                         ((Stairs) blockData).setHalf(Bisected.Half.BOTTOM);
                     });
-                    spawnDisplay(above.add(0, 0, -2), data2);
+                    spawnDisplay(above.add(0, 0, 2), data2);
                 }
 
                 //continue with checks right, left and bottom
@@ -131,13 +131,13 @@ public class Year2025 {
                     //place a stairblockk below right
                     spawnDisplay(below.clone().add(0, 1, -1), data);
                 }
-                if (!numberLoc.contains(below.add(0, 1, -4))) {
+                if (!numberLoc.contains(below.add(0, 0, -4))) {
                     BlockData data2 = Material.WARPED_STAIRS.createBlockData(blockData -> { //QUARTZ_STAIRS
                         ((Stairs) blockData).setFacing(BlockFace.EAST);
                         ((Stairs) blockData).setHalf(Bisected.Half.TOP);
                     });
                     //place a stairblock below left
-                    spawnDisplay(below.add(0, 0, 2), data2);
+                    spawnDisplay(below.add(0, 1, 2), data2);
                 }
             }
             BlockData data = Material.QUARTZ_BLOCK.createBlockData();
