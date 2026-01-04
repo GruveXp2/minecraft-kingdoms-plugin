@@ -7,6 +7,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Bisected;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.Stairs;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -15,9 +19,7 @@ import org.bukkit.util.Transformation;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 public class Year2025 {
 
@@ -36,6 +38,9 @@ public class Year2025 {
     private static final List<Location> number2 = new ArrayList<>();
     private static final List<Double> number1Lengths = new ArrayList<>();
     private static final List<Double> number2Lengths = new ArrayList<>();
+
+    private static final Set<Location> numberLoc = new HashSet<>();
+    private static final Set<BlockDisplay> outline = new HashSet<>();
 
     public static BlockDisplay testDisplay;
 
@@ -85,6 +90,76 @@ public class Year2025 {
                 setBlockDisplaySize(display, 2);
             }, 10L);
         }
+    }
+
+    public static void spawnOutline() {
+        for (BlockDisplay display : blockDisplays) { // legger til alle locateions
+            numberLoc.add(display.getLocation().getBlock().getLocation());
+        }
+        for (Location loc : numberLoc) { // spawner inn trapper
+            Location above = loc.clone().add(0, 2, 0);
+            if (!numberLoc.contains(above)) {
+                BlockData data = Material.CRIMSON_STAIRS.createBlockData(blockData -> {
+                    ((Stairs) blockData).setFacing(BlockFace.EAST);
+                    ((Stairs) blockData).setHalf(Bisected.Half.BOTTOM);
+                });
+                if (!numberLoc.contains(above.add(0, 0, 2))) {
+                    //place a stairblockk above right
+                    spawnDisplay(above.clone().add(0, 0, -1), data);
+                }
+                if (!numberLoc.contains(above.clone().add(0, 0, -4))) {
+                    //place a stairblock above left
+                    BlockData data2 = Material.WARPED_STAIRS.createBlockData(blockData -> { //QUARTZ_STAIRS
+                        ((Stairs) blockData).setFacing(BlockFace.EAST);
+                        ((Stairs) blockData).setHalf(Bisected.Half.BOTTOM);
+                    });
+                    spawnDisplay(above.add(0, 0, -2), data2);
+                }
+
+                //continue with checks right, left and bottom
+            }
+            Location below = loc.clone().add(0, -2, 0);
+            if (!numberLoc.contains(below)) {
+                BlockData data = Material.CRIMSON_STAIRS.createBlockData(blockData -> { //QUARTZ_STAIRS
+                    ((Stairs) blockData).setFacing(BlockFace.EAST);
+                    ((Stairs) blockData).setHalf(Bisected.Half.TOP);
+                });
+                if (!numberLoc.contains(below.add(0, 0, 2))) {
+                    //place a stairblockk below right
+                    spawnDisplay(below.clone().add(0, 1, -1), data);
+                }
+                if (!numberLoc.contains(below.add(0, 1, -4))) {
+                    BlockData data2 = Material.WARPED_STAIRS.createBlockData(blockData -> { //QUARTZ_STAIRS
+                        ((Stairs) blockData).setFacing(BlockFace.EAST);
+                        ((Stairs) blockData).setHalf(Bisected.Half.TOP);
+                    });
+                    //place a stairblock below left
+                    spawnDisplay(below.add(0, 0, 2), data2);
+                }
+            }
+            BlockData data = Material.QUARTZ_BLOCK.createBlockData();
+            Location side = loc.clone().add(0, 0, 2);
+            if (!numberLoc.contains(side)) { // right
+                // plasér vanlige blokker
+                spawnDisplay(side, data);
+                spawnDisplay(side.clone().add(0, 1, 0), data);
+            }
+            side.add(0, 0, -4);
+            if (!numberLoc.contains(side)) { // left
+                spawnDisplay(side.add(0, 0, 1), data);
+                spawnDisplay(side.add(0, 1, 0), data);
+            }
+        }
+    }
+
+    public static void spawnDisplay(Location loc, BlockData data) {
+        if (loc == null || loc.getWorld() == null || data == null) return;
+
+        BlockDisplay display = loc.getWorld().spawn(loc, BlockDisplay.class);
+
+        display.setBlock(data);
+        display.addScoreboardTag("nyttor2025");
+        outline.add(display);
     }
 
     public static void addSnøFnuggBlock(Location location) {
@@ -282,6 +357,7 @@ public class Year2025 {
         blockDisplays.clear();
         blockDisplays1.clear();
         blockDisplays2.clear();
+        outline.clear();
 
         length.clear();
         radians.clear();
@@ -459,7 +535,7 @@ public class Year2025 {
             double progress = (double) step / totalSteps;
             for (int i = 0; i < totalDisplays; i++) {
                 double placement = (double) i / totalDisplays;
-                boolean test = i == totalDisplays - 1;
+                boolean test = /*i == totalDisplays - 1;*/ false;
 
                 displays.get(i).teleport(getLocation(isNumber20, progress, placement, test));
                 //displays.get(i).teleport(getLocation(isNumber20, progress, placement));
