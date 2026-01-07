@@ -52,17 +52,17 @@ public class Year2025 {
 
     private static final Set<BlockDisplay> frogLights = new HashSet<>();
 
-    private static final List<Integer> number1GlassSteps = List.of(1, 5, 9, 3, 3, 3, 4, 1);
-    private static final List<Integer> number2GlassSteps = List.of(1, 5, 9, 3, 3, 3, 8, 3, 3, 3, 4, 1, 1, 1);
+    private static final List<Integer> number1GlassSteps = List.of(1, 5, 9, 3, 3, 3, 4, 2);
+    private static final List<Integer> number2GlassSteps = List.of(1, 5, 9, 3, 3, 3, 9, 3, 3, 3, 4, 2, 1, 2, 2);
     private static final List<Vector> number1GlassTps = List.of(
-            new Vector(-1, 0, 0),
-            new Vector(0, -1, 0),
-            new Vector(0, 0, -1),
-            new Vector(0, 1, 0),
-            new Vector(0, 0, 1),
-            new Vector(0, 1, 0),
-            new Vector(0, 0, -1),
-            new Vector(1, 0, 0)
+            new Vector(-2, 0, 0),
+            new Vector(0, -2, 0),
+            new Vector(0, 0, -2),
+            new Vector(0, 2, 0),
+            new Vector(0, 0, 2),
+            new Vector(0, 2, 0),
+            new Vector(0, 0, -2),
+            new Vector(2, 0, 0)
     );
     private static final List<Vector> number2GlassTps = List.of(
             new Vector(-2, 0, 0),
@@ -79,7 +79,7 @@ public class Year2025 {
             new Vector(2, 0, 0),
             new Vector(-2, 0, 0),
             new Vector(0, 2, 0),
-            new Vector(-2, 0, 0)
+            new Vector(2, 0, 0)
     );
     private static GlassAnimation glassAni1;
     private static GlassAnimation glassAni2;
@@ -95,7 +95,8 @@ public class Year2025 {
                 Material.LIGHT_BLUE_STAINED_GLASS,
                 Material.BLUE_STAINED_GLASS,
                 Material.PURPLE_STAINED_GLASS,
-                Material.MAGENTA_STAINED_GLASS
+                Material.MAGENTA_STAINED_GLASS,
+                Material.PINK_STAINED_GLASS
         );
         private final List<Integer> glassSteps;
         private final List<Vector> glassTps;
@@ -110,8 +111,10 @@ public class Year2025 {
             this.glassSteps = glassSteps;
             this.glassTps = glassTps;
             this.startLoc = start;
-            for (int i = 0; i < 30; i++) {
+            for (int i = 0; i < glassSteps.stream().mapToInt(Integer::intValue).sum() + 1; i++) {
                 BlockDisplay glass = spawnDisplay(start, glassColors.get(i % glassColors.size()).createBlockData());
+                glass.setTeleportDuration(10);
+                setBlockDisplaySize(glass, 2);
                 currentStep.put(glass, -i);
                 currentPart.put(glass, 0);
                 glassBlocks.add(glass);
@@ -129,27 +132,36 @@ public class Year2025 {
                     for (BlockDisplay glass : glassBlocks) {
                         int step = currentStep.get(glass);
                         step++;
-                        if (step <= 0) continue;
+                        if (step <= 0) {
+                            currentStep.put(glass, step);
+                            continue;
+                        }
                         int part = currentPart.get(glass);
                         glass.teleport(glass.getLocation().add(glassTps.get(part)));
                         if (step == glassSteps.get(part)) {
                             step = 0;
-                            if (part == glassTps.size()) {
+                            if (part == glassTps.size() - 1) {
                                 part = -1;
+                                setBlockDisplaySize(glass, 0.5f);
                                 glass.teleport(startLoc);
+                                Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> setBlockDisplaySize(glass, 2f), 4L);
+                            } else if (part == 11) {
+                                setBlockDisplaySize(glass, 0.5f);
+                                glass.teleport(startLoc.clone().add(0, 0, 24));
+                                Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> setBlockDisplaySize(glass, 2f), 4L);
                             }
                             currentPart.put(glass, part + 1);
                         }
                         currentStep.put(glass, step);
                     }
                 }
-            }.runTaskTimer(Main.getPlugin(), 0, 1);
+            }.runTaskTimer(Main.getPlugin(), 0, 10);
         }
     }
 
     public static void initGlass() {
-        glassAni1 = new GlassAnimation(number1GlassSteps, number1GlassTps, numberStart1.clone().add(1, 0, 0));
-        glassAni2 = new GlassAnimation(number2GlassSteps, number2GlassTps, numberStart2.clone().add(1, 0, 0));
+        glassAni1 = new GlassAnimation(number1GlassSteps, number1GlassTps, numberStart1.clone().add(0.5, 0, -2));
+        glassAni2 = new GlassAnimation(number2GlassSteps, number2GlassTps, numberStart2.clone().add(0.5, 0, -2));
     }
 
     public static void runGlassAnimation() {
@@ -158,6 +170,7 @@ public class Year2025 {
     }
 
     public static void stopGlassAnimation() {
+        if (glassAni1 == null) return;
         glassAni1.stop = true;
         glassAni2.stop = true;
     }
