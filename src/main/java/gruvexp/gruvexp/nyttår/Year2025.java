@@ -279,6 +279,28 @@ public class Year2025 {
         }.runTaskTimer(Main.getPlugin(), 30, 1);
     }
 
+    public static void animatePopout() {
+        for (BlockDisplay display : blockDisplays) {
+            if (!numberLoc.contains(display.getLocation().getBlock().getLocation())) continue;
+
+            int dist = (int) animationCenter.distance(display.getLocation());
+            new BukkitRunnable() {
+                int t = 0;
+                final Location startLoc = display.getLocation();
+
+                public void run() {
+                    t++;
+                    display.teleport(startLoc.clone().add(-2*Math.sin((double) t /20 * Math.PI), 0, 0));
+
+                    if (t == 30) {
+                        cancel();
+                        setBlockDisplaySize(display, 0);
+                    }
+                }
+            }.runTaskTimer(Main.getPlugin(), dist, 1);
+        }
+    }
+
     public static BlockDisplay spawnDisplay(Location loc, BlockData data) {
         if (loc == null || loc.getWorld() == null || data == null) throw new IllegalArgumentException("null in arguments!");
 

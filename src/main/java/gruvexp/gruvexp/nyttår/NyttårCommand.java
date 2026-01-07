@@ -83,6 +83,7 @@ public class NyttårCommand implements CommandExecutor {
                 Year2025.spawnOutline();
                 Year2025.animateOutlineExpansion();
             }
+            case "animate_popout" -> Year2025.animatePopout();
             case "report" -> Year2025.report();
             case "run_snowflake" -> {
                 Year2025.snowFlake();
