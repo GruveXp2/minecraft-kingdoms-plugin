@@ -146,7 +146,7 @@ public class Year2025 {
             Location above = loc.clone().add(0, 2, 0);
             // top
             if (!numberLoc.contains(above)) {
-                BlockData data = Material.CRIMSON_STAIRS.createBlockData(blockData -> {
+                BlockData data = Material.QUARTZ_STAIRS.createBlockData(blockData -> {
                     ((Stairs) blockData).setFacing(BlockFace.EAST);
                     ((Stairs) blockData).setHalf(Bisected.Half.BOTTOM);
                 });
@@ -158,7 +158,7 @@ public class Year2025 {
                 }
                 if (!numberLoc.contains(above.add(0, 0, -4))) {
                     //place a stairblock above left
-                    BlockData data2 = Material.WARPED_STAIRS.createBlockData(blockData -> { //QUARTZ_STAIRS
+                    BlockData data2 = Material.QUARTZ_STAIRS.createBlockData(blockData -> { //QUARTZ_STAIRS
                         ((Stairs) blockData).setFacing(BlockFace.EAST);
                         ((Stairs) blockData).setHalf(Bisected.Half.BOTTOM);
                     });
@@ -168,7 +168,7 @@ public class Year2025 {
             // bottom
             Location below = loc.clone().add(0, -2, 0);
             if (!numberLoc.contains(below)) {
-                BlockData data = Material.CRIMSON_STAIRS.createBlockData(blockData -> { //QUARTZ_STAIRS
+                BlockData data = Material.QUARTZ_STAIRS.createBlockData(blockData -> { //QUARTZ_STAIRS
                     ((Stairs) blockData).setFacing(BlockFace.EAST);
                     ((Stairs) blockData).setHalf(Bisected.Half.TOP);
                 });
@@ -179,7 +179,7 @@ public class Year2025 {
                     outlineBottom.add(spawnDisplay(below.clone().add(0, 1, -1), data));
                 }
                 if (!numberLoc.contains(below.add(0, 0, -4))) {
-                    BlockData data2 = Material.WARPED_STAIRS.createBlockData(blockData -> { //QUARTZ_STAIRS
+                    BlockData data2 = Material.QUARTZ_STAIRS.createBlockData(blockData -> { //QUARTZ_STAIRS
                         ((Stairs) blockData).setFacing(BlockFace.EAST);
                         ((Stairs) blockData).setHalf(Bisected.Half.TOP);
                     });
