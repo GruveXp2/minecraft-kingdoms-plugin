@@ -211,7 +211,7 @@ public class Year2025 {
         int TICKS = 20;
 
         // TOP
-        outlineTop.forEach(display -> setBlockDisplaySize(display, 1, 0, 1));
+        outlineTop.forEach(display -> setBlockDisplaySize(display, 1, 0.05f, 1));
         new BukkitRunnable() {
             int t = 0;
             final float Δy = (float) 1 / TICKS;
@@ -225,7 +225,7 @@ public class Year2025 {
         }.runTaskTimer(Main.getPlugin(), 0, 1);
 
         // RIGHT
-        outlineRight.forEach(display -> setBlockDisplaySize(display, 1, 1, 0));
+        outlineRight.forEach(display -> setBlockDisplaySize(display, 1, 1, 0.05f));
         new BukkitRunnable() {
             int t = 0;
             final float Δz = (float) 1 / TICKS;
@@ -240,7 +240,7 @@ public class Year2025 {
 
         // BOTTOM
         outlineBottom.forEach(display -> {
-            setBlockDisplaySize(display, 1, 0, 1);
+            setBlockDisplaySize(display, 1, 0.05f, 1);
             display.teleport(display.getLocation().add(0, 1, 0));
         });
         new BukkitRunnable() {
@@ -260,7 +260,7 @@ public class Year2025 {
 
         // LEFT
         outlineLeft.forEach(display -> {
-            setBlockDisplaySize(display, 1, 1, 0);
+            setBlockDisplaySize(display, 1, 1, 0.05f);
             display.teleport(display.getLocation().add(0, 0, 1));
         });
         new BukkitRunnable() {
