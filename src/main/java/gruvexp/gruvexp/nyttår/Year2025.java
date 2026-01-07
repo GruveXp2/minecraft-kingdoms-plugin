@@ -48,6 +48,8 @@ public class Year2025 {
     private static final Set<BlockDisplay> outlineTop = new HashSet<>();
     private static final Set<BlockDisplay> outlineBottom = new HashSet<>();
 
+    private static final Set<BlockDisplay> frogLights = new HashSet<>();
+
     public static BlockDisplay testDisplay;
 
     public static final int NUMBER_SCALE = 2;
@@ -67,8 +69,8 @@ public class Year2025 {
         targetLoc.getBlock().setType(source.getType());
         targetLoc.getBlock().setBlockData(source.getBlockData().clone());
 
-        if (source.getState() instanceof org.bukkit.block.Sign srcSign
-                && targetLoc.getBlock().getState() instanceof org.bukkit.block.Sign tgtSign) {
+        if (source.getState() instanceof Sign srcSign
+                && targetLoc.getBlock().getState() instanceof Sign tgtSign) {
 
             tgtSign.line(0, srcSign.line(0));
             tgtSign.line(1, srcSign.line(1));
@@ -141,6 +143,21 @@ public class Year2025 {
         for (BlockDisplay display : outlineCenter) { // legger til alle locateions
             numberLoc.add(display.getLocation().getBlock().getLocation());
         }
+        BlockData green = Material.VERDANT_FROGLIGHT.createBlockData();
+        BlockData purple = Material.PEARLESCENT_FROGLIGHT.createBlockData();
+        BlockData yellow = Material.OCHRE_FROGLIGHT.createBlockData();
+        for (Location loc : numberLoc) {
+            Location spawnLoc = loc.clone();
+            BlockData color = green;
+            if (loc.getZ() > 192 && loc.getZ() < 203) color = yellow;
+            else if (loc.getZ() > 216) color = purple;
+
+            frogLights.add(spawnDisplay(spawnLoc.add(1, 0, 0), color));
+            frogLights.add(spawnDisplay(spawnLoc.add(0, 0, 1), color));
+            frogLights.add(spawnDisplay(spawnLoc.add(0, 1, 0), color));
+            frogLights.add(spawnDisplay(spawnLoc.add(0, 0, -1), color));
+        }
+
         BlockData quartsData = Material.QUARTZ_BLOCK.createBlockData();
         for (Location loc : numberLoc) { // spawner inn trapper
             Location above = loc.clone().add(0, 2, 0);
@@ -525,6 +542,7 @@ public class Year2025 {
         outlineRight.clear();
         outlineBottom.clear();
         outlineLeft.clear();
+        frogLights.clear();
 
         length.clear();
         radians.clear();
