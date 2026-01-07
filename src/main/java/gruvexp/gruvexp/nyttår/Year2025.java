@@ -43,6 +43,11 @@ public class Year2025 {
     private static final Set<BlockDisplay> outline = new HashSet<>(); // outline where the stairs etc will spawn
     private static final Set<BlockDisplay> outlineCenter = new HashSet<>(); // the blocks that outline will spawn around
 
+    private static final Set<BlockDisplay> outlineRight = new HashSet<>();
+    private static final Set<BlockDisplay> outlineLeft = new HashSet<>();
+    private static final Set<BlockDisplay> outlineTop = new HashSet<>();
+    private static final Set<BlockDisplay> outlineBottom = new HashSet<>();
+
     public static BlockDisplay testDisplay;
 
     public static final int NUMBER_SCALE = 2;
@@ -202,14 +207,87 @@ public class Year2025 {
         }
     }
 
-    public static void spawnDisplay(Location loc, BlockData data) {
-        if (loc == null || loc.getWorld() == null || data == null) return;
+    public static void animateOutlineExpansion() {
+        int TICKS = 20;
+
+        // TOP
+        outlineTop.forEach(display -> setBlockDisplaySize(display, 1, 0, 1));
+        new BukkitRunnable() {
+            int t = 0;
+            final float Δy = (float) 1 / TICKS;
+
+            public void run() {
+                t++;
+                outlineTop.forEach(display -> setBlockDisplaySize(display, 1, Δy*t, 1));
+
+                if (t == 20) cancel();
+            }
+        }.runTaskTimer(Main.getPlugin(), 0, 1);
+
+        // RIGHT
+        outlineRight.forEach(display -> setBlockDisplaySize(display, 1, 1, 0));
+        new BukkitRunnable() {
+            int t = 0;
+            final float Δz = (float) 1 / TICKS;
+
+            public void run() {
+                t++;
+                outlineRight.forEach(display -> setBlockDisplaySize(display, 1, 1, Δz *t));
+
+                if (t == 20) cancel();
+            }
+        }.runTaskTimer(Main.getPlugin(), 10, 1);
+
+        // BOTTOM
+        outlineBottom.forEach(display -> {
+            setBlockDisplaySize(display, 1, 0, 1);
+            display.teleport(display.getLocation().add(0, 1, 0));
+        });
+        new BukkitRunnable() {
+            int t = 0;
+            final float Δy = (float) 1 / TICKS;
+
+            public void run() {
+                t++;
+                outlineBottom.forEach(display -> {
+                    setBlockDisplaySize(display, 1, Δy * t, 1);
+                    display.teleport(display.getLocation().add(0, -Δy, 0));
+                });
+
+                if (t == 20) cancel();
+            }
+        }.runTaskTimer(Main.getPlugin(), 20, 1);
+
+        // LEFT
+        outlineLeft.forEach(display -> {
+            setBlockDisplaySize(display, 1, 1, 0);
+            display.teleport(display.getLocation().add(0, 0, 1));
+        });
+        new BukkitRunnable() {
+            int t = 0;
+            final float Δz = (float) 1 / TICKS;
+
+            public void run() {
+                t++;
+                outlineLeft.forEach(display -> {
+                    setBlockDisplaySize(display, 1, 1, Δz * t);
+                    display.teleport(display.getLocation().add(0, 0, -Δz));
+                });
+
+                if (t == 20) cancel();
+            }
+        }.runTaskTimer(Main.getPlugin(), 30, 1);
+    }
+
+    public static BlockDisplay spawnDisplay(Location loc, BlockData data) {
+        if (loc == null || loc.getWorld() == null || data == null) throw new IllegalArgumentException("null in arguments!");
 
         BlockDisplay display = loc.getWorld().spawn(loc, BlockDisplay.class);
 
         display.setBlock(data);
         display.addScoreboardTag("nyttor2025");
         outline.add(display);
+        return display;
     }
 
     public static void addSnøFnuggBlock(Location location) {
@@ -421,6 +499,10 @@ public class Year2025 {
         blockDisplays2.clear();
         outline.clear();
         outlineCenter.clear();
+        outlineTop.clear();
+        outlineRight.clear();
+        outlineBottom.clear();
+        outlineLeft.clear();
 
         length.clear();
         radians.clear();

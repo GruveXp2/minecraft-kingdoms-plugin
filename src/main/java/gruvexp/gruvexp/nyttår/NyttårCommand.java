@@ -79,7 +79,10 @@ public class NyttårCommand implements CommandExecutor {
                 Year2025.spawnCircle(centerLocation);
                 sender.sendMessage("Spawner sirkel");
             }
-            case "spawn_outline" -> Year2025.spawnOutline();
+            case "spawn_outline" -> {
+                Year2025.spawnOutline();
+                Year2025.animateOutlineExpansion();
+            }
             case "report" -> Year2025.report();
             case "run_snowflake" -> {
                 Year2025.snowFlake();
