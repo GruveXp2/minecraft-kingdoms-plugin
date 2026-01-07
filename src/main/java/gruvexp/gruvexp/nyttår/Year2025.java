@@ -93,6 +93,43 @@ public class Year2025 {
                 setBlockDisplaySize(display, 2);
             }, 10L);
         }
+
+        for (int i = 1; i < 5; i++) {
+            int finalI = i;
+            new BukkitRunnable() {
+                double t = 0;
+                double Δy = (double) -finalI /(8*10) + 0.001;
+                final BlockDisplay display = blockDisplays1.get(23 + finalI);
+                Location loc = display.getLocation();
+
+                public void run() {
+                    t++;
+                    loc.add(0, Δy, 0);
+                    display.teleport(loc);
+
+                    if (t == 20) cancel();
+                }
+            }.runTaskTimer(Main.getPlugin(), 0, 1);
+            new BukkitRunnable() {
+                double t = 0;
+                double Δy = (double) -finalI /(8*10) + 0.001;
+                final BlockDisplay display = blockDisplays2.get(41 + finalI);
+                Location loc = display.getLocation();
+
+                public void run() {
+                    t++;
+                    loc.add(0, Δy, 0.001*finalI); // add z to workaround a bug where z ends up at .99
+                    display.teleport(loc);
+
+                    if (t == 20) cancel();
+                }
+            }.runTaskTimer(Main.getPlugin(), 0, 1);
+            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
+                for (BlockDisplay display : blockDisplays) {
+                    display.teleport(display.getLocation().getBlock().getLocation());
+                }
+            }, 21L);
+        }
     }
 
     public static void spawnOutline() {
