@@ -136,16 +136,20 @@ public class Year2025 {
         for (BlockDisplay display : outlineCenter) { // legger til alle locateions
             numberLoc.add(display.getLocation().getBlock().getLocation());
         }
+        BlockData quartsData = Material.QUARTZ_BLOCK.createBlockData();
         for (Location loc : numberLoc) { // spawner inn trapper
             Location above = loc.clone().add(0, 2, 0);
+            // top
             if (!numberLoc.contains(above)) {
                 BlockData data = Material.CRIMSON_STAIRS.createBlockData(blockData -> {
                     ((Stairs) blockData).setFacing(BlockFace.EAST);
                     ((Stairs) blockData).setHalf(Bisected.Half.BOTTOM);
                 });
-                if (!numberLoc.contains(above.add(0, 0, 2))) {
+                outlineTop.add(spawnDisplay(above.add(1, 0, 0), quartsData));
+                outlineTop.add(spawnDisplay(above.add(0, 0, 1), quartsData));
+                if (!numberLoc.contains(above.add(-1, 0, 1))) {
                     //place a stairblockk above right
-                    spawnDisplay(above.clone().add(0, 0, -1), data);
+                    outlineTop.add(spawnDisplay(above.clone().add(0, 0, -1), data));
                 }
                 if (!numberLoc.contains(above.add(0, 0, -4))) {
                     //place a stairblock above left
@@ -153,20 +157,21 @@ public class Year2025 {
                         ((Stairs) blockData).setFacing(BlockFace.EAST);
                         ((Stairs) blockData).setHalf(Bisected.Half.BOTTOM);
                     });
-                    spawnDisplay(above.add(0, 0, 2), data2);
+                    outlineTop.add(spawnDisplay(above.add(0, 0, 2), data2));
                 }
-
-                //continue with checks right, left and bottom
             }
+            // bottom
             Location below = loc.clone().add(0, -2, 0);
             if (!numberLoc.contains(below)) {
                 BlockData data = Material.CRIMSON_STAIRS.createBlockData(blockData -> { //QUARTZ_STAIRS
                     ((Stairs) blockData).setFacing(BlockFace.EAST);
                     ((Stairs) blockData).setHalf(Bisected.Half.TOP);
                 });
-                if (!numberLoc.contains(below.add(0, 0, 2))) {
+                outlineBottom.add(spawnDisplay(below.add(1, 1, 0), quartsData));
+                outlineBottom.add(spawnDisplay(below.add(0, 0, 1), quartsData));
+                if (!numberLoc.contains(below.add(-1, -1, 1))) {
                     //place a stairblockk below right
-                    spawnDisplay(below.clone().add(0, 1, -1), data);
+                    outlineBottom.add(spawnDisplay(below.clone().add(0, 1, -1), data));
                 }
                 if (!numberLoc.contains(below.add(0, 0, -4))) {
                     BlockData data2 = Material.WARPED_STAIRS.createBlockData(blockData -> { //QUARTZ_STAIRS
@@ -174,20 +179,25 @@ public class Year2025 {
                         ((Stairs) blockData).setHalf(Bisected.Half.TOP);
                     });
                     //place a stairblock below left
-                    spawnDisplay(below.add(0, 1, 2), data2);
+                    outlineBottom.add(spawnDisplay(below.add(0, 1, 2), data2));
                 }
             }
-            BlockData data = Material.QUARTZ_BLOCK.createBlockData();
+            // sides
             Location side = loc.clone().add(0, 0, 2);
             if (!numberLoc.contains(side)) { // right
                 // plasér vanlige blokker
-                spawnDisplay(side, data);
-                spawnDisplay(side.clone().add(0, 1, 0), data);
+                Location sideClone = side.clone();
+                outlineRight.add(spawnDisplay(sideClone, quartsData));
+                outlineRight.add(spawnDisplay(sideClone.add(0,  1, 0), quartsData));
+                outlineRight.add(spawnDisplay(sideClone.add(1,  0, 0), quartsData));
+                outlineRight.add(spawnDisplay(sideClone.add(0, -1, 0), quartsData));
             }
             side.add(0, 0, -4);
             if (!numberLoc.contains(side)) { // left
-                spawnDisplay(side.add(0, 0, 1), data);
-                spawnDisplay(side.add(0, 1, 0), data);
+                outlineLeft.add(spawnDisplay(side.add(0, 0, 1), quartsData));
+                outlineLeft.add(spawnDisplay(side.add(0, 1, 0), quartsData));
+                outlineLeft.add(spawnDisplay(side.add(1,  0, 0), quartsData));
+                outlineLeft.add(spawnDisplay(side.add(0, -1, 0), quartsData));
             }
         }
     }
