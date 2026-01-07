@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Sign;
 import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Stairs;
@@ -16,6 +17,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
@@ -49,6 +51,116 @@ public class Year2025 {
     private static final Set<BlockDisplay> outlineBottom = new HashSet<>();
 
     private static final Set<BlockDisplay> frogLights = new HashSet<>();
+
+    private static final List<Integer> number1GlassSteps = List.of(1, 5, 9, 3, 3, 3, 4, 1);
+    private static final List<Integer> number2GlassSteps = List.of(1, 5, 9, 3, 3, 3, 8, 3, 3, 3, 4, 1, 1, 1);
+    private static final List<Vector> number1GlassTps = List.of(
+            new Vector(-1, 0, 0),
+            new Vector(0, -1, 0),
+            new Vector(0, 0, -1),
+            new Vector(0, 1, 0),
+            new Vector(0, 0, 1),
+            new Vector(0, 1, 0),
+            new Vector(0, 0, -1),
+            new Vector(1, 0, 0)
+    );
+    private static final List<Vector> number2GlassTps = List.of(
+            new Vector(-2, 0, 0),
+            new Vector(0, 2, 0),
+            new Vector(0, 0, 2),
+            new Vector(0, -2, 0),
+            new Vector(0, 0, -2),
+            new Vector(0, -2, 0),
+            new Vector(0, 0, 2),
+            new Vector(0, 2, 0),
+            new Vector(0, 0, -2),
+            new Vector(0, 2, 0),
+            new Vector(0, 0, 2),
+            new Vector(2, 0, 0),
+            new Vector(-2, 0, 0),
+            new Vector(0, 2, 0),
+            new Vector(-2, 0, 0)
+    );
+    private static GlassAnimation glassAni1;
+    private static GlassAnimation glassAni2;
+
+    private static class GlassAnimation {
+        private static final List<Material> glassColors = List.of(
+                Material.RED_STAINED_GLASS,
+                Material.ORANGE_STAINED_GLASS,
+                Material.YELLOW_STAINED_GLASS,
+                Material.LIME_STAINED_GLASS,
+                Material.GREEN_STAINED_GLASS,
+                Material.CYAN_STAINED_GLASS,
+                Material.LIGHT_BLUE_STAINED_GLASS,
+                Material.BLUE_STAINED_GLASS,
+                Material.PURPLE_STAINED_GLASS,
+                Material.MAGENTA_STAINED_GLASS
+        );
+        private final List<Integer> glassSteps;
+        private final List<Vector> glassTps;
+        private final Location startLoc;
+
+        private final Map<BlockDisplay, Integer> currentStep = new HashMap<>();
+        private final Map<BlockDisplay, Integer> currentPart = new HashMap<>();
+        private final Set<BlockDisplay> glassBlocks = new HashSet<>();
+        private boolean stop = false;
+
+        public GlassAnimation(List<Integer> glassSteps, List<Vector> glassTps, Location start) {
+            this.glassSteps = glassSteps;
+            this.glassTps = glassTps;
+            this.startLoc = start;
+            for (int i = 0; i < 30; i++) {
+                BlockDisplay glass = spawnDisplay(start, glassColors.get(i % glassColors.size()).createBlockData());
+                currentStep.put(glass, -i);
+                currentPart.put(glass, 0);
+                glassBlocks.add(glass);
+            }
+        }
+
+        public void startAnimation() {
+            new BukkitRunnable() {
+                public void run() {
+                    if (stop) {
+                        cancel();
+                        stop = false;
+                    }
+
+                    for (BlockDisplay glass : glassBlocks) {
+                        int step = currentStep.get(glass);
+                        step++;
+                        if (step <= 0) continue;
+                        int part = currentPart.get(glass);
+                        glass.teleport(glass.getLocation().add(glassTps.get(part)));
+                        if (step == glassSteps.get(part)) {
+                            step = 0;
+                            if (part == glassTps.size()) {
+                                part = -1;
+                                glass.teleport(startLoc);
+                            }
+                            currentPart.put(glass, part + 1);
+                        }
+                        currentStep.put(glass, step);
+                    }
+                }
+            }.runTaskTimer(Main.getPlugin(), 0, 1);
+        }
+    }
+
+    public static void initGlass() {
+        glassAni1 = new GlassAnimation(number1GlassSteps, number1GlassTps, numberStart1.clone().add(1, 0, 0));
+        glassAni2 = new GlassAnimation(number2GlassSteps, number2GlassTps, numberStart2.clone().add(1, 0, 0));
+    }
+
+    public static void runGlassAnimation() {
+        glassAni1.startAnimation();
+        glassAni2.startAnimation();
+    }
+
+    public static void stopGlassAnimation() {
+        glassAni1.stop = true;
+        glassAni2.stop = true;
+    }
 
     public static BlockDisplay testDisplay;
 
@@ -157,6 +269,8 @@ public class Year2025 {
             frogLights.add(spawnDisplay(spawnLoc.add(0, 1, 0), color));
             frogLights.add(spawnDisplay(spawnLoc.add(0, 0, -1), color));
         }
+
+        initGlass();
 
         BlockData quartsData = Material.QUARTZ_BLOCK.createBlockData();
         for (Location loc : numberLoc) { // spawner inn trapper
@@ -546,6 +660,8 @@ public class Year2025 {
 
         length.clear();
         radians.clear();
+
+        stopGlassAnimation();
     }
 
     public static void saveData() {
