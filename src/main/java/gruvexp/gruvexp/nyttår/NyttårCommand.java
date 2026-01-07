@@ -89,6 +89,7 @@ public class NyttårCommand implements CommandExecutor {
                 Year2025.snowFlake();
                 sender.sendMessage("Gjør om til snøfnugg");
             }
+            case "run_glass" -> Year2025.runGlassAnimation();
             case "rotate_snowflake" -> {
                 if (args.length == 1) {
                     sender.sendMessage(ChatColor.RED + "Ta med antall ticks");
