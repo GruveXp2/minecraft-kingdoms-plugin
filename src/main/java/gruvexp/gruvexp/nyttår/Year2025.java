@@ -146,13 +146,13 @@ public class Year2025 {
                             step = 0;
                             if (part == glassTps.size() - 1) {
                                 part = -1;
-                                setBlockDisplaySize(glass, 0.5f);
+                                setBlockDisplaySize(glass, 1);
                                 glass.teleport(startLoc);
-                                Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> setBlockDisplaySize(glass, 2f), 4L);
+                                Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> setBlockDisplaySize(glass, 2f), 7L);
                             } else if (part == 11) {
-                                setBlockDisplaySize(glass, 0.5f);
+                                setBlockDisplaySize(glass, 1);
                                 glass.teleport(startLoc.clone().add(0, 0, 24));
-                                Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> setBlockDisplaySize(glass, 2f), 4L);
+                                Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> setBlockDisplaySize(glass, 2f), 7L);
                             }
                             currentPart.put(glass, part + 1);
                         }
