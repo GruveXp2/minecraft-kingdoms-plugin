@@ -11,6 +11,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.MultipleFacing;
+import org.bukkit.block.data.type.Light;
 import org.bukkit.block.data.type.Stairs;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.EntityType;
@@ -83,6 +85,8 @@ public class Year2025 {
     );
     private static GlassAnimation glassAni1;
     private static GlassAnimation glassAni2;
+
+    private static boolean stop = false;
 
     private static class GlassAnimation {
         private static final List<Material> glassColors = List.of(
@@ -159,6 +163,59 @@ public class Year2025 {
         }
     }
 
+    public static void startLightAnimation() {
+        new BukkitRunnable() {
+            int t = 0;
+            public void run() {
+                if (stop) {
+                    cancel();
+                    Bukkit.getScheduler().runTaskLater(Main.getPlugin(), bukkitTask -> stop = false, 2L);
+                    return;
+                }
+                t++;
+                for (Location loc : numberLoc) {
+                    int totalLight = Math.abs(Math.floorMod(loc.getBlockZ() - loc.getBlockY() - t, 40)/2 - 10) + 5;
+
+                    Block block = loc.getBlock();
+                    setLight(block, totalLight);
+                    setLight(block.getRelative(BlockFace.UP), totalLight);
+                    setLight(block.getRelative(BlockFace.SOUTH), totalLight);
+                    setLight(block.getRelative(BlockFace.SOUTH).getRelative(BlockFace.UP), totalLight);
+                }
+            }
+        }.runTaskTimer(Main.getPlugin(), 0, 1);
+    }
+
+    private static void setLight(Block block, int lightlevel) {
+
+        Material material = switch (lightlevel) {
+            case 5 -> Material.BLACK_CONCRETE;
+            case 6 -> Material.BLACK_TERRACOTTA;
+            case 7 -> Material.BROWN_TERRACOTTA;
+            case 8 -> Material.BROWN_CONCRETE;
+            case 9 -> Material.BROWN_WOOL;
+            case 10 -> Material.STRIPPED_SPRUCE_WOOD;
+            case 11  -> Material.BROWN_MUSHROOM_BLOCK;
+            case 12  -> Material.STRIPPED_JUNGLE_WOOD;
+            case 13  -> Material.RED_MUSHROOM_BLOCK;
+            case 14  -> Material.SMOOTH_SANDSTONE;
+            case 15 -> Material.STRIPPED_PALE_OAK_WOOD;
+            default -> throw new IllegalStateException("Unexpected value: " + lightlevel);
+        };
+        block.setType(material);
+        if (lightlevel == 13) {
+            MultipleFacing facing = ((MultipleFacing) Material.RED_MUSHROOM_BLOCK.createBlockData());
+            facing.setFace(BlockFace.WEST, false);
+            block.setBlockData(facing);
+        }
+        return;
+
+        /*block.setType(Material.LIGHT);
+        Light light = (Light) block.getBlockData();
+        light.setLevel(lightlevel);
+        block.setBlockData(light);*/
+    }
+
     public static void initGlass() {
         glassAni1 = new GlassAnimation(number1GlassSteps, number1GlassTps, numberStart1.clone().add(0.5, 0, -2));
         glassAni2 = new GlassAnimation(number2GlassSteps, number2GlassTps, numberStart2.clone().add(0.5, 0, -2));
@@ -173,6 +230,7 @@ public class Year2025 {
         if (glassAni1 == null) return;
         glassAni1.stop = true;
         glassAni2.stop = true;
+        stop = true;
     }
 
     public static BlockDisplay testDisplay;
