@@ -91,6 +91,16 @@ public class NyttårCommand implements CommandExecutor {
             }
             case "run_glass" -> Year2025.runGlassAnimation();
             case "start_light" -> Year2025.startLightAnimation();
+            case "start_phase_1" -> {
+                if (args.length < 4) {
+                    sender.sendMessage(ChatColor.RED + "You must specify xyz of the center of the animation");
+                    return true;
+                }
+                Coord koordinat = new Coord(args[1], args[2], args[3]);
+                Location centerLocation = koordinat.toLocation(Main.WORLD).add(-0.5, 0, -0.5);
+                Year2025.auto = true;
+                Year2025.startPhase1(centerLocation);
+            }
             case "rotate_snowflake" -> {
                 if (args.length == 1) {
                     sender.sendMessage(ChatColor.RED + "Ta med antall ticks");
