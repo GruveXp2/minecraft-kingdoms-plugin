@@ -13,6 +13,7 @@ import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Light;
 import org.bukkit.block.data.type.Stairs;
+import org.bukkit.block.sign.Side;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -86,6 +87,7 @@ public class Year2025 {
     private static GlassAnimation glassAni2;
 
     private static boolean stop = false;
+    public static boolean auto = true;
 
     private static class GlassAnimation {
         private static final List<Material> glassColors = List.of(
@@ -162,6 +164,11 @@ public class Year2025 {
         }
     }
 
+    public static void startPhase1(Location animationCenter) {
+        auto = true;
+        spawnCircle(animationCenter);
+    }
+
     public static void startLightAnimation() {
         new BukkitRunnable() {
             int t = 0;
@@ -218,7 +225,7 @@ public class Year2025 {
     // TODO: man trykker på knappen og når man trykker så blir hvite concretblokka om til blockdisplay 2 stykker faktisk som smooth beveger seg mot 5 tallet for å gjør det om til 6 tall, da kommer det factorio win sfx og det vokser ut vegger rundt og sea lantern og farga glass beveger seg og nyttårsrakettan flyr opp
 
     public static void resetSignpost() { // clone signpost from the hidden underneath and place it above
-
+        auto = false;
         Block source = FENCEPOST_LOCATION.clone().add(0, -2, 0).getBlock();
         Location targetLoc = FENCEPOST_LOCATION.clone().add(0, 1, 0);
 
@@ -555,6 +562,7 @@ public class Year2025 {
         for (int i = 0; i < snøfnugg.size(); i++) {
             blockDisplays.get(i).teleport(animationCenter.clone().add(snøfnugg.get(i)));
         }
+        if (auto) Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> rotatingCircle(60), 40L);
     }
 
     public static void rotatingCircle(int ticks) {
@@ -621,6 +629,7 @@ public class Year2025 {
         blockDisplays.forEach(display -> display.setTeleportDuration(2));
         new SkiltAnimasjon(blockDisplays1, true, ticks).runTaskTimer(Main.getPlugin(), 0, 2);
         new SkiltAnimasjon(blockDisplays2, false, ticks).runTaskTimer(Main.getPlugin(), 0, 2);
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Year2025::resetSignpost, ticks + 20);
     }
 
     private static void hideDisplay(BlockDisplay display) {
@@ -803,6 +812,7 @@ public class Year2025 {
 
             if (currentStep == totalSteps) {
                 this.cancel();
+                if (auto) Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> rotateInwards(40), 1L);
             }
         }
     }
@@ -838,6 +848,7 @@ public class Year2025 {
 
             if (currentStep == totalSteps) {
                 this.cancel();
+                if (auto) Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> animateNumber(160), 1L);
             }
         }
 
