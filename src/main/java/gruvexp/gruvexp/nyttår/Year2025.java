@@ -54,6 +54,11 @@ public class Year2025 {
 
     private static final Set<BlockDisplay> frogLights = new HashSet<>();
 
+    private static BlockDisplay testDisplay;
+
+    private static final int NUMBER_SCALE = 2;
+    private static final Location FENCEPOST_LOCATION = new Location(Main.WORLD, -4819, 70, 211);
+
     private static final List<Integer> number1GlassSteps = List.of(1, 5, 9, 3, 3, 3, 4, 2);
     private static final List<Integer> number2GlassSteps = List.of(1, 5, 9, 3, 3, 3, 9, 3, 3, 3, 4, 2, 1, 2, 2);
     private static final List<Vector> number1GlassTps = List.of(
@@ -199,7 +204,7 @@ public class Year2025 {
         block.setBlockData(light);
     }
 
-    public static void initGlass() {
+    private static void initGlass() {
         glassAni1 = new GlassAnimation(number1GlassSteps, number1GlassTps, numberStart1.clone().add(0.5, 0, -2));
         glassAni2 = new GlassAnimation(number2GlassSteps, number2GlassTps, numberStart2.clone().add(0.5, 0, -2));
     }
@@ -209,18 +214,12 @@ public class Year2025 {
         glassAni2.startAnimation();
     }
 
-    public static void stopGlassAnimation() {
+    private static void stopGlassAnimation() {
         if (glassAni1 == null) return;
         glassAni1.stop = true;
         glassAni2.stop = true;
         stop = true;
     }
-
-    public static BlockDisplay testDisplay;
-
-    public static final int NUMBER_SCALE = 2;
-
-    public static final Location FENCEPOST_LOCATION = new Location(Main.WORLD, -4819, 70, 211);
 
     // TODO: man trykker på knappen og når man trykker så blir hvite concretblokka om til blockdisplay 2 stykker faktisk som smooth beveger seg mot 5 tallet for å gjør det om til 6 tall, da kommer det factorio win sfx og det vokser ut vegger rundt og sea lantern og farga glass beveger seg og nyttårsrakettan flyr opp
 
@@ -238,10 +237,12 @@ public class Year2025 {
         if (source.getState() instanceof Sign srcSign
                 && targetLoc.getBlock().getState() instanceof Sign tgtSign) {
 
-            tgtSign.line(0, srcSign.line(0));
-            tgtSign.line(1, srcSign.line(1));
-            tgtSign.line(2, srcSign.line(2));
-            tgtSign.line(3, srcSign.line(3));
+            tgtSign.getSide(Side.FRONT).line(0, srcSign.getSide(Side.FRONT).line(0));
+            tgtSign.getSide(Side.FRONT).line(1, srcSign.getSide(Side.FRONT).line(1));
+            tgtSign.getSide(Side.FRONT).line(2, srcSign.getSide(Side.FRONT).line(2));
+            tgtSign.getSide(Side.FRONT).line(3, srcSign.getSide(Side.FRONT).line(3));
+            tgtSign.getSide(Side.FRONT).setColor(srcSign.getSide(Side.FRONT).getColor());
+            tgtSign.getSide(Side.FRONT).setGlowingText(true);
 
             tgtSign.update();
         }
@@ -486,7 +487,7 @@ public class Year2025 {
         }
     }
 
-    public static BlockDisplay spawnDisplay(Location loc, BlockData data) {
+    private static BlockDisplay spawnDisplay(Location loc, BlockData data) {
         if (loc == null || loc.getWorld() == null || data == null) throw new IllegalArgumentException("null in arguments!");
 
         BlockDisplay display = loc.getWorld().spawn(loc, BlockDisplay.class);
@@ -581,11 +582,11 @@ public class Year2025 {
         new Vekkus(ticks).runTaskTimer(Main.getPlugin(), 0, 1);
     }
 
-    public static void setBlockDisplaySize(BlockDisplay display, float scale) {
+    private static void setBlockDisplaySize(BlockDisplay display, float scale) {
         setBlockDisplaySize(display, scale, scale, scale);
     }
 
-    public static void setBlockDisplaySize(BlockDisplay display, float scaleX, float scaleY, float scaleZ) {
+    private static void setBlockDisplaySize(BlockDisplay display, float scaleX, float scaleY, float scaleZ) {
         // Hent eksisterende transformasjon
         Transformation currentTransform = display.getTransformation();
 
