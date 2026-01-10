@@ -57,7 +57,7 @@ public class Year2025 {
     private static BlockDisplay testDisplay;
 
     private static final int NUMBER_SCALE = 2;
-    private static final Location FENCEPOST_LOCATION = new Location(Main.WORLD, -4819, 70, 211);
+    private static final Location FENCEPOST_LOCATION = new Location(Main.WORLD, -3316, 119, 2252);
 
     private static final List<Integer> number1GlassSteps = List.of(1, 5, 9, 3, 3, 3, 4, 2);
     private static final List<Integer> number2GlassSteps = List.of(1, 5, 9, 3, 3, 3, 9, 3, 3, 3, 4, 2, 1, 2, 2);
