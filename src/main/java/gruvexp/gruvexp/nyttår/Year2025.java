@@ -676,10 +676,18 @@ public class Year2025 {
             outlineCenter.remove(blockDisplays2.get(i));
         }
 
+        for (int i = 0; i < 9; i++) {
+            BlockDisplay display = blockDisplays1.removeLast();
+            display.setTeleportDuration(0);
+            display.teleport(numberStart2);
+            blockDisplays2.add(display);
+            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> display.setTeleportDuration(2), 1);
+        }
+
         blockDisplays.forEach(display -> display.setTeleportDuration(2));
         new SkiltAnimasjon(blockDisplays1, true, ticks).runTaskTimer(Main.getPlugin(), 0, 2);
         new SkiltAnimasjon(blockDisplays2, false, ticks).runTaskTimer(Main.getPlugin(), 0, 2);
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Year2025::resetSignpost, ticks + 20);
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Year2025::resetSignpost, ticks * 2L + 160);
     }
 
     private static void hideDisplay(BlockDisplay display) {
