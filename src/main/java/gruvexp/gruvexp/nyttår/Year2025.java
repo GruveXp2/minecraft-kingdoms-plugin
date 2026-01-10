@@ -548,18 +548,37 @@ public class Year2025 {
         animationCenter = center;
         int radius = 10;
         int blocks = snøfnugg.size();
+
+        if (auto) {
+            new BukkitRunnable() {
+                int i = 0;
+
+                public void run() {
+                    double angle = 2*Math.PI * i/blocks;
+                    BlockDisplay display = (BlockDisplay) Main.WORLD.spawnEntity(center.clone().add(0, radius * Math.sin(angle), radius * Math.cos(angle)), EntityType.BLOCK_DISPLAY);
+                    display.setInterpolationDuration(0);
+                    display.setTeleportDuration(25); // sett til 25
+                    display.setBlock(Material.SNOW_BLOCK.createBlockData());
+                    display.addScoreboardTag("nyttor2025");
+                    blockDisplays.add(display);
+
+                    i++;
+                    if (i == blocks) {
+                        cancel();
+                        if (auto) Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Year2025::snowFlake, 1L);
+                    }
+                }
+            }.runTaskTimer(Main.getPlugin(), 0, 1);
+            return;
+        }
+
+
         for (int i = 0; i < blocks; i++) {
             double angle = 2*Math.PI * i/blocks;
             BlockDisplay display = (BlockDisplay) Main.WORLD.spawnEntity(center.clone().add(0, radius * Math.sin(angle), radius * Math.cos(angle)), EntityType.BLOCK_DISPLAY);
             display.setInterpolationDuration(0);
-            display.setTeleportDuration(3); // sett til 25
-            if (i == 0) {
-                display.setBlock(Material.REDSTONE_BLOCK.createBlockData());
-            } else if (i == blocks - 1) {
-                display.setBlock(Material.EMERALD_BLOCK.createBlockData());
-            } else {
-                display.setBlock(Material.SNOW_BLOCK.createBlockData());
-            }
+            display.setTeleportDuration(25); // sett til 25
+            display.setBlock(Material.SNOW_BLOCK.createBlockData());
             display.addScoreboardTag("nyttor2025");
             blockDisplays.add(display);
         }
