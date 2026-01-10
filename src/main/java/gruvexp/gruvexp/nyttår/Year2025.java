@@ -62,31 +62,31 @@ public class Year2025 {
     private static final List<Integer> number1GlassSteps = List.of(1, 5, 9, 3, 3, 3, 4, 2);
     private static final List<Integer> number2GlassSteps = List.of(1, 5, 9, 3, 3, 3, 9, 3, 3, 3, 4, 2, 1, 2, 2);
     private static final List<Vector> number1GlassTps = List.of(
-            new Vector(-2, 0, 0),
-            new Vector(0, -2, 0),
-            new Vector(0, 0, -2),
-            new Vector(0, 2, 0),
             new Vector(0, 0, 2),
+            new Vector(0, -2, 0),
+            new Vector(-2, 0, 0),
             new Vector(0, 2, 0),
-            new Vector(0, 0, -2),
-            new Vector(2, 0, 0)
+            new Vector(2, 0, 0),
+            new Vector(0, 2, 0),
+            new Vector(-2, 0, 0),
+            new Vector(0, 0, -2)
     );
     private static final List<Vector> number2GlassTps = List.of(
-            new Vector(-2, 0, 0),
-            new Vector(0, 2, 0),
-            new Vector(0, 0, 2),
-            new Vector(0, -2, 0),
-            new Vector(0, 0, -2),
-            new Vector(0, -2, 0),
             new Vector(0, 0, 2),
             new Vector(0, 2, 0),
-            new Vector(0, 0, -2),
-            new Vector(0, 2, 0),
-            new Vector(0, 0, 2),
             new Vector(2, 0, 0),
+            new Vector(0, -2, 0),
+            new Vector(-2, 0, 0),
+            new Vector(0, -2, 0),
+            new Vector(2, 0, 0),
+            new Vector(0, 2, 0),
             new Vector(-2, 0, 0),
             new Vector(0, 2, 0),
-            new Vector(2, 0, 0)
+            new Vector(2, 0, 0),
+            new Vector(0, 0, -2),
+            new Vector(0, 0, 2),
+            new Vector(0, 2, 0),
+            new Vector(0, 0, -2)
     );
     private static GlassAnimation glassAni1;
     private static GlassAnimation glassAni2;
@@ -157,7 +157,7 @@ public class Year2025 {
                                 Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> setBlockDisplaySize(glass, 2f), 7L);
                             } else if (part == 11) {
                                 setBlockDisplaySize(glass, 1);
-                                glass.teleport(startLoc.clone().add(0, 0, 24));
+                                glass.teleport(startLoc.clone().add(24, 0, 0));
                                 Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> setBlockDisplaySize(glass, 2f), 7L);
                             }
                             currentPart.put(glass, part + 1);
@@ -187,12 +187,11 @@ public class Year2025 {
             public void run() {
                 if (stop) {
                     cancel();
-                    Bukkit.getScheduler().runTaskLater(Main.getPlugin(), bukkitTask -> stop = false, 2L);
                     return;
                 }
                 t++;
                 for (Location loc : numberLoc) {
-                    int totalLight = Math.abs(Math.floorMod(loc.getBlockZ() - loc.getBlockY() - t, 40)/2 - 10) + 5;
+                    int totalLight = Math.abs(Math.floorMod(loc.getBlockX() - loc.getBlockY() - t, 40)/2 - 10) + 5;
 
                     Block block = loc.getBlock();
                     setLight(block, totalLight);
@@ -212,8 +211,8 @@ public class Year2025 {
     }
 
     private static void initGlass() {
-        glassAni1 = new GlassAnimation(number1GlassSteps, number1GlassTps, numberStart1.clone().add(2.5, 0, 0));
-        glassAni2 = new GlassAnimation(number2GlassSteps, number2GlassTps, numberStart2.clone().add(2.5, 0, 0));
+        glassAni1 = new GlassAnimation(number1GlassSteps, number1GlassTps, numberStart1.clone().add(0, 0, -2.5));
+        glassAni2 = new GlassAnimation(number2GlassSteps, number2GlassTps, numberStart2.clone().add(0, 0, -2.5));
     }
 
     public static void runGlassAnimation() {
@@ -228,6 +227,7 @@ public class Year2025 {
         glassAni1.stop = true;
         glassAni2.stop = true;
         stop = true;
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), bukkitTask -> stop = false, 1);
     }
 
     // TODO: man trykker på knappen og når man trykker så blir hvite concretblokka om til blockdisplay 2 stykker faktisk som smooth beveger seg mot 5 tallet for å gjør det om til 6 tall, da kommer det factorio win sfx og det vokser ut vegger rundt og sea lantern og farga glass beveger seg og nyttårsrakettan flyr opp
@@ -238,7 +238,7 @@ public class Year2025 {
         Location targetLoc = FENCEPOST_LOCATION.clone().add(0, 1, 0);
 
         targetLoc.getBlock().setType(Material.WHITE_CONCRETE); // a white concrete the sign will hang on. it will be used l8r to turn into the line making the 5 in 2025 to a 6
-        targetLoc.add(-1, 0, 0);
+        targetLoc.add(0, 0, 1);
 
         targetLoc.getBlock().setType(source.getType());
         targetLoc.getBlock().setBlockData(source.getBlockData().clone());
@@ -263,7 +263,7 @@ public class Year2025 {
         for (int i = 0; i < 2; i++) {
             BlockDisplay display = (BlockDisplay) Main.WORLD.spawnEntity(spawnLoc, EntityType.BLOCK_DISPLAY);
             display.setBlock(Material.SNOW_BLOCK.createBlockData());
-            display.setTeleportDuration(20);
+            display.setTeleportDuration(50);
             display.setInterpolationDuration(20);
             display.addScoreboardTag("nyttor2025");
             blockDisplays.add(display);
@@ -271,15 +271,15 @@ public class Year2025 {
 
 
             final int finalI = i;
-            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> display.teleport(numberStart2.clone().add(0, finalI * 2, 24)), 10);
+            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> display.teleport(numberStart2.clone().add(24, finalI * 2, 0)), 10);
 
             new BukkitRunnable() {
                 int t = 0;
                 public void run() {
                     t++;
-                    if (t == 20) cancel();
+                    if (t == 50) cancel();
 
-                    setBlockDisplaySize(display, 1 + (float) t/20);
+                    setBlockDisplaySize(display, 1 + (float) t/50);
                 }
             }.runTaskTimer(Main.getPlugin(), 10, 1);
         }
@@ -308,7 +308,7 @@ public class Year2025 {
 
                 public void run() {
                     t++;
-                    loc.add(0, Δy, 0.001*finalI); // add z to workaround a bug where z ends up at .99
+                    loc.add(0.001*finalI, Δy, 0); // add z to workaround a bug where z ends up at .99
                     display.teleport(loc);
 
                     if (t == 20) cancel();
@@ -318,7 +318,7 @@ public class Year2025 {
                 for (BlockDisplay display : blockDisplays) {
                     display.teleport(display.getLocation().getBlock().getLocation());
                 }
-            }, 21L);
+            }, 50);
         }
         Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Year2025::spawnOutline, 41);
     }
@@ -333,13 +333,13 @@ public class Year2025 {
         for (Location loc : numberLoc) {
             Location spawnLoc = loc.clone();
             BlockData color = green;
-            if (loc.getZ() > 192 && loc.getZ() < 203) color = yellow;
-            else if (loc.getZ() > 216) color = purple;
+            if (loc.getX() > 192 && loc.getX() < 203) color = yellow; // FIKS! GRØNN GUL GRØNN LILLA
+            else if (loc.getX() > 216) color = purple;
 
-            frogLights.add(spawnDisplay(spawnLoc.add(1, 0, 0), color));
-            frogLights.add(spawnDisplay(spawnLoc.add(0, 0, 1), color));
-            frogLights.add(spawnDisplay(spawnLoc.add(0, 1, 0), color));
             frogLights.add(spawnDisplay(spawnLoc.add(0, 0, -1), color));
+            frogLights.add(spawnDisplay(spawnLoc.add(1, 0, 0), color));
+            frogLights.add(spawnDisplay(spawnLoc.add(0, 1, 0), color));
+            frogLights.add(spawnDisplay(spawnLoc.add(-1, 0, 0), color));
         }
 
         initGlass();
@@ -350,61 +350,61 @@ public class Year2025 {
             // top
             if (!numberLoc.contains(above)) {
                 BlockData data = Material.QUARTZ_STAIRS.createBlockData(blockData -> {
-                    ((Stairs) blockData).setFacing(BlockFace.EAST);
+                    ((Stairs) blockData).setFacing(BlockFace.NORTH);
                     ((Stairs) blockData).setHalf(Bisected.Half.BOTTOM);
                 });
+                outlineTop.add(spawnDisplay(above.add(0, 0, -1), quartsData));
                 outlineTop.add(spawnDisplay(above.add(1, 0, 0), quartsData));
-                outlineTop.add(spawnDisplay(above.add(0, 0, 1), quartsData));
-                if (!numberLoc.contains(above.add(-1, 0, 1))) {
+                if (!numberLoc.contains(above.add(1, 0, 1))) {
                     //place a stairblockk above right
-                    outlineTop.add(spawnDisplay(above.clone().add(0, 0, -1), data));
+                    outlineTop.add(spawnDisplay(above.clone().add(-1, 0, 0), data));
                 }
-                if (!numberLoc.contains(above.add(0, 0, -4))) {
+                if (!numberLoc.contains(above.add(-4, 0, 0))) {
                     //place a stairblock above left
                     BlockData data2 = Material.QUARTZ_STAIRS.createBlockData(blockData -> { //QUARTZ_STAIRS
                         ((Stairs) blockData).setFacing(BlockFace.EAST);
                         ((Stairs) blockData).setHalf(Bisected.Half.BOTTOM);
                     });
-                    outlineTop.add(spawnDisplay(above.add(0, 0, 2), data2));
+                    outlineTop.add(spawnDisplay(above.add(2, 0, 0), data2));
                 }
             }
             // bottom
             Location below = loc.clone().add(0, -2, 0);
             if (!numberLoc.contains(below)) {
                 BlockData data = Material.QUARTZ_STAIRS.createBlockData(blockData -> { //QUARTZ_STAIRS
-                    ((Stairs) blockData).setFacing(BlockFace.EAST);
+                    ((Stairs) blockData).setFacing(BlockFace.NORTH);
                     ((Stairs) blockData).setHalf(Bisected.Half.TOP);
                 });
-                outlineBottom.add(spawnDisplay(below.add(1, 1, 0), quartsData));
-                outlineBottom.add(spawnDisplay(below.add(0, 0, 1), quartsData));
-                if (!numberLoc.contains(below.add(-1, -1, 1))) {
+                outlineBottom.add(spawnDisplay(below.add(0, 1, -1), quartsData));
+                outlineBottom.add(spawnDisplay(below.add(1, 0, 0), quartsData));
+                if (!numberLoc.contains(below.add(1, -1, 1))) {
                     //place a stairblockk below right
-                    outlineBottom.add(spawnDisplay(below.clone().add(0, 1, -1), data));
+                    outlineBottom.add(spawnDisplay(below.clone().add(-1, 1, 0), data));
                 }
-                if (!numberLoc.contains(below.add(0, 0, -4))) {
+                if (!numberLoc.contains(below.add(-4, 0, 0))) {
                     BlockData data2 = Material.QUARTZ_STAIRS.createBlockData(blockData -> { //QUARTZ_STAIRS
                         ((Stairs) blockData).setFacing(BlockFace.EAST);
                         ((Stairs) blockData).setHalf(Bisected.Half.TOP);
                     });
                     //place a stairblock below left
-                    outlineBottom.add(spawnDisplay(below.add(0, 1, 2), data2));
+                    outlineBottom.add(spawnDisplay(below.add(2, 1, 0), data2));
                 }
             }
             // sides
-            Location side = loc.clone().add(0, 0, 2);
+            Location side = loc.clone().add(2, 0, 0);
             if (!numberLoc.contains(side)) { // right
                 // plasér vanlige blokker
                 Location sideClone = side.clone();
                 outlineRight.add(spawnDisplay(sideClone, quartsData));
                 outlineRight.add(spawnDisplay(sideClone.add(0,  1, 0), quartsData));
-                outlineRight.add(spawnDisplay(sideClone.add(1,  0, 0), quartsData));
+                outlineRight.add(spawnDisplay(sideClone.add(0,  0, -1), quartsData));
                 outlineRight.add(spawnDisplay(sideClone.add(0, -1, 0), quartsData));
             }
-            side.add(0, 0, -4);
+            side.add(-4, 0, 0);
             if (!numberLoc.contains(side)) { // left
-                outlineLeft.add(spawnDisplay(side.add(0, 0, 1), quartsData));
+                outlineLeft.add(spawnDisplay(side.add(1, 0, 0), quartsData));
                 outlineLeft.add(spawnDisplay(side.add(0, 1, 0), quartsData));
-                outlineLeft.add(spawnDisplay(side.add(1,  0, 0), quartsData));
+                outlineLeft.add(spawnDisplay(side.add(0,  0, -1), quartsData));
                 outlineLeft.add(spawnDisplay(side.add(0, -1, 0), quartsData));
             }
         }
@@ -429,14 +429,14 @@ public class Year2025 {
         }.runTaskTimer(Main.getPlugin(), 0, 1);
 
         // RIGHT
-        outlineRight.forEach(display -> setBlockDisplaySize(display, 1, 1, 0.05f));
+        outlineRight.forEach(display -> setBlockDisplaySize(display, 0.05f, 1, 1));
         new BukkitRunnable() {
             int t = 0;
-            final float Δz = (float) 1 / TICKS;
+            final float Δx = (float) 1 / TICKS;
 
             public void run() {
                 t++;
-                outlineRight.forEach(display -> setBlockDisplaySize(display, 1, 1, Δz *t));
+                outlineRight.forEach(display -> setBlockDisplaySize(display, Δx *t, 1, 1));
 
                 if (t == 20) cancel();
             }
@@ -464,18 +464,18 @@ public class Year2025 {
 
         // LEFT
         outlineLeft.forEach(display -> {
-            setBlockDisplaySize(display, 1, 1, 0.05f);
-            display.teleport(display.getLocation().add(0, 0, 1));
+            setBlockDisplaySize(display, 0.05f, 1, 1);
+            display.teleport(display.getLocation().add(1, 0, 0));
         });
         new BukkitRunnable() {
             int t = 0;
-            final float Δz = (float) 1 / TICKS;
+            final float Δx = (float) 1 / TICKS;
 
             public void run() {
                 t++;
                 outlineLeft.forEach(display -> {
-                    setBlockDisplaySize(display, 1, 1, Δz * t);
-                    display.teleport(display.getLocation().add(0, 0, -Δz));
+                    setBlockDisplaySize(display, Δx * t, 1, 1);
+                    display.teleport(display.getLocation().add(-Δx, 0, 0));
                 });
 
                 if (t == 20) {
@@ -497,7 +497,7 @@ public class Year2025 {
 
                 public void run() {
                     t++;
-                    display.teleport(startLoc.clone().add(-2*Math.sin((double) t /20 * Math.PI), 0, 0));
+                    display.teleport(startLoc.clone().add(0, 0, 2*Math.sin((double) t /20 * Math.PI)));
 
                     if (t == 30) {
                         cancel();
@@ -570,7 +570,7 @@ public class Year2025 {
 
                 public void run() {
                     double angle = 2*Math.PI * i/blocks;
-                    BlockDisplay display = (BlockDisplay) Main.WORLD.spawnEntity(center.clone().add(0, radius * Math.sin(angle), radius * Math.cos(angle)), EntityType.BLOCK_DISPLAY);
+                    BlockDisplay display = (BlockDisplay) Main.WORLD.spawnEntity(center.clone().add(radius * Math.cos(angle), radius * Math.sin(angle), 0), EntityType.BLOCK_DISPLAY);
                     display.setInterpolationDuration(0);
                     display.setTeleportDuration(25); // sett til 25
                     display.setBlock(Material.SNOW_BLOCK.createBlockData());
@@ -590,7 +590,7 @@ public class Year2025 {
 
         for (int i = 0; i < blocks; i++) {
             double angle = 2*Math.PI * i/blocks;
-            BlockDisplay display = (BlockDisplay) Main.WORLD.spawnEntity(center.clone().add(0, radius * Math.sin(angle), radius * Math.cos(angle)), EntityType.BLOCK_DISPLAY);
+            BlockDisplay display = (BlockDisplay) Main.WORLD.spawnEntity(center.clone().add(radius * Math.cos(angle), radius * Math.sin(angle), 0), EntityType.BLOCK_DISPLAY);
             display.setInterpolationDuration(0);
             display.setTeleportDuration(25); // sett til 25
             display.setBlock(Material.SNOW_BLOCK.createBlockData());
@@ -610,8 +610,8 @@ public class Year2025 {
     public static void rotatingCircle(int ticks) {
         for (BlockDisplay display : blockDisplays) {
             Location relativeLoc = display.getLocation().subtract(animationCenter); // 0.1: 1/radius
-            radians.add(Math.atan2(relativeLoc.getY(), relativeLoc.getZ()));
-            length.add(Math.hypot(relativeLoc.getY(), relativeLoc.getZ()));
+            radians.add(Math.atan2(relativeLoc.getY(), relativeLoc.getX()));
+            length.add(Math.hypot(relativeLoc.getY(), relativeLoc.getX()));
             display.setTeleportDuration(1);
         }
         Main.getPlugin().getLogger().info("Starting loop");
@@ -802,7 +802,7 @@ public class Year2025 {
         double multiply = big ? NUMBER_SCALE : 1;
         for (String coord : coords) {
             String[] loc = coord.split(",");
-            number.add(new Location(Main.WORLD, Double.parseDouble(loc[0]) * multiply, Double.parseDouble(loc[1]) * multiply, Double.parseDouble(loc[2]) * multiply));
+            number.add(new Location(Main.WORLD, Double.parseDouble(loc[2]) * multiply, Double.parseDouble(loc[1]) * multiply, -Double.parseDouble(loc[0]) * multiply));
         }
     }
 
@@ -849,7 +849,7 @@ public class Year2025 {
                 double diffDist = 10 - startDist;
                 double newDist = startDist + diffDist * progress;
 
-                blockDisplays.get(i).teleport(animationCenter.clone().add(0, newDist * Math.sin(newAngle), newDist * Math.cos(newAngle)));
+                blockDisplays.get(i).teleport(animationCenter.clone().add(newDist * Math.cos(newAngle), newDist * Math.sin(newAngle), 0));
             }
 
             if (currentStep == totalSteps) {
@@ -884,7 +884,7 @@ public class Year2025 {
 
                 float size = (float) (1 + progress);
 
-                blockDisplays.get(i).teleport(animationCenter.clone().add(0, newDist * Math.sin(newAngle), newDist * Math.cos(newAngle)));
+                blockDisplays.get(i).teleport(animationCenter.clone().add(newDist * Math.cos(newAngle), newDist * Math.sin(newAngle), 0));
                 setBlockDisplaySize(blockDisplays.get(i), size);
             }
 
