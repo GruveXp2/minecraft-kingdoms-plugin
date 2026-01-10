@@ -263,7 +263,7 @@ public class Year2025 {
         for (int i = 0; i < 2; i++) {
             BlockDisplay display = (BlockDisplay) Main.WORLD.spawnEntity(spawnLoc, EntityType.BLOCK_DISPLAY);
             display.setBlock(Material.SNOW_BLOCK.createBlockData());
-            display.setTeleportDuration(50);
+            display.setTeleportDuration(2);
             display.setInterpolationDuration(20);
             display.addScoreboardTag("nyttor2025");
             blockDisplays.add(display);
@@ -271,15 +271,21 @@ public class Year2025 {
 
 
             final int finalI = i;
-            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> display.teleport(numberStart2.clone().add(24, finalI * 2, 0)), 10);
+            Location startLoc = display.getLocation();
+            Location targetLoc = numberStart2.clone().add(24, finalI * 2, 0);
+            Vector diff = targetLoc.toVector().subtract(startLoc.toVector()).multiply(1./50);
 
-            new BukkitRunnable() {
+            new BukkitRunnable() { // smoothly increase the blockdisplay size
                 int t = 0;
                 public void run() {
                     t++;
-                    if (t == 50) cancel();
-
+                    startLoc.add(diff);
+                    display.teleport(startLoc);
                     setBlockDisplaySize(display, 1 + (float) t/50);
+                    if (t == 50) {
+                        cancel();
+                        display.teleport(targetLoc);
+                    }
                 }
             }.runTaskTimer(Main.getPlugin(), 10, 1);
         }
@@ -318,9 +324,9 @@ public class Year2025 {
                 for (BlockDisplay display : blockDisplays) {
                     display.teleport(display.getLocation().getBlock().getLocation());
                 }
-            }, 50);
+            }, 64);
         }
-        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Year2025::spawnOutline, 41);
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Year2025::spawnOutline, 81);
     }
 
     public static void spawnOutline() {
