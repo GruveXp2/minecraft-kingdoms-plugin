@@ -117,13 +117,15 @@ public class Year2025 {
         private final Set<BlockDisplay> glassBlocks = new HashSet<>();
         private boolean stop = false;
 
+        private final int PERIOD = 7;
+
         public GlassAnimation(List<Integer> glassSteps, List<Vector> glassTps, Location start) {
             this.glassSteps = glassSteps;
             this.glassTps = glassTps;
             this.startLoc = start;
             for (int i = 0; i < glassSteps.stream().mapToInt(Integer::intValue).sum() + 1; i++) {
                 BlockDisplay glass = spawnDisplay(start, glassColors.get(i % glassColors.size()).createBlockData());
-                glass.setTeleportDuration(10);
+                glass.setTeleportDuration(PERIOD);
                 setBlockDisplaySize(glass, 2);
                 currentStep.put(glass, -i);
                 currentPart.put(glass, 0);
@@ -165,7 +167,7 @@ public class Year2025 {
                         currentStep.put(glass, step);
                     }
                 }
-            }.runTaskTimer(Main.getPlugin(), 0, 10);
+            }.runTaskTimer(Main.getPlugin(), 0, PERIOD);
         }
     }
 
