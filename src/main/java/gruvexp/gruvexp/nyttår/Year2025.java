@@ -262,10 +262,17 @@ public class Year2025 {
 
 
             final int finalI = i;
-            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-                display.teleport(numberStart2.clone().add(-2, finalI * 2, 22));
-                setBlockDisplaySize(display, 2);
-            }, 10L);
+            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> display.teleport(numberStart2.clone().add(0, finalI * 2, 24)), 10);
+
+            new BukkitRunnable() {
+                int t = 0;
+                public void run() {
+                    t++;
+                    if (t == 20) cancel();
+
+                    setBlockDisplaySize(display, 1 + (float) t/20);
+                }
+            }.runTaskTimer(Main.getPlugin(), 10, 1);
         }
 
         for (int i = 1; i < 5; i++) {
