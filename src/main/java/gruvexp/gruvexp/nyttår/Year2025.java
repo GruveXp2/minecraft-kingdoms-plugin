@@ -205,8 +205,8 @@ public class Year2025 {
     }
 
     private static void initGlass() {
-        glassAni1 = new GlassAnimation(number1GlassSteps, number1GlassTps, numberStart1.clone().add(0.5, 0, -2));
-        glassAni2 = new GlassAnimation(number2GlassSteps, number2GlassTps, numberStart2.clone().add(0.5, 0, -2));
+        glassAni1 = new GlassAnimation(number1GlassSteps, number1GlassTps, numberStart1.clone().add(2.5, 0, 0));
+        glassAni2 = new GlassAnimation(number2GlassSteps, number2GlassTps, numberStart2.clone().add(2.5, 0, 0));
     }
 
     public static void runGlassAnimation() {
