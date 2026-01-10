@@ -171,7 +171,14 @@ public class Year2025 {
 
     public static void startPhase1(Location animationCenter) {
         auto = true;
+        deleteCircle();
         spawnCircle(animationCenter);
+        Main.getPlugin().getLogger().info("Phase 1 is starting");
+    }
+
+    public static void startPhase2() {
+        auto = true;
+        transformInto2026();
     }
 
     public static void startLightAnimation() {
@@ -212,6 +219,8 @@ public class Year2025 {
     public static void runGlassAnimation() {
         glassAni1.startAnimation();
         glassAni2.startAnimation();
+
+        if (auto) Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Year2025::startLightAnimation, 30);
     }
 
     private static void stopGlassAnimation() {
@@ -311,6 +320,7 @@ public class Year2025 {
                 }
             }, 21L);
         }
+        Bukkit.getScheduler().runTaskLater(Main.getPlugin(), Year2025::spawnOutline, 41);
     }
 
     public static void spawnOutline() {
@@ -398,6 +408,7 @@ public class Year2025 {
                 outlineLeft.add(spawnDisplay(side.add(0, -1, 0), quartsData));
             }
         }
+        if (auto) animateOutlineExpansion();
     }
 
     public static void animateOutlineExpansion() {
@@ -467,7 +478,10 @@ public class Year2025 {
                     display.teleport(display.getLocation().add(0, 0, -Δz));
                 });
 
-                if (t == 20) cancel();
+                if (t == 20) {
+                    cancel();
+                    if (auto) animatePopout();
+                }
             }
         }.runTaskTimer(Main.getPlugin(), 30, 1);
     }
@@ -492,6 +506,7 @@ public class Year2025 {
                 }
             }.runTaskTimer(Main.getPlugin(), dist, 1);
         }
+        if (auto) runGlassAnimation();
     }
 
     private static BlockDisplay spawnDisplay(Location loc, BlockData data) {

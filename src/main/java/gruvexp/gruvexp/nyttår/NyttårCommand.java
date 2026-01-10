@@ -2,6 +2,7 @@ package gruvexp.gruvexp.nyttår;
 
 import gruvexp.gruvexp.Main;
 import gruvexp.gruvexp.rail.Coord;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -29,7 +30,7 @@ public class NyttårCommand implements CommandExecutor {
         Player david = Bukkit.getPlayer("GruveXp");
         switch (oper) {
             case "reset_signpost" -> Year2025.resetSignpost();
-            case "fix_year" -> Year2025.transformInto2026();
+            case "fix_year" -> Year2025.startPhase2();
             case "lag_tekst" -> {
                 assert david != null;
                 david.chat("/function forskerlinja:god_jul_forskerlinja");
@@ -98,8 +99,8 @@ public class NyttårCommand implements CommandExecutor {
                 }
                 Coord koordinat = new Coord(args[1], args[2], args[3]);
                 Location centerLocation = koordinat.toLocation(Main.WORLD).add(-0.5, 0, -0.5);
-                Year2025.auto = true;
                 Year2025.startPhase1(centerLocation);
+                sender.sendMessage(Component.text("Successfully started phase 1"));
             }
             case "rotate_snowflake" -> {
                 if (args.length == 1) {
