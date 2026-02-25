@@ -21,8 +21,8 @@ public class SelectKingdomMenu extends Menu {
     }
 
     @Override
-    public String getMenuName() {
-        return "Select kingdom";
+    public Component getMenuName() {
+        return Component.text("Select kingdom");
     }
 
     @Override

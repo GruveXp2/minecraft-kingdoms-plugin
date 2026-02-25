@@ -36,7 +36,7 @@ public abstract class Menu implements InventoryHolder {
     }
 
     // navnet på menyen
-    public abstract String getMenuName();
+    public abstract Component getMenuName();
 
     // hvor mange slots
     public abstract int getSlots();

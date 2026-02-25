@@ -22,8 +22,8 @@ public class SelectLocalityMenu extends Menu {
     }
 
     @Override
-    public String getMenuName() {
-        return "Select locality";
+    public Component getMenuName() {
+        return Component.text("Select locality");
     }
 
     @Override

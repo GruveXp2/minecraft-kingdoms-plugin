@@ -33,8 +33,8 @@ public class StationMenu extends Menu {
     }
 
     @Override
-    public String getMenuName() {
-        return "Select Destination";
+    public Component getMenuName() {
+        return Component.text("Select Destination");
     }
 
     @Override
