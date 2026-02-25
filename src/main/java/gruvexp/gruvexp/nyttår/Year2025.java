@@ -272,9 +272,8 @@ public class Year2025 {
             outlineCenter.add(display);
 
 
-            final int finalI = i;
             Location startLoc = display.getLocation();
-            Location targetLoc = numberStart2.clone().add(24, finalI * 2, 0);
+            Location targetLoc = numberStart2.clone().add(24, i * 2, 0);
             Vector diff = targetLoc.toVector().subtract(startLoc.toVector()).multiply(1./50);
 
             new BukkitRunnable() { // smoothly increase the blockdisplay size
@@ -296,9 +295,9 @@ public class Year2025 {
             int finalI = i;
             new BukkitRunnable() {
                 double t = 0;
-                double Δy = (double) -finalI /(8*10) + 0.001;
+                final double Δy = (double) -finalI /(8*10) + 0.001;
                 final BlockDisplay display = blockDisplays1.get(23 + finalI);
-                Location loc = display.getLocation();
+                final Location loc = display.getLocation();
 
                 public void run() {
                     t++;
@@ -310,9 +309,9 @@ public class Year2025 {
             }.runTaskTimer(Main.getPlugin(), 0, 1);
             new BukkitRunnable() {
                 double t = 0;
-                double Δy = (double) -finalI /(8*10) + 0.001;
+                final double Δy = (double) -finalI /(8*10) + 0.001;
                 final BlockDisplay display = blockDisplays2.get(41 + finalI);
-                Location loc = display.getLocation();
+                final Location loc = display.getLocation();
 
                 public void run() {
                     t++;

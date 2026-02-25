@@ -23,7 +23,7 @@ public class CalculateLength extends BukkitRunnable {
     final Location exit;
     final Player p;
     final int startDistance;
-    HashMap<Location, Integer> speedPositions;
+    final HashMap<Location, Integer> speedPositions;
     boolean doubleRun = false; // system som gjør at hver tick flytter han seg 2 hakk
     public CalculateLength(Section section, char direction, Player p) {
         this.section = section;

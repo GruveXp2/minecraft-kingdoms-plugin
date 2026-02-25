@@ -21,7 +21,7 @@ import java.util.Objects;
 
 public class DriveCart extends BukkitRunnable {
 
-    public static float TURN_OFFSET = (float) (1 - Math.sqrt(2) / 2);
+    public static final float TURN_OFFSET = (float) (1 - Math.sqrt(2) / 2);
 
     int sectionLength;
     int totalDistance = 0;
