@@ -6,6 +6,7 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.jspecify.annotations.NonNull;
 
 public record Coord(int x, int y, int z) {
 
@@ -38,7 +39,8 @@ public record Coord(int x, int y, int z) {
 
     public Component name() {
         return Component.text(toString(), NamedTextColor.AQUA)
-                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/java tp " + x + " " + y + " " + z));
+                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND,
+                        ClickEvent.Payload.string("/java tp " + x + " " + y + " " + z)));
     }
 
     public Location toLocation(World world) {

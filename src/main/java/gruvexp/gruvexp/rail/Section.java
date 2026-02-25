@@ -305,7 +305,8 @@ public final class Section {
 
     public @NotNull Component name() {
         return Component.text(id, VALUE_COLOR)
-                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/rail " + id + " info"));
+                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND,
+                        ClickEvent.Payload.string("/rail " + id + " info")));
     }
 
     public static Component speed(int speedValue) {

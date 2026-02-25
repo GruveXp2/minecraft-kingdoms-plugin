@@ -142,7 +142,8 @@ public class Locality {
 
     public Component name() {
         return Component.text(id, VALUE_COLOR)
-                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/locality " + id + " info"));
+                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND,
+                        ClickEvent.Payload.string("/locality " + id + " info")));
     }
     public String tag() {
         return district.tag() + ":" + id;

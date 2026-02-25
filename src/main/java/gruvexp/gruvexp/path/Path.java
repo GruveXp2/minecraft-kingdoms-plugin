@@ -150,7 +150,8 @@ public class Path {
 
     public Component name() {
         return Component.text(id, VALUE_COLOR)
-                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/path " + id + " info"));
+                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND,
+                        ClickEvent.Payload.string("/path " + id + " info")));
     }
 
     public Component nameIndex(int index) {

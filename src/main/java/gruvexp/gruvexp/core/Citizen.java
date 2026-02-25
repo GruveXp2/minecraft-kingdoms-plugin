@@ -140,7 +140,8 @@ public class Citizen { //holder info om hver villager, som bosted, fabrikk, og p
 
     public Component name() {
         return Component.text(name, NamedTextColor.GREEN)
-                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/citizen " + name + " info"));
+                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND,
+                        ClickEvent.Payload.string("/citizen " + name + " info")));
     }
 
     public Component workAddress() {

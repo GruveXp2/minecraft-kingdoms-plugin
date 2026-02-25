@@ -109,7 +109,8 @@ public class House {
 
     public Component name() {
         return locality.name().appendSpace().append(Component.text(nr, NamedTextColor.BLUE))
-                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/house " + nr + " info"));
+                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND,
+                        ClickEvent.Payload.string("/house " + nr + " info")));
     }
 
     public String nationalAddress() {

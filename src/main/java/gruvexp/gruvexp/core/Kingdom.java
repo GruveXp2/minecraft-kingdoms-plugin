@@ -137,7 +137,8 @@ public class Kingdom {
 
     public Component name() {
         return Component.text(Character.toUpperCase(id.charAt(0)) + id.substring(1), VALUE_COLOR)
-                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/kingdom " + id + " info"));
+                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND,
+                        ClickEvent.Payload.string("/kingdom " + id + " info")));
     }
 
     public Component king() {
