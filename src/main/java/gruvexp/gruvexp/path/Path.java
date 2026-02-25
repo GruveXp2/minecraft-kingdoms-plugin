@@ -52,41 +52,23 @@ public class Path {
 
     public static char dirToChar(String direction) {
         return switch (direction) {
-            case "n":
-            case "s":
-            case "e":
-            case "w":
-                yield  direction.toCharArray()[0];
-            case "ne":
-                yield 'N';
-            case "se":
-                yield 'E';
-            case "sw":
-                yield 'S';
-            case "nw":
-                yield 'W';
-            default:
-                throw new IllegalArgumentException("Illegal direction value!");
+            case "n", "s", "e", "w" -> direction.toCharArray()[0];
+            case "ne" -> 'N';
+            case "se" -> 'E';
+            case "sw" -> 'S';
+            case "nw" -> 'W';
+            default -> throw new IllegalArgumentException("Illegal direction value!");
         };
     }
 
     public static String dirToStr(char direction) {
         return switch (direction) {
-            case 'n':
-            case 's':
-            case 'e':
-            case 'w':
-                yield String.valueOf(direction);
-            case 'N':
-                yield "ne";
-            case 'E':
-                yield "se";
-            case 'S':
-                yield "sw";
-            case 'W':
-                yield "nw";
-            default:
-                throw new IllegalArgumentException("Illegal direction value!");
+            case 'n', 's', 'e', 'w' -> String.valueOf(direction);
+            case 'N' -> "ne";
+            case 'E' -> "se";
+            case 'S' -> "sw";
+            case 'W' -> "nw";
+            default -> throw new IllegalArgumentException("Illegal direction value!");
         };
     }
 
