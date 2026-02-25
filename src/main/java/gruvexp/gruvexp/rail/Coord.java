@@ -33,7 +33,7 @@ public record Coord(int x, int y, int z) {
     }
 
     @Override
-    public String toString() {
+    public @NonNull String toString() {
         return String.format("%s %s %s", x, y, z);
     }
 
