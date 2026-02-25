@@ -4,7 +4,8 @@ import gruvexp.gruvexp.core.District;
 import gruvexp.gruvexp.core.Kingdom;
 import gruvexp.gruvexp.menu.Menu;
 import gruvexp.gruvexp.rail.Entrypoint;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -47,7 +48,7 @@ public class SelectDistrictMenu extends Menu {
         Kingdom kingdom = entrypoint.getTargetKingdom();
         Collection<District> districts = kingdom.getDistricts();
         if (districts.isEmpty()) {
-            inventory.setItem(0, makeItem(Material.BARRIER, ChatColor.RED + "This kingdom has no districts"));
+            inventory.setItem(0, makeItem(Material.BARRIER, Component.text("This kingdom has no districts", NamedTextColor.RED)));
         }
         int i = 0;
         for (District district : districts) {

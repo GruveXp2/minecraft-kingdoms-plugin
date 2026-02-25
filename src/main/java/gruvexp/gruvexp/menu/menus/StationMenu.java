@@ -130,7 +130,7 @@ public class StationMenu extends Menu {
     public void switchToDriveMode() {
         mailMode = false;
         inventory.setItem(7, makeItem(Material.MINECART, "Respawn cart", "respawn"));
-        inventory.setItem(8, makeItem(Material.MINECART, "Mode", ChatColor.BLUE + "drive"));
+        inventory.setItem(8, makeItem(Material.MINECART, Component.text("Mode"), Component.text("drive", NamedTextColor.BLUE)));
         Minecart prevCart = null;
         try {
             prevCart = (Minecart) Bukkit.getEntity(entrypoint.getCartUUID());
@@ -147,7 +147,7 @@ public class StationMenu extends Menu {
         inventory.setItem(3, null);
         inventory.setItem(5, null);
         inventory.setItem(7, makeItem(Material.CHEST, "Edit contents", "edit the contents", "of the minecart"));
-        inventory.setItem(8, makeItem(Material.CHEST_MINECART, "Mode", ChatColor.GOLD + "message"));
+        inventory.setItem(8, makeItem(Material.CHEST_MINECART, Component.text("Mode"), Component.text("message", NamedTextColor.GOLD)));
         Kingdom targetKingdom = entrypoint.getTargetKingdom();
         if (targetKingdom != null) entrypoint.setTargetKingdom(entrypoint.getTargetKingdom());
 

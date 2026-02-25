@@ -4,7 +4,8 @@ import gruvexp.gruvexp.core.District;
 import gruvexp.gruvexp.core.Locality;
 import gruvexp.gruvexp.menu.Menu;
 import gruvexp.gruvexp.rail.Entrypoint;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -47,7 +48,7 @@ public class SelectLocalityMenu extends Menu {
         District district = entrypoint.getTargetDistrict();
         Collection<Locality> localities = district.getLocalities();
         if (localities.isEmpty()) {
-            inventory.setItem(0, makeItem(Material.BARRIER, ChatColor.RED + "This district has no localities"));
+            inventory.setItem(0, makeItem(Material.BARRIER, Component.text("This district has no localities", NamedTextColor.RED)));
         }
         int i = 0;
         for (Locality locality : localities) {

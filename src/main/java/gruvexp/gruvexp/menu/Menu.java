@@ -2,6 +2,7 @@ package gruvexp.gruvexp.menu;
 
 import gruvexp.gruvexp.Main;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -14,14 +15,16 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class Menu implements InventoryHolder {
 
     protected final Inventory inventory;
     protected final ItemStack FILLER_GLASS = makeItem(Material.GRAY_STAINED_GLASS_PANE, " ");
-    protected final ItemStack LEFT = makeItem(Material.LIGHT_BLUE_STAINED_GLASS_PANE, ChatColor.AQUA + "Prev page");
-    protected final ItemStack CLOSE = makeItem(Material.BARRIER, ChatColor.RED + "Close menu");
-    protected final ItemStack RIGHT = makeItem(Material.LIGHT_BLUE_STAINED_GLASS_PANE, ChatColor.AQUA + "Next page");
+    protected final ItemStack LEFT = makeItem(Material.LIGHT_BLUE_STAINED_GLASS_PANE, Component.text("Prev page", NamedTextColor.AQUA));
+    protected final ItemStack CLOSE = makeItem(Material.BARRIER, Component.text("Close menu", NamedTextColor.RED));
+    protected final ItemStack RIGHT = makeItem(Material.LIGHT_BLUE_STAINED_GLASS_PANE, Component.text("Next page", NamedTextColor.AQUA));
 
     //The owner of the inventory created is the Menu itself,
     // so we are able to reverse engineer the Menu object from the
@@ -65,15 +68,23 @@ public abstract class Menu implements InventoryHolder {
     }
 
     // lager et item
-    public static ItemStack makeItem(Material material, String displayName, String... lore) {
+    public static ItemStack makeItem(Material material, Component displayName, List<Component> lore) {
 
         ItemStack item = new ItemStack(material);
         ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.setDisplayName(displayName);
-        itemMeta.setLore(Arrays.asList(lore));
+        itemMeta.displayName(displayName);
+        itemMeta.lore(lore);
         item.setItemMeta(itemMeta);
 
         return item;
+    }
+
+    public static ItemStack makeItem(Material material, Component displayName, Component... lore) {
+        return makeItem(material, displayName, Arrays.asList(lore));
+    }
+
+    public static ItemStack makeItem(Material material, String displayName, String... lore) {
+        return makeItem(material, Component.text(displayName), Arrays.stream(lore).map(Component::text).collect(Collectors.toList()));
     }
 
     public ItemStack makeHeadItem(OfflinePlayer p, String displayName, String... lore) {
@@ -81,7 +92,7 @@ public abstract class Menu implements InventoryHolder {
         SkullMeta itemMeta = (SkullMeta) item.getItemMeta();
 
         itemMeta.displayName(Component.text(displayName));
-        itemMeta.setLore(Arrays.asList(lore));
+        itemMeta.lore(Arrays.stream(lore).map(Component::text).collect(Collectors.toList()));
         itemMeta.getPersistentDataContainer().set(
                 new NamespacedKey(Main.getPlugin(), "uuid"),
                 PersistentDataType.STRING,
