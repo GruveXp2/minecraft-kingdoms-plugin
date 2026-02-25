@@ -1,7 +1,6 @@
 package gruvexp.gruvexp.commands;
 
 import gruvexp.gruvexp.core.District;
-import gruvexp.gruvexp.core.Kingdom;
 import gruvexp.gruvexp.core.KingdomsManager;
 import gruvexp.gruvexp.core.Locality;
 import gruvexp.gruvexp.path.Path;
