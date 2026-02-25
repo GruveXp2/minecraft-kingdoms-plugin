@@ -23,12 +23,12 @@ public class KingdomCommand implements CommandExecutor {
 
         if (!(sender instanceof Player p)) {return true;}
         if (args.length == 0) {return false;}
-        Component result = processCommand(p, args, command);
+        Component result = processCommand(args, command);
         p.sendMessage(result);
         return true;
     }
 
-    private Component processCommand(Player p, String[] args, Command command) {
+    private Component processCommand(String[] args, Command command) {
         String kingdomID = args[0];
         Kingdom kingdom = KingdomsManager.getKingdom(kingdomID);
         if (kingdom == null) return Component.text("Kingdom \"" + kingdomID + "\" doesnt exist!", NamedTextColor.RED);

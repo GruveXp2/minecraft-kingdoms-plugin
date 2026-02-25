@@ -34,7 +34,6 @@ public class NyttårCommand implements CommandExecutor {
             case "lag_tekst" -> {
                 assert david != null;
                 david.chat("/function forskerlinja:god_jul_forskerlinja");
-                Forskerlinja.location = david.getLocation();
                 Forskerlinja.makeBlocks(david);
             }
             case "register_center" -> {

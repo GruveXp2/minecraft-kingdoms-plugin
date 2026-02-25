@@ -15,8 +15,6 @@ import org.joml.Vector3f;
 
 public class Forskerlinja {
 
-    public static Location location = null;
-
     public static void makeBlocks(Player p) {
 
         int Δx = 125;

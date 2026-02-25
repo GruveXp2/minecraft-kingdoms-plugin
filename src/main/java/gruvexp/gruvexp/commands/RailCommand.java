@@ -21,12 +21,12 @@ public class RailCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String @NotNull [] args) {
         if (!(sender instanceof Player p)) {return true;}
         if (args.length == 0) {return false;}
-        Component result = processCommand(p, args, command);
+        Component result = processCommand(p, args);
         p.sendMessage(result);
         return true;
     }
 
-    private Component processCommand(Player p, String[] args, Command command) {
+    private Component processCommand(Player p, String[] args) {
         // Rail command by GruveXp aka David
         // This is a command that lets players in my Minecraft server interact with the rail network, and makes it easier to create roads similar to real life.
         // when a player comes to a rail intersection, arrows will appear in the inventory and the player can choose which rail to switch to.
