@@ -9,7 +9,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -103,12 +102,12 @@ public final class KingdomsManager {
         }
         if (loadedCitizens > 0) {
             if (citizenPostInit.isEmpty()) {
-                Bukkit.broadcastMessage("[Kingdoms] " + ChatColor.GREEN + "Successfully loaded " + loadedCitizens + " citizens");
+                Bukkit.broadcast(Component.text("Successfully loaded " + loadedCitizens + " citizens", NamedTextColor.GREEN));
             } else {
-                Bukkit.broadcastMessage(String.format("[Kingdoms] %sSuccessfully loaded %d citizens, but failed to load %s", ChatColor.YELLOW, loadedCitizens, citizenPostInit.size()));
+                Bukkit.broadcast(Component.text("Successfully loaded" + loadedCitizens + " citizens, but failed to load " + citizenPostInit.size(), NamedTextColor.YELLOW));
             }
         } else {
-            Bukkit.broadcastMessage("[Kingdoms] " + ChatColor.RED + "Failed to load " + citizenPostInit.size() + " citizens");
+            Bukkit.broadcast(Component.text("Failed to load " + citizenPostInit.size() + " citizens", NamedTextColor.RED));
         }
     }
 

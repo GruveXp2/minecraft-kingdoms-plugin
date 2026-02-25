@@ -1,7 +1,8 @@
 package gruvexp.gruvexp.commands;
 
 import gruvexp.gruvexp.rail.Coord;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -23,7 +24,8 @@ public class ShrinkCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
         Player p = (Player) sender;
         if (args.length < 10) {
-            p.sendMessage(ChatColor.RED + "Not enough args!\n" + ChatColor.WHITE + "Usage: " + command.getUsage());
+            p.sendMessage(Component.text("Not enough args!", NamedTextColor.RED).appendNewline()
+                    .append(Component.text("Usage: " + command.getUsage(), NamedTextColor.WHITE)));
             return true;
         }
         try {
@@ -39,12 +41,12 @@ public class ShrinkCommand implements CommandExecutor {
                     size = Float.parseFloat(args[9]);
                 }
             } catch (NumberFormatException e) {
-                p.sendMessage(ChatColor.RED + "Size must be a number");
+                p.sendMessage(Component.text("Size must be a number", NamedTextColor.RED));
             }
             Coord coordFrom = new Coord(Math.min(coord1.x(), coord2.x()), Math.min(coord1.y(), coord2.y()), Math.min(coord1.z(), coord2.z()));
             Coord dimensions = new Coord(Math.abs(coord1.x() - coord2.x()), Math.abs(coord1.y() - coord2.y()), Math.abs(coord1.z() - coord2.z()));
             if (dimensions.x() * dimensions.y() * dimensions.z() > 16384) {
-                p.sendMessage(ChatColor.RED + "Too many blocks to clone! (the server cant handle that many)");
+                p.sendMessage(Component.text("Too many blocks to clone! (the server cant handle that many)", NamedTextColor.RED));
                 return true;
             }
             String tag = null;

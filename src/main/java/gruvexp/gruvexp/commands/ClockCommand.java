@@ -3,7 +3,8 @@ package gruvexp.gruvexp.commands;
 import gruvexp.gruvexp.Main;
 import gruvexp.gruvexp.clock.ClockManager;
 import gruvexp.gruvexp.clock.IncreaseDigit;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -16,7 +17,7 @@ public class ClockCommand implements CommandExecutor {
         Player p = (Player) sender;
 
         if (args.length == 0) {
-            p.sendMessage(ChatColor.RED + "you need 1 or more arguments");
+            p.sendMessage(Component.text("you need 1 or more arguments", NamedTextColor.RED));
             return true;
         }
         switch (args[0]) {
@@ -28,7 +29,8 @@ public class ClockCommand implements CommandExecutor {
                     z = Integer.parseInt(args[3]);
                     ClockManager.clockInit(x, y, z);
                 } catch (NumberFormatException e) {
-                    p.sendMessage(ChatColor.RED + "Syntax error! " + ChatColor.WHITE + "Only numbers are allowed");
+                    p.sendMessage(Component.text("Syntax error! ", NamedTextColor.RED)
+                            .append(Component.text("Only numbers are allowed", NamedTextColor.WHITE)));
                     return true;
                 }
                 return true;
@@ -40,7 +42,8 @@ public class ClockCommand implements CommandExecutor {
             }
             case "set" -> {
                 if (args.length < 4) {
-                    p.sendMessage(ChatColor.RED + "Syntax error! " + ChatColor.WHITE + "Usage: /digitalclock set <hours> <minutes> <seconds>");
+                    p.sendMessage(Component.text("Syntax error! ", NamedTextColor.RED)
+                            .append(Component.text("Usage: /digitalclock set <hours> <minutes> <seconds>", NamedTextColor.WHITE)));
                     return true;
                 }
                 int hr, min, sec;
@@ -50,12 +53,13 @@ public class ClockCommand implements CommandExecutor {
                     min = Integer.parseInt(args[2]);
                     sec = Integer.parseInt(args[3]);
                 } catch (NumberFormatException e) {
-                    p.sendMessage(ChatColor.RED + "Syntax error! " + ChatColor.WHITE + "Only numbers are allowed");
+                    p.sendMessage(Component.text("Syntax error! ", NamedTextColor.RED)
+                            .append(Component.text("Only numbers are allowed", NamedTextColor.WHITE)));
                     return true;
                 }
                 ClockManager.setTime(hr, min, sec);
             }
-            case null, default -> p.sendMessage(ChatColor.RED + args[0] + "is not a valid argument!");
+            case null, default -> p.sendMessage(Component.text(args[0] + "is not a valid argument!", NamedTextColor.RED));
         }
         return true;
     }

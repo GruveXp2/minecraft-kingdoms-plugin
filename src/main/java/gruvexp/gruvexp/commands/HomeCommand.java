@@ -2,7 +2,8 @@ package gruvexp.gruvexp.commands;
 
 import gruvexp.gruvexp.HomeManager;
 import gruvexp.gruvexp.Main;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -30,7 +31,10 @@ public class HomeCommand implements CommandExecutor {
                     p.teleport(new Location(Main.WORLD, Double.parseDouble(coords[0]), Double.parseDouble(coords[1]), Double.parseDouble(coords[2])));
                 }
             } catch (NullPointerException e) {
-                p.sendMessage(ChatColor.RED + "You dont have a registered home!\n" + ChatColor.WHITE + "To set your home, type " + ChatColor.AQUA + "/home set" + ChatColor.WHITE + ", and your location will be saved as your home.");
+                p.sendMessage(Component.text("You dont have a registered home!", NamedTextColor.RED).appendNewline()
+                        .append(Component.text("To set your home, type ", NamedTextColor.WHITE))
+                        .append(Component.text("/home set", NamedTextColor.AQUA))
+                        .append(Component.text(", and your location will be saved as your home", NamedTextColor.WHITE)));
             }
         }
 
@@ -38,7 +42,8 @@ public class HomeCommand implements CommandExecutor {
             Location loc = p.getLocation();
             String coords = (Math.round(loc.getX() * 100.0) / 100.0)+" "+loc.getY()+" "+(Math.round(loc.getZ() * 100.0) / 100.0);
             homeLocations.put(p.getPlayerListName(), coords);
-            p.sendMessage("Your home adress is now " + ChatColor.AQUA + coords);
+            p.sendMessage(Component.text("Your home adress is now ")
+                    .append(Component.text(coords, NamedTextColor.AQUA)));
             HomeManager.saveData();
         }
         // man blir tpa til hjemmet sitt når man skriver /home. skriv /home set <pos> for å sette, og /home get for å få den nåværende posisjonen.

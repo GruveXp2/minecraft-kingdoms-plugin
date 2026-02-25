@@ -3,8 +3,8 @@ package gruvexp.gruvexp.nyttår;
 import gruvexp.gruvexp.Main;
 import gruvexp.gruvexp.rail.Coord;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -22,7 +22,7 @@ public class NyttårCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
 
         if (args.length == 0) {
-            sender.sendMessage(ChatColor.RED + "you need 1 or more arguments");
+            sender.sendMessage(Component.text("you need 1 or more arguments", NamedTextColor.RED));
             return true;
         }
 
@@ -39,7 +39,7 @@ public class NyttårCommand implements CommandExecutor {
             }
             case "register_center" -> {
                 if (args.length < 4) {
-                    sender.sendMessage(ChatColor.RED + "Ta med koordinater");
+                    sender.sendMessage(Component.text("Ta med koordinater", NamedTextColor.RED));
                     return true;
                 }
                 Coord koordinat = new Coord(args[1], args[2], args[3]);
@@ -49,7 +49,7 @@ public class NyttårCommand implements CommandExecutor {
             }
             case "register_number_center" -> {
                 if (args.length < 5) {
-                    sender.sendMessage(ChatColor.RED + "Ta med tall og koordinater");
+                    sender.sendMessage(Component.text("Ta med tall og koordinater", NamedTextColor.RED));
                     return true;
                 }
                 String number = args[1];
@@ -72,7 +72,7 @@ public class NyttårCommand implements CommandExecutor {
             }
             case "spawn_circle" -> {
                 if (args.length < 4) {
-                    sender.sendMessage(ChatColor.RED + "Ta med koordinater");
+                    sender.sendMessage(Component.text("Ta med koordinater", NamedTextColor.RED));
                     return true;
                 }
                 Coord koordinat = new Coord(args[1], args[2], args[3]);
@@ -94,7 +94,7 @@ public class NyttårCommand implements CommandExecutor {
             case "start_light" -> Year2025.startLightAnimation();
             case "start_phase_1" -> {
                 if (args.length < 4) {
-                    sender.sendMessage(ChatColor.RED + "You must specify xyz of the center of the animation");
+                    sender.sendMessage(Component.text("You must specify xyz of the center of the animation", NamedTextColor.RED));
                     return true;
                 }
                 Coord koordinat = new Coord(args[1], args[2], args[3]);
@@ -104,7 +104,7 @@ public class NyttårCommand implements CommandExecutor {
             }
             case "rotate_snowflake" -> {
                 if (args.length == 1) {
-                    sender.sendMessage(ChatColor.RED + "Ta med antall ticks");
+                    sender.sendMessage(Component.text("Ta med antall ticks", NamedTextColor.RED));
                     return true;
                 }
                 int ticks = Integer.parseInt(args[1]);
@@ -113,7 +113,7 @@ public class NyttårCommand implements CommandExecutor {
             }
             case "teleportus_vekkus" -> {
                 if (args.length == 1) {
-                    sender.sendMessage(ChatColor.RED + "Ta med antall ticks");
+                    sender.sendMessage(Component.text("Ta med antall ticks", NamedTextColor.RED));
                     return true;
                 }
                 int ticks = Integer.parseInt(args[1]);
@@ -121,7 +121,7 @@ public class NyttårCommand implements CommandExecutor {
             }
             case "animate_number" -> {
                 if (args.length == 1) {
-                    sender.sendMessage(ChatColor.RED + "Ta med antall ticks");
+                    sender.sendMessage(Component.text("Ta med antall ticks", NamedTextColor.RED));
                     return true;
                 }
                 int ticks = Integer.parseInt(args[1]);
@@ -142,7 +142,7 @@ public class NyttårCommand implements CommandExecutor {
             }
             case "test" -> {
                 if (args.length == 1) {
-                    sender.sendMessage(ChatColor.RED + "Ta med tall");
+                    sender.sendMessage(Component.text("Ta med tall", NamedTextColor.RED));
                     return true;
                 }
                 String tall = args[1];
@@ -153,7 +153,7 @@ public class NyttårCommand implements CommandExecutor {
                     case "4" -> Year2025.test4();
                 }
             }
-            default -> sender.sendMessage(ChatColor.RED + oper + " fins ikke!");
+            default -> sender.sendMessage(Component.text(oper + " fins ikke!", NamedTextColor.RED));
         }
         return true;
     }

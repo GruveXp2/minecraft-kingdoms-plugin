@@ -5,8 +5,9 @@ import gruvexp.gruvexp.core.KingdomsManager;
 import gruvexp.gruvexp.rail.CartManager;
 import gruvexp.gruvexp.rail.CircleCart;
 import gruvexp.gruvexp.rail.Test;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -26,7 +27,7 @@ public class TestCommand implements CommandExecutor {
 
         Player p = (Player) sender;
         if (args.length == 0) {
-            p.sendMessage(ChatColor.RED + "For få args. [villager | rail | round]");
+            p.sendMessage(Component.text("For få args. [villager | rail | round]", NamedTextColor.RED));
             return true;
         }
         switch (args[0]) {
@@ -92,7 +93,7 @@ public class TestCommand implements CommandExecutor {
                     case "rotate4" -> Test.rotate4(p);
                 }
             }
-            default -> p.sendMessage(ChatColor.RED + "Feil arg, skriv inn [villager | rail]");
+            default -> p.sendMessage(Component.text("Feil arg, skriv inn [villager | rail]", NamedTextColor.RED));
         }
         return true;
     }

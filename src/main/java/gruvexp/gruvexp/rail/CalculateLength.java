@@ -1,7 +1,10 @@
 package gruvexp.gruvexp.rail;
 
 import net.kyori.adventure.text.Component;
-import org.bukkit.*;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.data.Rail;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -57,13 +60,13 @@ public class CalculateLength extends BukkitRunnable {
             if (material2 == Material.RAIL || material2 == Material.POWERED_RAIL || material2 == Material.ACTIVATOR_RAIL || material2 == Material.DETECTOR_RAIL) {
                 loc.add(0, -1, 0);
             } else {
-                p.sendMessage(ChatColor.RED + "Cart derailed, length calculation cancelled");
+                p.sendMessage(Component.text("Cart derailed, length calculation cancelled", NamedTextColor.RED));
                 cancel();
                 return;
             }
         } else {
             if (material != Material.RAIL && material != Material.POWERED_RAIL && material != Material.ACTIVATOR_RAIL && material != Material.DETECTOR_RAIL) {
-                p.sendMessage(ChatColor.RED + "Cart derailed, length calculation cancelled");
+                p.sendMessage(Component.text("Cart derailed, length calculation cancelled", NamedTextColor.RED));
                 cancel();
                 return;
             }
@@ -113,7 +116,8 @@ public class CalculateLength extends BukkitRunnable {
         cart.teleport(loc);
         if (loc.equals(exit)) {
             section.setLength(counter);
-            p.sendMessage("100% - Rail length: " + ChatColor.AQUA + counter + "m");
+            p.sendMessage(Component.text("100% - Rail length: ")
+                    .append(Component.text(counter + "m", NamedTextColor.AQUA)));
             cart.remove();
             cancel();
         }
